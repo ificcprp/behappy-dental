@@ -115,7 +115,7 @@ export function RealCardsAndWelcomeSection() {
                   03 · CATÁLOGO CLÍNICO
                 </span>
                 <h3 className="text-base font-medium tracking-tight text-[#141413] leading-snug">
-                  21 Procedimientos Protocolizados
+                  20 Procedimientos Protocolizados
                 </h3>
                 <p className="text-xs text-[#66635d] font-light mt-2 leading-relaxed">
                   Desde alineación invisible Invisalign e implantes óseos hasta resinas estéticas y blanqueamiento.

@@ -66,8 +66,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/portal" className="text-purple-400 hover:text-purple-300 transition">
-                  Portal Clínico de Pacientes
+                <Link href="/portal" className="hover:text-white transition">
+                  Portal Clínico (4 Roles)
                 </Link>
               </li>
             </ul>

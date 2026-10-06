@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { TREATMENTS, CATEGORIES, Treatment } from "@/data/treatments";
 import { createWhatsAppUrl } from "@/data/clinicInfo";
 import { MessageCircle, ArrowUpRight } from "lucide-react";
@@ -37,7 +38,7 @@ export function TreatmentsSection() {
           </p>
         </div>
 
-        {/* Filter Categories Bar (Editorial Hairline Tabs) */}
+        {/* Filter Categories Bar */}
         <div className="flex flex-wrap gap-2 pt-2">
           {CATEGORIES.map((cat) => (
             <button
@@ -54,73 +55,86 @@ export function TreatmentsSection() {
           ))}
         </div>
 
-        {/* Treatments Grid (Clean Architectural Ledger) */}
+        {/* Treatments Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTreatments.map((treatment) => (
             <div
               key={treatment.id}
-              className="border border-[#e5e0d5] bg-white p-6 hover:border-[#141413] transition-colors flex flex-col justify-between group"
+              className="border border-[#e5e0d5] bg-white hover:border-[#141413] transition-colors flex flex-col justify-between group overflow-hidden"
             >
-              <div className="space-y-4">
-                {/* Meta Top Line */}
-                <div className="flex items-center justify-between border-b border-[#f0ede6] pb-3">
-                  <span className="text-[10px] font-mono tracking-[0.18em] text-[#78736a] uppercase">
-                    {treatment.category}
-                  </span>
-                  {treatment.popular && (
-                    <span className="text-[9px] font-mono tracking-widest text-[#141413] uppercase border border-[#ded9cd] px-2 py-0.5 bg-[#faf8f5]">
-                      Alta Demanda
-                    </span>
-                  )}
-                </div>
-
-                {/* Treatment Title */}
-                <h3 className="text-lg font-normal tracking-tight text-[#141413]">
-                  {treatment.name}
-                </h3>
-
-                {/* Description */}
-                <p className="text-xs text-[#5d5952] font-light leading-relaxed">
-                  {treatment.shortDescription}
-                </p>
-
-                {/* Benefits List */}
-                <ul className="space-y-1.5 text-xs text-[#5d5952] font-light pt-2 border-t border-[#f0ede6]">
-                  {treatment.benefits.slice(0, 3).map((benefit, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="text-[#141413] font-mono text-[10px] select-none">✓</span>
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* Indicated For */}
-                <div className="p-3 bg-[#faf8f5] border border-[#e5e0d5] text-[11px] text-[#5d5952] font-light">
-                  <strong className="text-[#141413] font-mono text-[10px] tracking-wider uppercase block mb-0.5">
-                    Indicación Médica:
-                  </strong>
-                  {treatment.recommendedFor}
-                </div>
+              {/* Image thumbnail */}
+              <div className="relative w-full h-[180px] bg-[#f5f2eb] overflow-hidden border-b border-[#f0ede6]">
+                <Image
+                  src={treatment.image}
+                  alt={treatment.name}
+                  fill
+                  className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 380px"
+                />
               </div>
 
-              {/* Action Desk */}
-              <div className="pt-5 mt-5 border-t border-[#f0ede6] flex items-center justify-between gap-3">
-                <button
-                  onClick={() => handleSelectTreatment(treatment)}
-                  className="flex-1 py-2.5 px-3 text-xs font-mono tracking-wider uppercase bg-[#141413] text-[#faf8f5] hover:bg-black transition text-center font-medium"
-                >
-                  Agendar Consulta
-                </button>
+              <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                <div className="space-y-3">
+                  {/* Meta Top Line */}
+                  <div className="flex items-center justify-between border-b border-[#f0ede6] pb-2">
+                    <span className="text-[10px] font-mono tracking-[0.18em] text-[#78736a] uppercase">
+                      {treatment.tag}
+                    </span>
+                    {treatment.popular && (
+                      <span className="text-[9px] font-mono tracking-widest text-[#141413] uppercase border border-[#ded9cd] px-2 py-0.5 bg-[#faf8f5]">
+                        Alta Demanda
+                      </span>
+                    )}
+                  </div>
 
-                <a
-                  href={createWhatsAppUrl(`Hola Centro Dental BeHappy, me interesa consultar detalles sobre el tratamiento de ${treatment.name}.`)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 border border-[#e5e0d5] hover:border-[#141413] hover:bg-[#faf8f5] text-[#141413] transition"
-                  title="Consultar por WhatsApp"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                </a>
+                  {/* Treatment Title */}
+                  <h3 className="text-lg font-normal tracking-tight text-[#141413]">
+                    {treatment.name}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-xs text-[#5d5952] font-light leading-relaxed">
+                    {treatment.shortDescription}
+                  </p>
+
+                  {/* Benefits List */}
+                  <ul className="space-y-1.5 text-xs text-[#5d5952] font-light pt-2 border-t border-[#f0ede6]">
+                    {treatment.benefits.slice(0, 3).map((benefit, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-[#141413] font-mono text-[10px] select-none">✓</span>
+                        <span>{benefit}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Indicated For */}
+                  <div className="p-3 bg-[#faf8f5] border border-[#e5e0d5] text-[11px] text-[#5d5952] font-light">
+                    <strong className="text-[#141413] font-mono text-[10px] tracking-wider uppercase block mb-0.5">
+                      Indicación Médica:
+                    </strong>
+                    {treatment.recommendedFor}
+                  </div>
+                </div>
+
+                {/* Action Desk */}
+                <div className="pt-4 border-t border-[#f0ede6] flex items-center justify-between gap-3">
+                  <button
+                    onClick={() => handleSelectTreatment(treatment)}
+                    className="flex-1 py-2 px-3 text-xs font-mono tracking-wider uppercase bg-[#141413] text-[#faf8f5] hover:bg-black transition text-center font-medium"
+                  >
+                    Agendar Consulta
+                  </button>
+
+                  <a
+                    href={createWhatsAppUrl(`Hola Centro Dental BeHappy, me interesa consultar detalles sobre el tratamiento de ${treatment.name}.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 border border-[#e5e0d5] hover:border-[#141413] hover:bg-[#faf8f5] text-[#141413] transition"
+                    title="Consultar por WhatsApp"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                  </a>
+                </div>
               </div>
             </div>
           ))}

@@ -48,9 +48,9 @@ export function PromotionsBannerSection() {
           </div>
 
           {/* Card 2: Explora Promociones Vigentes */}
-          <div className="bg-neutral-950 border border-neutral-800 rounded-3xl p-8 flex flex-col justify-between hover:border-sky-500 transition-all duration-300 group shadow-xl">
+          <div className="bg-neutral-950 border border-neutral-800 rounded-lg p-8 flex flex-col justify-between hover:border-neutral-500 transition-all duration-300 group shadow-xl">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-400 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-neutral-800 text-neutral-200 flex items-center justify-center">
                 <Sparkles className="w-6 h-6" />
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-white">
@@ -66,7 +66,7 @@ export function PromotionsBannerSection() {
                 href={createWhatsAppUrl("Hola Centro Dental BeHappy, me gustaría conocer las promociones vigentes de este mes.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full bg-neutral-900 group-hover:bg-sky-600 text-white font-medium text-xs sm:text-sm border border-neutral-700 group-hover:border-sky-600 transition-all"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 bg-neutral-900 group-hover:bg-neutral-800 text-white font-medium text-xs sm:text-sm border border-neutral-700 transition-all"
               >
                 Explora Promociones Vigentes <ArrowRight className="w-4 h-4" />
               </a>

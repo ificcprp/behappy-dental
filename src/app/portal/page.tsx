@@ -287,7 +287,7 @@ function PortalContent() {
 
               <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
                 <span className="text-[10px] font-mono tracking-widest text-neutral-400 block uppercase">Tratamiento Activo</span>
-                <span className="text-base font-normal text-purple-300 block">Invisalign®</span>
+                <span className="text-base font-normal text-white block">Invisalign®</span>
                 <span className="text-[11px] font-mono text-neutral-400 block">Alineador 14 de 24</span>
               </div>
 
@@ -472,13 +472,13 @@ function PortalContent() {
                   </div>
 
                   <div className="p-4 border border-[#2b2b34] bg-[#16161d] space-y-1.5">
-                    <span className="font-mono text-purple-300 text-[10px] uppercase font-bold block">40% Descuento</span>
+                    <span className="font-mono text-neutral-300 text-[10px] uppercase font-bold block">40% Cobertura</span>
                     <h4 className="font-medium text-white text-sm">Ortodoncia & Resinas</h4>
                     <p className="text-neutral-400">Ahorro en alineadores Invisalign y tapaduras estéticas.</p>
                   </div>
 
                   <div className="p-4 border border-[#2b2b34] bg-[#16161d] space-y-1.5">
-                    <span className="font-mono text-sky-300 text-[10px] uppercase font-bold block">20% Descuento</span>
+                    <span className="font-mono text-neutral-300 text-[10px] uppercase font-bold block">20% Cobertura</span>
                     <h4 className="font-medium text-white text-sm">Cirugía e Implantes</h4>
                     <p className="text-neutral-400">Cobertura en implantes de titanio y extracciones complejas.</p>
                   </div>
@@ -874,10 +874,10 @@ export default function PortalPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen bg-[#0a0a0c] text-white flex items-center justify-center">
+        <div className="min-h-screen bg-[#faf8f5] text-[#141413] flex items-center justify-center">
           <div className="text-center space-y-3">
-            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs font-mono uppercase text-neutral-400">Cargando portal...</p>
+            <div className="w-6 h-6 border-2 border-[#141413] border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-xs font-mono uppercase tracking-widest text-[#78736a]">Cargando portal clínico...</p>
           </div>
         </div>
       }
