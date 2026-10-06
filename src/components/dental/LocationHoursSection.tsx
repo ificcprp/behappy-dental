@@ -1,10 +1,31 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { CLINIC_INFO } from "@/data/clinicInfo";
+import { getCMSData, CMSData } from "@/lib/cmsStore";
 import { ArrowUpRight } from "lucide-react";
 
 export function LocationHoursSection() {
+  const [clinicInfo, setClinicInfo] = useState(CLINIC_INFO);
+
+  useEffect(() => {
+    const cms = getCMSData();
+    if (cms?.clinicInfo) {
+      setClinicInfo(cms.clinicInfo);
+    }
+
+    const handleUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      if (custom?.clinicInfo) {
+        setClinicInfo(custom.clinicInfo);
+      } else {
+        setClinicInfo(getCMSData().clinicInfo);
+      }
+    };
+
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, []);
   return (
     <section id="ubicacion" className="py-24 bg-[#faf8f5] text-[#141413] border-b border-[#e5e0d5]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -37,15 +58,15 @@ export function LocationHoursSection() {
               <div className="space-y-2.5 text-xs sm:text-sm text-[#5d5952] font-light leading-relaxed pt-2">
                 <div className="flex justify-between py-1 border-b border-[#f0ede6]">
                   <span>Lunes ~ Viernes</span>
-                  <span className="font-mono text-[#141413] font-bold">10:00 - 20:00</span>
+                  <span className="font-mono text-[#141413] font-bold">{clinicInfo.hours.weekdays.replace("Lunes ~ Viernes: ", "")}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-[#f0ede6]">
                   <span>Sábado</span>
-                  <span className="font-mono text-[#141413] font-bold">10:00 - 18:00</span>
+                  <span className="font-mono text-[#141413] font-bold">{clinicInfo.hours.saturday.replace("Sábado: ", "")}</span>
                 </div>
                 <div className="flex justify-between py-1">
                   <span>Domingos y Feriados</span>
-                  <span className="font-mono text-[#78736a]">Cerrado</span>
+                  <span className="font-mono text-[#78736a]">{clinicInfo.hours.sunday.replace("Domingos y feriados: ", "")}</span>
                 </div>
               </div>
             </div>
@@ -59,7 +80,7 @@ export function LocationHoursSection() {
           <div className="lg:col-span-5 p-4 sm:p-6 bg-[#faf8f5]">
             <div className="w-full h-[280px] sm:h-[320px] overflow-hidden border border-[#e5e0d5] bg-[#f0ede6]">
               <iframe
-                src={CLINIC_INFO.address.googleMapsEmbedUrl}
+                src={clinicInfo.address.googleMapsEmbedUrl}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -82,8 +103,8 @@ export function LocationHoursSection() {
                 Sede Ñuñoa
               </h3>
               <div className="text-xs sm:text-sm text-[#5d5952] font-light space-y-1">
-                <p className="font-medium text-[#141413]">Suecia 3580, OF. 304</p>
-                <p>Ñuñoa, Santiago, Chile</p>
+                <p className="font-medium text-[#141413]">{clinicInfo.address.street}</p>
+                <p>{clinicInfo.address.commune}, {clinicInfo.address.city}, {clinicInfo.address.country}</p>
                 <p className="text-[11px] text-[#78736a] pt-2">
                   Referencia: Av. Suecia entre Eliodoro Yáñez y Pocuro / Simón Bolívar. A pasos de Metro Chile España (L3).
                 </p>
@@ -92,7 +113,7 @@ export function LocationHoursSection() {
 
             <div>
               <a
-                href={CLINIC_INFO.address.googleMapsDirectUrl}
+                href={clinicInfo.address.googleMapsDirectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-[11px] font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4 decoration-1"

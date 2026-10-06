@@ -27,12 +27,12 @@ export function RealCardsAndWelcomeSection() {
         </div>
 
         {/* 4 Grid Columns with Fine Border Dividers */}
+        {/* 4 Grid Columns with Fine Border Dividers */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t border-l border-b border-[#e5e0d5]">
           
-          {/* Card 1: Cómo llegar (Instagram Reel) */}
+          {/* Card 1: Conoce cómo llegar (Instagram Reel) */}
           <div className="p-7 flex flex-col justify-between border-r border-[#e5e0d5] hover:bg-[#f3efe6] transition-colors group">
             <div className="space-y-4">
-              {/* Minimalist Line Diagram */}
               <div className="h-14 flex items-center">
                 <svg className="w-16 h-8 text-[#141413]" viewBox="0 0 64 32" fill="none" stroke="currentColor">
                   <circle cx="12" cy="16" r="8" strokeWidth="1" />
@@ -48,10 +48,10 @@ export function RealCardsAndWelcomeSection() {
                   01 · LOCALIZACIÓN & ACCESO
                 </span>
                 <h3 className="text-base font-medium tracking-tight text-[#141413] leading-snug">
-                  Cómo llegar desde Metro Chile España L3
+                  Conoce cómo llegar a nuestra clínica
                 </h3>
                 <p className="text-xs text-[#66635d] font-light mt-2 leading-relaxed">
-                  Recorrido peatonal de 5 minutos por Av. Suecia hasta el Edificio Suecia 3580, oficina 304.
+                  Visítanos en Suecia 3580, of. 304, Ñuñoa. A pasos de Metro Chile España (Línea 3).
                 </p>
               </div>
             </div>
@@ -62,14 +62,13 @@ export function RealCardsAndWelcomeSection() {
               rel="noopener noreferrer"
               className="mt-6 inline-flex items-center gap-1 text-[11px] font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4 decoration-1 group-hover:text-neutral-900 transition"
             >
-              Ver video en Instagram <ArrowUpRight className="w-3.5 h-3.5" />
+              Explorar <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
           </div>
 
           {/* Card 2: Convenio Dental */}
           <div className="p-7 flex flex-col justify-between border-r border-[#e5e0d5] hover:bg-[#f3efe6] transition-colors group">
             <div className="space-y-4">
-              {/* Minimalist Line Diagram */}
               <div className="h-14 flex items-center">
                 <svg className="w-16 h-8 text-[#141413]" viewBox="0 0 64 32" fill="none" stroke="currentColor">
                   <path d="M8 24 C18 12, 28 28, 40 14 C48 8, 56 16, 56 16" strokeWidth="1" />
@@ -84,10 +83,10 @@ export function RealCardsAndWelcomeSection() {
                   02 · SISTEMA PREVENTIVO
                 </span>
                 <h3 className="text-base font-medium tracking-tight text-[#141413] leading-snug">
-                  Convenio BeHappy & Ahorro Escalonado
+                  Descubre nuestro convenio dental
                 </h3>
                 <p className="text-xs text-[#66635d] font-light mt-2 leading-relaxed">
-                  Coberturas del 20%, 40% y 60% en todos los procedimientos odontológicos sin letra chica.
+                  Beneficios del convenio, coberturas escalonadas y tarifas preferenciales para toda la familia.
                 </p>
               </div>
             </div>
@@ -96,14 +95,13 @@ export function RealCardsAndWelcomeSection() {
               href="/precios"
               className="mt-6 inline-flex items-center gap-1 text-[11px] font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4 decoration-1 transition"
             >
-              Leer sobre el seguro →
+              Lee sobre nuestro seguro →
             </Link>
           </div>
 
           {/* Card 3: Tratamientos */}
           <div className="p-7 flex flex-col justify-between border-r border-[#e5e0d5] hover:bg-[#f3efe6] transition-colors group">
             <div className="space-y-4">
-              {/* Minimalist Math / Formula Graphic */}
               <div className="h-14 flex items-center font-serif text-sm tracking-wide text-[#141413]">
                 <span className="italic font-normal">
                   Protocolo <span className="text-xs font-mono">2026</span> = <sup>(Dx + 3D)</sup>&frasl;<sub>Prevención</sub>
@@ -115,10 +113,10 @@ export function RealCardsAndWelcomeSection() {
                   03 · CATÁLOGO CLÍNICO
                 </span>
                 <h3 className="text-base font-medium tracking-tight text-[#141413] leading-snug">
-                  20 Procedimientos Protocolizados
+                  Revisa nuestros tratamientos y servicios dentales
                 </h3>
                 <p className="text-xs text-[#66635d] font-light mt-2 leading-relaxed">
-                  Desde alineación invisible Invisalign e implantes óseos hasta resinas estéticas y blanqueamiento.
+                  Desde ortodoncia invisible Invisalign e implantes hasta odontopediatría y blanqueamiento.
                 </p>
               </div>
             </div>
@@ -127,14 +125,13 @@ export function RealCardsAndWelcomeSection() {
               href="/tratamientos"
               className="mt-6 inline-flex items-center gap-1 text-[11px] font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4 decoration-1 transition"
             >
-              Explorar tratamientos →
+              Ver tratamientos →
             </Link>
           </div>
 
-          {/* Card 4: Especialistas */}
+          {/* Card 4: Especialistas / Derivaciones */}
           <div className="p-7 flex flex-col justify-between border-r border-[#e5e0d5] hover:bg-[#f3efe6] transition-colors group">
             <div className="space-y-4">
-              {/* Minimalist Grid Diagram */}
               <div className="h-14 flex items-center">
                 <svg className="w-14 h-10 text-[#141413]" viewBox="0 0 56 40" fill="none" stroke="currentColor">
                   <rect x="4" y="4" width="48" height="32" strokeWidth="1" />
@@ -150,27 +147,29 @@ export function RealCardsAndWelcomeSection() {
                   04 · EQUIPO ACREDITADO
                 </span>
                 <h3 className="text-base font-medium tracking-tight text-[#141413] leading-snug">
-                  8 Especialistas Certificados
+                  ¿Necesita un especialista? Recibimos derivaciones
                 </h3>
                 <p className="text-xs text-[#66635d] font-light mt-2 leading-relaxed">
-                  Directorio médico registrado en la Superintendencia de Salud con dedicación exclusiva por área.
+                  8 especialistas registrados en la Superintendencia de Salud con derivaciones en diversas áreas.
                 </p>
               </div>
             </div>
 
-            <Link
-              href="/nosotros"
+            <a
+              href={createWhatsAppUrl("Hola Centro Dental BeHappy, me gustaría coordinar una cita con un especialista.")}
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-6 inline-flex items-center gap-1 text-[11px] font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4 decoration-1 transition"
             >
-              Conocer al equipo →
-            </Link>
+              Agenda Aquí →
+            </a>
           </div>
 
         </div>
 
       </div>
 
-      {/* "¿Nuevo como paciente?" Editorial Callout & Real Clinic Box Photo */}
+      {/* "¿Nuevo como paciente? Contáctenos hoy mismo" */}
       <div className="border-t border-[#e5e0d5] py-20 bg-[#f5f2eb]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -178,26 +177,31 @@ export function RealCardsAndWelcomeSection() {
             {/* Left Copy */}
             <div className="lg:col-span-5 space-y-6">
               <span className="text-[11px] font-mono tracking-[0.2em] text-[#78736a] uppercase block">
-                PRIMERA ATENCIÓN & INGRESO
+                PRIMERA ATENCIÓN & ADMISIÓN
               </span>
 
               <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-[#141413] leading-tight">
                 ¿Nuevo como paciente?<br />
-                Inicie su diagnóstico hoy mismo.
+                Contáctenos hoy mismo
               </h2>
 
-              <p className="text-sm text-[#5d5952] font-light leading-relaxed">
-                Cámbiese a BeHappy de forma ágil y ordenada. Gestionamos el traslado de su historial clínico y realizamos una primera evaluación diagnóstica integral para establecer su plan de salud dental sin presiones.
-              </p>
+              <div className="space-y-3 text-sm text-[#5d5952] font-light leading-relaxed">
+                <p>
+                  Cámbiate a nosotros fácilmente. Gestiona y mantén tu salud dental.
+                </p>
+                <p>
+                  Escríbenos directamente para recibir detalles personalizados y resolver tus dudas clínicas.
+                </p>
+              </div>
 
               <div className="pt-2">
                 <a
-                  href={createWhatsAppUrl("Hola Centro Dental BeHappy, soy un nuevo paciente y me gustaría solicitar información y agendar mi primera evaluación.")}
+                  href={createWhatsAppUrl("Hola Centro Dental BeHappy, soy un nuevo paciente y me gustaría recibir información sobre la primera consulta.")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center px-7 py-3.5 rounded-[2px] bg-[#141413] text-[#faf8f5] hover:bg-black text-xs font-mono tracking-[0.16em] uppercase font-bold transition shadow-sm"
                 >
-                  Contactar con Recepción
+                  Enviar mensaje por WhatsApp
                 </a>
               </div>
             </div>

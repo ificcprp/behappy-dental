@@ -1,18 +1,39 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { TREATMENTS, CATEGORIES, Treatment } from "@/data/treatments";
+import { getCMSData, CMSData } from "@/lib/cmsStore";
 import { createWhatsAppUrl } from "@/data/clinicInfo";
 import { MessageCircle, ArrowUpRight } from "lucide-react";
 
 export function TreatmentsSection() {
+  const [treatmentsList, setTreatmentsList] = useState<Treatment[]>(TREATMENTS);
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
+
+  useEffect(() => {
+    const cms = getCMSData();
+    if (cms?.treatments && cms.treatments.length > 0) {
+      setTreatmentsList(cms.treatments);
+    }
+
+    const handleUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      if (custom?.treatments && custom.treatments.length > 0) {
+        setTreatmentsList(custom.treatments);
+      } else {
+        setTreatmentsList(getCMSData().treatments);
+      }
+    };
+
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, []);
 
   const filteredTreatments =
     activeCategory === "Todos"
-      ? TREATMENTS
-      : TREATMENTS.filter((t) => t.category === activeCategory);
+      ? treatmentsList
+      : treatmentsList.filter((t) => t.category === activeCategory);
 
   const handleSelectTreatment = (treatment: Treatment) => {
     const el = document.getElementById("agendar");

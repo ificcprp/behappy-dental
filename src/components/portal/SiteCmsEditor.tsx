@@ -18,12 +18,14 @@ import {
   Users,
   PhoneCall,
   Bell,
-  Sparkles
+  Sparkles,
+  Home
 } from "lucide-react";
+import { CMSHero, DEFAULT_HERO } from "@/lib/cmsStore";
 
 export function SiteCmsEditor() {
   const [cmsData, setCmsData] = useState<CMSData>(getCMSData());
-  const [activeTab, setActiveTab] = useState<"tratamientos" | "doctores" | "contacto" | "anuncios" | "promos">("tratamientos");
+  const [activeTab, setActiveTab] = useState<"hero" | "tratamientos" | "doctores" | "contacto" | "anuncios" | "promos">("hero");
   const [toastMessage, setToastToastMessage] = useState<string | null>(null);
 
   // Edit Treatment Modal State
@@ -124,6 +126,18 @@ export function SiteCmsEditor() {
     setCmsData(updated);
   };
 
+  // Hero Handlers
+  const handleHeroChange = (field: keyof CMSHero, value: string) => {
+    const updated = {
+      ...cmsData,
+      hero: {
+        ...(cmsData.hero || DEFAULT_HERO),
+        [field]: value
+      }
+    };
+    setCmsData(updated);
+  };
+
   // Announcements Handlers
   const handleAddAnnouncement = (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,7 +185,7 @@ export function SiteCmsEditor() {
           </span>
           <h2 className="text-2xl font-normal text-white">CMS: Editor del Sitio Web</h2>
           <p className="text-xs text-neutral-400 font-light mt-1">
-            Modifica en tiempo real los 20 tratamientos, doctores, teléfonos, horarios y avisos públicos de behappydental.cl
+            Modifica en tiempo real los textos de portada, los 20 tratamientos, doctores, teléfonos, horarios y avisos públicos de behappydental.cl
           </p>
         </div>
 
@@ -207,6 +221,18 @@ export function SiteCmsEditor() {
 
       {/* Navigation Sub-Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-[#222228] pb-3">
+        <button
+          onClick={() => setActiveTab("hero")}
+          className={`px-4 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border ${
+            activeTab === "hero"
+              ? "bg-[#1f1f26] text-white border-purple-500 font-semibold"
+              : "bg-[#121216] text-neutral-400 border-[#222228] hover:text-white"
+          }`}
+        >
+          <Home className="w-4 h-4 text-purple-400" />
+          <span>Portada & Hero</span>
+        </button>
+
         <button
           onClick={() => setActiveTab("tratamientos")}
           className={`px-4 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border ${
@@ -267,6 +293,138 @@ export function SiteCmsEditor() {
           <span>Promociones & Seguro</span>
         </button>
       </div>
+
+      {/* ========================================================================= */}
+      {/* TAB 0: PORTADA & HERO */}
+      {/* ========================================================================= */}
+      {activeTab === "hero" && (
+        <div className="border border-[#222228] bg-[#121216] p-6 space-y-6">
+          <div className="border-b border-[#222228] pb-4">
+            <h3 className="text-base font-normal text-white">
+              Portada Principal (Hero Banner)
+            </h3>
+            <p className="text-xs text-neutral-400 font-light mt-1">
+              Personaliza el mensaje de bienvenida oficial, títulos y enlaces de reserva en la página de inicio.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] font-mono text-neutral-400 uppercase mb-1">
+                Kicker de Bienvenida (Saludo)
+              </label>
+              <input
+                type="text"
+                value={cmsData.hero?.welcomeKicker || "Bienvenidos a"}
+                onChange={(e) => handleHeroChange("welcomeKicker", e.target.value)}
+                placeholder="Bienvenidos a"
+                className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-mono text-neutral-400 uppercase mb-1">
+                Título Principal de la Clínica
+              </label>
+              <input
+                type="text"
+                value={cmsData.hero?.title || "Centro Dental BeHappy"}
+                onChange={(e) => handleHeroChange("title", e.target.value)}
+                placeholder="Centro Dental BeHappy"
+                className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-bold"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-[11px] font-mono text-neutral-400 uppercase mb-1">
+                Bajada / Descripción Principal
+              </label>
+              <textarea
+                rows={2}
+                value={cmsData.hero?.subtitle || "Centro dental en Ñuñoa con la última tecnología y tratamientos de la más alta calidad."}
+                onChange={(e) => handleHeroChange("subtitle", e.target.value)}
+                className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs leading-relaxed"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-mono text-neutral-400 uppercase mb-1">
+                Texto Botón Principal
+              </label>
+              <input
+                type="text"
+                value={cmsData.hero?.primaryCtaText || "Reserva aquí"}
+                onChange={(e) => handleHeroChange("primaryCtaText", e.target.value)}
+                placeholder="Reserva aquí"
+                className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-mono text-neutral-400 uppercase mb-1">
+                Enlace Botón Principal (WhatsApp o URL)
+              </label>
+              <input
+                type="text"
+                value={cmsData.hero?.primaryCtaUrl || "https://api.whatsapp.com/send/?phone=56947578597&text&type=phone_number&app_absent=0"}
+                onChange={(e) => handleHeroChange("primaryCtaUrl", e.target.value)}
+                className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-mono text-neutral-400 uppercase mb-1">
+                Texto Botón Secundario
+              </label>
+              <input
+                type="text"
+                value={cmsData.hero?.secondaryCtaText || "Agendar con agendador →"}
+                onChange={(e) => handleHeroChange("secondaryCtaText", e.target.value)}
+                placeholder="Agendar con agendador →"
+                className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-mono text-neutral-400 uppercase mb-1">
+                Ruta Imagen Fondo
+              </label>
+              <input
+                type="text"
+                value={cmsData.hero?.bgImage || "/images/hero-woman.jpg"}
+                onChange={(e) => handleHeroChange("bgImage", e.target.value)}
+                className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+              />
+            </div>
+          </div>
+
+          {/* Preview Box */}
+          <div className="p-4 border border-[#2b2b34] bg-[#0c0c10] space-y-2">
+            <span className="text-[10px] font-mono uppercase text-purple-400 font-bold block">
+              Vista Previa Rápida
+            </span>
+            <div className="p-6 bg-black/90 border border-neutral-800 text-center space-y-2 rounded">
+              <span className="text-neutral-300 text-sm block">{cmsData.hero?.welcomeKicker}</span>
+              <h4 className="text-xl font-bold text-white">{cmsData.hero?.title}</h4>
+              <p className="text-xs text-neutral-300 max-w-md mx-auto">{cmsData.hero?.subtitle}</p>
+              <div className="pt-2">
+                <span className="px-5 py-1.5 rounded-full border border-white text-white text-xs inline-block">
+                  {cmsData.hero?.primaryCtaText}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-2 flex justify-end">
+            <button
+              onClick={handleSaveAll}
+              className="px-6 py-2.5 bg-white text-black font-bold font-mono text-xs uppercase tracking-wider hover:bg-neutral-200 transition"
+            >
+              Guardar Cambios de Portada
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* TAB 1: TRATAMIENTOS */}

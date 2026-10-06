@@ -945,8 +945,24 @@ function PortalContent() {
                 </button>
               </nav>
 
+              {/* Enlace directo a Propuesta Editorial Web */}
+              <div className="pt-4 border-t border-[#222228] space-y-2">
+                <span className="text-[10px] font-mono tracking-widest text-emerald-400 uppercase block font-bold">
+                  Documento Comercial
+                </span>
+                <a
+                  href="/propuesta.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between text-xs font-mono text-emerald-300 hover:text-white px-2.5 py-2 bg-emerald-950/40 border border-emerald-800/80 hover:bg-emerald-900/60 transition rounded"
+                >
+                  <span>📄 Editar Propuesta PDF ↗</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+
               {/* Quick links to live public website */}
-              <div className="pt-5 border-t border-[#222228] space-y-2.5">
+              <div className="pt-4 border-t border-[#222228] space-y-2.5">
                 <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase block">
                   Ver Sitio Web en Vivo
                 </span>

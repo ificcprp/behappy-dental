@@ -1,18 +1,39 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { TREATMENTS } from "@/data/treatments";
+import { TREATMENTS, Treatment } from "@/data/treatments";
+import { getCMSData, CMSData } from "@/lib/cmsStore";
 
 export function EspecialidadesTratamientosCarousel() {
+  const [treatmentsList, setTreatmentsList] = useState<Treatment[]>(TREATMENTS);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
-  const totalPages = Math.ceil(TREATMENTS.length / itemsPerPage);
 
+  useEffect(() => {
+    const cms = getCMSData();
+    if (cms?.treatments && cms.treatments.length > 0) {
+      setTreatmentsList(cms.treatments);
+    }
+
+    const handleUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      if (custom?.treatments && custom.treatments.length > 0) {
+        setTreatmentsList(custom.treatments);
+      } else {
+        setTreatmentsList(getCMSData().treatments);
+      }
+    };
+
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, []);
+
+  const totalPages = Math.ceil(treatmentsList.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = TREATMENTS.slice(startIndex, startIndex + itemsPerPage);
+  const currentItems = treatmentsList.slice(startIndex, startIndex + itemsPerPage);
 
   const goToPrev = () => {
     setCurrentPage((prev) => (prev > 1 ? prev - 1 : totalPages));

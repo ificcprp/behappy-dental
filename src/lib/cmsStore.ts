@@ -13,16 +13,39 @@ export interface CMSPromotion {
   linkHref: string;
 }
 
+export interface CMSHero {
+  welcomeKicker: string;
+  title: string;
+  subtitle: string;
+  primaryCtaText: string;
+  primaryCtaUrl: string;
+  secondaryCtaText: string;
+  secondaryCtaUrl: string;
+  bgImage: string;
+}
+
 export interface CMSData {
   treatments: Treatment[];
   doctors: Doctor[];
   clinicInfo: typeof CLINIC_INFO;
   announcements: string[];
   promotions: CMSPromotion[];
+  hero: CMSHero;
   heroHeadline: string;
   heroSubheadline: string;
   lastUpdated: string;
 }
+
+export const DEFAULT_HERO: CMSHero = {
+  welcomeKicker: "Bienvenidos a",
+  title: "Centro Dental BeHappy",
+  subtitle: "Centro dental en Ñuñoa con la última tecnología y tratamientos de la más alta calidad.",
+  primaryCtaText: "Reserva aquí",
+  primaryCtaUrl: "https://api.whatsapp.com/send/?phone=56947578597&text&type=phone_number&app_absent=0",
+  secondaryCtaText: "Agendar en línea",
+  secondaryCtaUrl: "#agendar",
+  bgImage: "/images/hero-woman.jpg"
+};
 
 export const DEFAULT_ANNOUNCEMENTS = [
   "¡Te estábamos esperando con alegría!",
@@ -46,7 +69,7 @@ export const DEFAULT_PROMOTIONS: CMSPromotion[] = [
     discount: "20% al 60%",
     description: "Cobertura escalonada en todos los procedimientos odontológicos sin letra chica ni copagos abusivos.",
     badge: "Membresía Activa",
-    linkText: "Conocer aranceles del plan",
+    linkText: "Lee sobre nuestro seguro",
     linkHref: "/precios"
   },
   {
@@ -56,7 +79,7 @@ export const DEFAULT_PROMOTIONS: CMSPromotion[] = [
     discount: "Sin Costo Inicial",
     description: "Diagnóstico completo con cámara intraoral y radiografía digital para pacientes que inician tratamiento.",
     badge: "Válido este mes",
-    linkText: "Agendar evaluación",
+    linkText: "Explora Promociones Vigentes",
     linkHref: "/#agendar"
   }
 ];
@@ -67,8 +90,9 @@ export const DEFAULT_CMS_DATA: CMSData = {
   clinicInfo: CLINIC_INFO,
   announcements: DEFAULT_ANNOUNCEMENTS,
   promotions: DEFAULT_PROMOTIONS,
-  heroHeadline: "Odontología de alta precisión en Ñuñoa.",
-  heroSubheadline: "Diagnóstico digital avanzado, especialistas de posgrado y atención ética sin dolor en Av. Suecia 3580.",
+  hero: DEFAULT_HERO,
+  heroHeadline: "Centro Dental BeHappy",
+  heroSubheadline: "Centro dental en Ñuñoa con la última tecnología y tratamientos de la más alta calidad.",
   lastUpdated: new Date().toISOString()
 };
 
@@ -90,6 +114,7 @@ export function getCMSData(): CMSData {
       treatments: parsed.treatments && parsed.treatments.length > 0 ? parsed.treatments : DEFAULT_CMS_DATA.treatments,
       doctors: parsed.doctors && parsed.doctors.length > 0 ? parsed.doctors : DEFAULT_CMS_DATA.doctors,
       clinicInfo: parsed.clinicInfo ? { ...DEFAULT_CMS_DATA.clinicInfo, ...parsed.clinicInfo } : DEFAULT_CMS_DATA.clinicInfo,
+      hero: parsed.hero ? { ...DEFAULT_CMS_DATA.hero, ...parsed.hero } : DEFAULT_CMS_DATA.hero,
     };
   } catch (err) {
     console.error("Error reading CMS data:", err);
