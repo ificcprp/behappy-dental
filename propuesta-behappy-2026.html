@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Propuesta · BeHappy Dental · 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+<style>
+/* ── RESET ─────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── VARIABLES ──────────────────────────── */
+:root {
+  --cream:    #f0ebe0;
+  --cream2:   #e8e2d4;
+  --parchment:#d9d2c2;
+  --ink:      #1a1712;
+  --ink2:     #3d3830;
+  --muted:    #7a7266;
+  --green:    #1f4a35;
+  --green2:   #2d6b4a;
+  --greenlite:#d4e8dc;
+  --rule:     #c8c0b0;
+  --serif:    'Cormorant Garamond', Georgia, serif;
+  --sans:     'DM Sans', system-ui, sans-serif;
+}
+
+/* ── PRINT ──────────────────────────────── */
+@page { size: A4; margin: 15mm 18mm 15mm 18mm; }
+
+@media print {
+  .no-print { display: none !important; }
+  .page-break { page-break-before: always; }
+  body { background: var(--cream) !important; }
+  .page { padding: 0 !important; }
+}
+
+/* ── BASE ───────────────────────────────── */
+html { font-size: 10.5pt; }
+
+body {
+  font-family: var(--sans);
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+/* ── UTILITIES ──────────────────────────── */
+.sc {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+.serif { font-family: var(--serif); }
+
+.rule-top { border-top: 1px solid var(--rule); padding-top: 14px; }
+.rule-bot { border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
+
+.mt-1 { margin-top: 0.75rem; }
+.mt-2 { margin-top: 1.5rem; }
+.mt-3 { margin-top: 2.5rem; }
+.mb-1 { margin-bottom: 0.75rem; }
+.mb-2 { margin-bottom: 1.5rem; }
+.mb-3 { margin-bottom: 2.5rem; }
+
+/* ── PAGE WRAPPER ───────────────────────── */
+.page {
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 44px 52px;
+  position: relative;
+}
+
+/* ── COVER ──────────────────────────────── */
+.cover {
+  background: var(--cream);
+  min-height: 297mm;
+  padding: 52px 52px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 210mm;
+  margin: 0 auto;
+}
+
+.cover-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 10px;
+}
+
+.cover-top-brand {
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+}
+
+.cover-top-meta {
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.cover-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px 0 40px;
+  max-width: 520px;
+}
+
+.cover-chapter {
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--green);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cover-chapter::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1.5px;
+  background: var(--green);
+}
+
+.cover-title {
+  font-family: var(--serif);
+  font-size: 4rem;
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.cover-title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--green);
+}
+
+.cover-subtitle {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-top: 20px;
+  max-width: 440px;
+}
+
+.cover-stats {
+  display: flex;
+  gap: 48px;
+  margin-top: 52px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+}
+
+.cover-stat .num {
+  font-family: var(--serif);
+  font-size: 3.2rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--ink);
+  display: block;
+}
+
+.cover-stat .lbl {
+  font-size: 0.56rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  display: block;
+  margin-top: 4px;
+}
+
+.cover-bottom {
+  border-top: 1px solid var(--rule);
+  padding-top: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+}
+
+.cover-bottom-item { padding-right: 20px; }
+
+.cover-bottom-item label {
+  display: block;
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.cover-bottom-item p {
+  font-size: 0.72rem;
+  color: var(--ink2);
+  line-height: 1.5;
+}
+
+/* ── INNER PAGE HEADER ──────────────────── */
+.ph {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 8px;
+  margin-bottom: 36px;
+}
+
+.ph-left {
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+}
+
+.ph-right {
+  font-family: var(--sans);
+  font-size: 0.56rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+/* ── SECTION HEADERS ────────────────────── */
+.chapter-label {
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--green);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chapter-label::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  background: var(--green);
+}
+
+.section-h {
+  font-family: var(--serif);
+  font-size: 2.4rem;
+  font-weight: 300;
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.section-h em { font-style: italic; color: var(--green); }
+
+.section-lead {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 560px;
+  margin-bottom: 24px;
+}
+
+/* ── RULE SECTION ───────────────────────── */
+.section-rule {
+  border-top: 1px solid var(--rule);
+  padding-top: 28px;
+  margin-top: 28px;
+}
+
+/* ── TABLES ─────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+thead th {
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-align: left;
+  padding: 0 0 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+tbody tr { border-bottom: 1px solid var(--cream2); }
+tbody tr:last-child { border-bottom: 1px solid var(--rule); }
+
+tbody td {
+  padding: 10px 0;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.td-n { font-weight: 600; color: var(--ink); padding-right: 16px; }
+.td-s { color: var(--muted); font-size: 0.76rem; }
+
+/* ── TAGS ───────────────────────────────── */
+.tag {
+  display: inline-block;
+  font-size: 0.56rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 9px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+
+.tag-ink { border-color: var(--ink); color: var(--ink); background: transparent; }
+.tag-green { border-color: var(--green); color: var(--green); background: transparent; }
+.tag-ok { background: var(--green); color: white; border-color: var(--green); }
+.tag-warn { border-color: #8a6000; color: #8a6000; background: transparent; }
+.tag-err { border-color: #8a0000; color: #8a0000; background: transparent; }
+.tag-muted { border-color: var(--rule); color: var(--muted); background: transparent; }
+
+/* ── METRIC STRIP ───────────────────────── */
+.metric-strip {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin: 24px 0;
+}
+
+.metric-item {
+  flex: 1;
+  padding: 16px 0;
+  border-right: 1px solid var(--rule);
+}
+
+.metric-item:last-child { border-right: none; padding-left: 20px; }
+.metric-item:not(:first-child) { padding-left: 20px; }
+
+.metric-item .n {
+  font-family: var(--serif);
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: var(--ink);
+  display: block;
+  line-height: 1;
+}
+
+.metric-item .l {
+  font-size: 0.56rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  display: block;
+  margin-top: 4px;
+}
+
+/* ── GRID ───────────────────────────────── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+/* ── CALLOUT ────────────────────────────── */
+.callout {
+  border-left: 3px solid var(--ink);
+  padding: 16px 20px;
+  margin: 20px 0;
+}
+
+.callout-green { border-color: var(--green); background: var(--greenlite); }
+.callout-amber { border-left-color: #8a6000; background: #f5eed8; }
+
+.callout p { font-size: 0.82rem; color: var(--ink2); line-height: 1.7; }
+.callout p strong { font-weight: 700; }
+
+/* ── PLAN CARDS ─────────────────────────── */
+.plan-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--rule);
+}
+
+.plan-col {
+  padding: 22px 20px;
+  border-right: 1px solid var(--rule);
+}
+
+.plan-col:last-child { border-right: none; }
+.plan-col.featured { background: var(--ink); color: white; }
+
+.plan-label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.plan-col.featured .plan-label { color: #7a7266; }
+
+.plan-name {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.plan-col.featured .plan-name { color: white; }
+
+.plan-price {
+  font-size: 0.72rem;
+  color: var(--green);
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.plan-col.featured .plan-price { color: #6ee7b7; border-color: #2d3748; }
+
+.plan-feat {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.75;
+  margin-bottom: 4px;
+  display: flex;
+  gap: 6px;
+}
+
+.plan-col.featured .plan-feat { color: #9ca3af; }
+
+.plan-feat::before {
+  content: '—';
+  flex-shrink: 0;
+  color: var(--rule);
+}
+
+.plan-col.featured .plan-feat::before { color: #374151; }
+
+/* ── TIMELINE ───────────────────────────── */
+.tl { list-style: none; padding: 0; }
+
+.tl-row {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed var(--rule);
+}
+
+.tl-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.tl-idx {
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: var(--cream2);
+  line-height: 1;
+  padding-top: 2px;
+}
+
+.tl-body {}
+
+.tl-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+
+.tl-desc {
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* ── VS TABLE ───────────────────────────── */
+.vs th:first-child { width: 40%; }
+.vs th.h-err { color: #8a0000; }
+.vs th.h-ok { color: var(--green); }
+.vs td { text-align: center; }
+.vs td:first-child { text-align: left; }
+.icon-ok { color: var(--green); font-weight: 900; }
+.icon-no { color: #8a0000; font-weight: 900; }
+.icon-w { color: #8a6000; font-weight: 900; }
+
+/* ── INVENTORY TABLE ────────────────────── */
+.inv th:last-child,
+.inv td:last-child { text-align: right; }
+
+/* ── SIGNATURE ──────────────────────────── */
+.sig-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+
+.sig-block label {
+  font-size: 0.56rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 36px;
+}
+
+.sig-line { border-bottom: 1px solid var(--ink); margin-bottom: 8px; }
+.sig-name { font-size: 0.72rem; color: var(--muted); }
+
+/* ── WATERMARK CHAPTER NUMBERS ──────────── */
+.wm {
+  position: absolute;
+  top: 44px;
+  right: 52px;
+  font-family: var(--serif);
+  font-size: 7rem;
+  font-weight: 300;
+  color: var(--cream2);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── COLOPHON / FOOTER ──────────────────── */
+.doc-foot {
+  text-align: center;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  margin-top: 36px;
+}
+
+.doc-foot p {
+  font-size: 0.56rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.8;
+}
+
+/* ── PRINT BUTTON ───────────────────────── */
+.print-btn {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  background: var(--ink);
+  color: var(--cream);
+  border: none;
+  padding: 12px 22px;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.print-btn:hover { background: var(--green); }
+
+p { margin-bottom: 0.4rem; }
+p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     PORTADA
+════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-top">
+    <span class="cover-top-brand">Centro Dental BeHappy &nbsp;·&nbsp; Ñuñoa</span>
+    <span class="cover-top-meta">Propuesta confidencial &nbsp;·&nbsp; Octubre 2026</span>
+  </div>
+
+  <div class="cover-body">
+    <div class="cover-chapter">Servicios digitales &nbsp;§ 2026</div>
+
+    <h1 class="cover-title">
+      Sistema de<br>
+      <em>captación</em><br>
+      y plataforma<br>
+      digital.
+    </h1>
+
+    <p class="cover-subtitle">
+      De una presencia web estancada en un constructor propietario a un ecosistema propio de captación de pacientes: plataforma, campañas, base de datos y medición. Propuesta de valor, infraestructura y condiciones para 90 días.
+    </p>
+
+    <div class="cover-stats">
+      <div class="cover-stat">
+        <span class="num">3</span>
+        <span class="lbl">Planes de servicio</span>
+      </div>
+      <div class="cover-stat">
+        <span class="num">90</span>
+        <span class="lbl">Días primer ciclo</span>
+      </div>
+      <div class="cover-stat">
+        <span class="num">100%</span>
+        <span class="lbl">Propiedad del cliente</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-bottom-item">
+      <label>Para</label>
+      <p>Centro Dental BeHappy Spa<br>Suecia 3580, Of. 304 · Ñuñoa</p>
+    </div>
+    <div class="cover-bottom-item">
+      <label>Emitido el</label>
+      <p>5 de octubre de 2026</p>
+    </div>
+    <div class="cover-bottom-item">
+      <label>Validez</label>
+      <p>19 de octubre de 2026<br>14 días corridos</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     § 00 — PRÓLOGO PERSONAL Y EVOLUCIÓN
+════════════════════════════════════════ -->
+<div class="page page-break" style="position:relative;">
+  <div class="wm">00</div>
+
+  <div class="ph">
+    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
+    <span class="ph-right">§ 00 · Prólogo personal</span>
+  </div>
+
+  <div class="chapter-label">§ 00 &nbsp;·&nbsp; El camino recorrido</div>
+  <h2 class="section-h">Aprender sobre la marcha.<br><em>Construir con cimientos reales.</em></h2>
+  <p class="section-lead">Una reflexión transparente sobre el punto de partida del proyecto, el crecimiento técnico acumulado y el valor genuino de lo que hoy podemos construir juntos para Centro Dental BeHappy.</p>
+
+  <div class="callout callout-amber">
+    <p><strong>El contexto inicial:</strong> Cuando comenzamos a colaborar, yo estaba aprendiendo sobre la marcha. Con total franqueza profesional: les ofrecí una página web levantada desde lo que sabía y podía resolver en ese momento, utilizando las herramientas que tenía al alcance en un constructor visual de Hostinger. Esa solución cumplió su ciclo y resolvió la urgencia de otorgarle presencia digital inmediata a la clínica, pero venía acompañada de limitaciones estructurales, recortes funcionales y un techo técnico que hoy se ha vuelto evidente.</p>
+  </div>
+
+  <div class="g2 mt-2">
+    <div>
+      <p class="sc mb-1">La evolución técnica: pasar a código propio</p>
+      <div style="font-size:0.78rem;color:var(--ink2);line-height:1.75;">
+        <p>No me conformé con ese rol de administrador básico. En este tiempo me enfoqué en profundizar en ingeniería de software, arquitectura moderna y desarrollo a medida. Lo que hoy tenemos entre manos —este núcleo de software ya estructurado y operativo en código— no es un rediseño superficial ni otra plantilla prediseñada.</p>
+        <br>
+        <p>Es una <strong>base de software propia, personalizada y de valor real</strong>, desarrollada con la misma tecnología de alto rendimiento que utilizan los estándares de la industria moderna (Next.js 15, Vercel y bases de datos en Supabase).</p>
+      </div>
+    </div>
+
+    <div>
+      <p class="sc mb-1">Un ecosistema entrelazado a las áreas del negocio</p>
+      <div style="font-size:0.78rem;color:var(--muted);line-height:1.75;border-left:2px solid var(--rule);padding-left:16px;">
+        <p>El mayor valor de esta plataforma no es solo que cargue en menos de un segundo. Es su <strong>naturaleza modular</strong>: una arquitectura donde podemos ir incorporando e integrando progresivamente módulos diseñados a la medida de la operación real de BeHappy:</p>
+        <br>
+        <p>• <strong>Captación y Recepción:</strong> registro centralizado de cada consulta, trazabilidad por anuncio y pase directo a WhatsApp.<br>
+        • <strong>Fichas y Pacientes:</strong> base de datos propia para historiales clínicos y seguimiento.<br>
+        • <strong>Convenios y Seguro BeHappy:</strong> control y fidelización de planes preventivos.<br>
+        • <strong>Gestión Operativa:</strong> agendas sincronizadas y alertas preventivas.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-green mt-2">
+    <p><em>"No vengo a pedirles renovar un hosting ni a justificar herramientas precarias. Vengo a poner mi propio crecimiento técnico a disposición de la clínica, transformando lo que era una página estática en un activo digital vivo, independiente y capaz de entrelazarse al corazón del negocio."</em></p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     § 01 — DIAGNÓSTICO
+════════════════════════════════════════ -->
+<div class="page page-break" style="position:relative;">
+  <div class="wm">01</div>
+
+  <div class="ph">
+    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
+    <span class="ph-right">§ 01 · Diagnóstico</span>
+  </div>
+
+  <div class="chapter-label">§ 01 &nbsp;·&nbsp; Diagnóstico actual</div>
+  <h2 class="section-h">La situación<br>que hay que resolver.</h2>
+  <p class="section-lead">Antes de proponer cualquier solución, corresponde nombrar con claridad qué está pasando con la presencia digital de BeHappy y por qué es un freno concreto al crecimiento.</p>
+
+  <div class="callout callout-amber">
+    <p>El sitio web de BeHappy fue construido sobre <strong>Hostinger Website Builder</strong>, un constructor visual propietario. El código resultante no puede exportarse. Si se cambia de proveedor o plataforma, no hay un archivo descargable: hay que reconstruir el sitio desde cero. La clínica, técnicamente, no es dueña del sitio que se ve.</p>
+  </div>
+
+  <div class="section-rule">
+    <p class="sc mb-1">Tres problemas que frenan el negocio hoy</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Problema</th>
+          <th>Impacto operacional</th>
+          <th>Gravedad</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-n">Carga lenta en móvil<br><span class="td-s">3 a 5 segundos en 4G</span></td>
+          <td class="td-s">El 90 % de los clics que llegan desde Instagram se abren en el navegador interno del teléfono. Cada segundo adicional reduce la conversión hasta un 40 %. El dinero invertido en publicidad se pierde antes de que el paciente vea el botón de WhatsApp.</td>
+          <td><span class="tag tag-err">Crítico</span></td>
+        </tr>
+        <tr>
+          <td class="td-n">Cero trazabilidad<br><span class="td-s">No hay base de datos propia</span></td>
+          <td class="td-s">Cuando alguien llena un formulario, el contacto llega al correo sin ningún dato de origen. Es imposible saber si el paciente vino de Google, de un Reel o de una recomendación. Sin eso, no se puede optimizar ninguna campaña.</td>
+          <td><span class="tag tag-err">Crítico</span></td>
+        </tr>
+        <tr>
+          <td class="td-n">Sin propiedad del código<br><span class="td-s">Jardín vallado Hostinger</span></td>
+          <td class="td-s">Cambiar de hosting implica reconstruir todo. La plataforma retiene el trabajo de diseño. No hay portabilidad ni propiedad real del activo digital que representa a la clínica.</td>
+          <td><span class="tag tag-warn">Alto</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="metric-strip mt-3">
+    <div class="metric-item">
+      <span class="n">78<span style="font-size:1.6rem">%</span></span>
+      <span class="l">de pacientes revisa el perfil digital antes de agendar</span>
+    </div>
+    <div class="metric-item">
+      <span class="n">40<span style="font-size:1.6rem">%</span></span>
+      <span class="l">menos conversión por cada segundo adicional de carga en móvil</span>
+    </div>
+    <div class="metric-item">
+      <span class="n">0</span>
+      <span class="l">registros de pacientes interesados en base de datos propia actualmente</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     § 02 — NUEVA PROPUESTA DE VALOR
+════════════════════════════════════════ -->
+<div class="page page-break" style="position:relative;">
+  <div class="wm">02</div>
+
+  <div class="ph">
+    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
+    <span class="ph-right">§ 02 · Nueva propuesta de valor</span>
+  </div>
+
+  <div class="chapter-label">§ 02 &nbsp;·&nbsp; Nueva propuesta de valor</div>
+  <h2 class="section-h">No renovar un hosting.<br><em>Escalar un sistema.</em></h2>
+  <p class="section-lead">La relación deja de ser técnica y pasa a ser estratégica. La pregunta no es "¿renovamos Hostinger?" — es "¿quiere BeHappy un sistema que llene la agenda?"</p>
+
+  <div class="callout">
+    <p><strong>Antes:</strong> proveedor que aloja la web y mantiene el constructor activo.<br>
+    <strong>Ahora:</strong> socio responsable de la captación digital, conversión y medición de pacientes nuevos. El hosting pasa a ser infraestructura; el valor está en los resultados.</p>
+  </div>
+
+  <div class="section-rule mt-2">
+    <p class="sc mb-2">Las cinco capas del sistema</p>
+    <ul class="tl">
+      <li class="tl-row">
+        <div class="tl-idx">01</div>
+        <div class="tl-body">
+          <div class="tl-title">Presencia local que convierte</div>
+          <div class="tl-desc">Sitio web propio, carga en menos de 1 segundo en 4G, con botones de WhatsApp y llamada siempre visibles. El paciente solicita hora en menos de 30 segundos desde cualquier dispositivo.</div>
+        </div>
+      </li>
+      <li class="tl-row">
+        <div class="tl-idx">02</div>
+        <div class="tl-body">
+          <div class="tl-title">Google: captura de demanda existente</div>
+          <div class="tl-desc">Google Business Profile optimizado. Google Ads para personas que ya buscan "dentista ñuñoa", "ortodoncia ñuñoa" o "urgencia dental" — alta intención, alta probabilidad de conversión.</div>
+        </div>
+      </li>
+      <li class="tl-row">
+        <div class="tl-idx">03</div>
+        <div class="tl-body">
+          <div class="tl-title">Meta: generación de demanda y confianza</div>
+          <div class="tl-desc">Instagram y Facebook para mostrar equipo, casos de ortodoncia, testimonios y prevención. Campañas de mensajes directos a WhatsApp con una oferta concreta. Remarketing a visitantes web.</div>
+        </div>
+      </li>
+      <li class="tl-row">
+        <div class="tl-idx">04</div>
+        <div class="tl-body">
+          <div class="tl-title">Conversión: del contacto a la cita</div>
+          <div class="tl-desc">Base de datos propia de solicitudes con nombre, teléfono, tratamiento de interés y canal de origen. Guion de respuesta por WhatsApp. Recordatorios a quienes consultaron sin reservar.</div>
+        </div>
+      </li>
+      <li class="tl-row">
+        <div class="tl-idx">05</div>
+        <div class="tl-body">
+          <div class="tl-title">Medición: datos para decisiones</div>
+          <div class="tl-desc">Reporte mensual: inversión, contactos generados, costo por contacto, reservas confirmadas. Se sabe qué servicio atrae más y qué anuncio convierte mejor. Nada se optimiza a ciegas.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     § 03 — LA PLATAFORMA + COMPARATIVA
+════════════════════════════════════════ -->
+<div class="page page-break" style="position:relative;">
+  <div class="wm">03</div>
+
+  <div class="ph">
+    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
+    <span class="ph-right">§ 03 · Plataforma y comparativa</span>
+  </div>
+
+  <div class="chapter-label">§ 03 &nbsp;·&nbsp; La nueva plataforma</div>
+  <h2 class="section-h">Ya construida.<br><em>Lista para conectar.</em></h2>
+  <p class="section-lead">No se está vendiendo un proyecto futuro. El núcleo técnico ya existe. A continuación, lo que se construyó y por qué el stack importa para una clínica dental que quiere hacer publicidad.</p>
+
+  <div class="g2 mb-2">
+    <div>
+      <p class="sc mb-1">Stack técnico</p>
+      <table>
+        <tbody>
+          <tr><td class="td-n">Frontend</td><td class="td-s">Next.js 15 + Tailwind CSS</td></tr>
+          <tr><td class="td-n">Base de datos</td><td class="td-s">Supabase (tabla de citas, leads por canal)</td></tr>
+          <tr><td class="td-n">Hosting</td><td class="td-s">Vercel — CDN global, SSL automático</td></tr>
+          <tr><td class="td-n">Dominio</td><td class="td-s">behappydental.cl — a nombre de la clínica</td></tr>
+          <tr><td class="td-n">Costo mensual</td><td class="td-s">$0 (planes gratuitos Vercel + Supabase)</td></tr>
+          <tr><td class="td-n">Secciones</td><td class="td-s">7: Hero, Citas, Tratamientos, Equipo, Prevención, Convenios, Ubicación</td></tr>
+          <tr><td class="td-n">Especialistas</td><td class="td-s">8 doctores con fotos y especialidades reales</td></tr>
+          <tr><td class="td-n">Tratamientos</td><td class="td-s">21 servicios filtrados por categoría</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <p class="sc mb-1">Por qué importa: De una fachada a un núcleo de negocio</p>
+      <div style="font-size:0.78rem;color:var(--muted);line-height:1.75;border-left:2px solid var(--rule);padding-left:16px;">
+        <p><strong style="color:var(--ink);">Para la captación inmediata:</strong> Cada peso invertido en Google Ads o en un Reel de Instagram abre en menos de 1 segundo en el celular del paciente, guardando el contacto en la base de datos y notificando a la recepción por WhatsApp sin fugas.</p>
+        <br>
+        <p><strong style="color:var(--ink);">Para la evolución del centro dental:</strong> Esta base de código no es un callejón sin salida. Al ser modular y contar con base de datos relacional (Supabase), permite ir desarrollando y acoplando módulos para entrelazar las distintas áreas esenciales de BeHappy:</p>
+        <br>
+        <p>• <em>Módulo de Fichas e Historiales:</em> centralizar la información de pacientes sin amarrarse a software cerrado de terceros.<br>
+        • <em>Módulo de Convenios y Seguro Propio:</em> trazabilidad del Seguro Dental BeHappy y convenios corporativos.<br>
+        • <em>Módulo de Fidelización Preventiva:</em> alertas automáticas cada 6 meses para controles periódicos de profilaxis.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-rule">
+    <p class="sc mb-2">Hostinger Builder actual vs. nueva plataforma</p>
+    <table class="vs">
+      <thead>
+        <tr>
+          <th>Criterio</th>
+          <th class="h-err" style="text-align:center">Hostinger Builder</th>
+          <th class="h-ok" style="text-align:center">Nueva plataforma</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-n">Velocidad en móvil (4G)</td>
+          <td><span class="icon-no">✗</span> 3–5 segundos</td>
+          <td><span class="icon-ok">✓</span> menos de 1 seg</td>
+        </tr>
+        <tr>
+          <td class="td-n">PageSpeed Score</td>
+          <td><span class="icon-w">~</span> 45–60 pts</td>
+          <td><span class="icon-ok">✓</span> 90–100 pts</td>
+        </tr>
+        <tr>
+          <td class="td-n">Propiedad del código</td>
+          <td><span class="icon-no">✗</span> No exportable</td>
+          <td><span class="icon-ok">✓</span> Código 100 % propio</td>
+        </tr>
+        <tr>
+          <td class="td-n">Base de datos de pacientes</td>
+          <td><span class="icon-no">✗</span> No existe</td>
+          <td><span class="icon-ok">✓</span> Supabase integrado</td>
+        </tr>
+        <tr>
+          <td class="td-n">Tracking de origen del contacto</td>
+          <td><span class="icon-no">✗</span> No</td>
+          <td><span class="icon-ok">✓</span> UTM + Supabase</td>
+        </tr>
+        <tr>
+          <td class="td-n">Formulario → WhatsApp automático</td>
+          <td><span class="icon-no">✗</span> No</td>
+          <td><span class="icon-ok">✓</span> Mensaje prellenado</td>
+        </tr>
+        <tr>
+          <td class="td-n">Costo de plataforma mensual</td>
+          <td><span class="icon-w">~</span> ~$20 USD/mes</td>
+          <td><span class="icon-ok">✓</span> $0</td>
+        </tr>
+        <tr>
+          <td class="td-n">Escalabilidad futura</td>
+          <td><span class="icon-no">✗</span> Ninguna</td>
+          <td><span class="icon-ok">✓</span> Portal, fichas, convenios</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     § 04 — ESTRATEGIA 90 DÍAS
+════════════════════════════════════════ -->
+<div class="page page-break" style="position:relative;">
+  <div class="wm">04</div>
+
+  <div class="ph">
+    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
+    <span class="ph-right">§ 04 · Estrategia 90 días</span>
+  </div>
+
+  <div class="chapter-label">§ 04 &nbsp;·&nbsp; Estrategia de captación</div>
+  <h2 class="section-h">Noventa días.<br><em>Tres fases. Un sistema.</em></h2>
+  <p class="section-lead">Un plan secuencial que valida primero los servicios de alta intención y bajo riesgo, antes de escalar a tratamientos más complejos. Los datos del mes 1 definen las decisiones del mes 2.</p>
+
+  <div class="g3 mb-3">
+    <div style="border-top:2px solid var(--ink);padding-top:14px;">
+      <p class="sc mb-1">Mes 1 &nbsp;·&nbsp; Sem. 1–4</p>
+      <p style="font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--ink);margin-bottom:10px;">Fundamentos y<br>validación</p>
+      <ul style="font-size:0.74rem;color:var(--muted);line-height:1.9;list-style:none;">
+        <li>— Deploy nueva plataforma</li>
+        <li>— Dominio + DNS configurado</li>
+        <li>— Supabase conectado</li>
+        <li>— Google Business Profile</li>
+        <li>— GA4 + Meta Pixel activos</li>
+        <li>— Google Ads (búsqueda)</li>
+        <li>— Guion WhatsApp recepción</li>
+      </ul>
+    </div>
+    <div style="border-top:2px solid var(--ink);padding-top:14px;">
+      <p class="sc mb-1">Mes 2 &nbsp;·&nbsp; Sem. 5–8</p>
+      <p style="font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--ink);margin-bottom:10px;">Contenido y<br>confianza</p>
+      <ul style="font-size:0.74rem;color:var(--muted);line-height:1.9;list-style:none;">
+        <li>— Campaña Meta activa</li>
+        <li>— 3–4 posts semanales</li>
+        <li>— Casos ortodoncia (antes/después)</li>
+        <li>— Presentación equipo médico</li>
+        <li>— Revisión métricas semana 4</li>
+        <li>— Ajuste segmentación y copy</li>
+        <li>— Reporte mensual #1</li>
+      </ul>
+    </div>
+    <div style="border-top:2px solid var(--green);padding-top:14px;">
+      <p class="sc mb-1" style="color:var(--green);">Mes 3 &nbsp;·&nbsp; Sem. 9–12</p>
+      <p style="font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--ink);margin-bottom:10px;">Escala y<br>optimización</p>
+      <ul style="font-size:0.74rem;color:var(--muted);line-height:1.9;list-style:none;">
+        <li>— Remarketing a visitantes web</li>
+        <li>— Campaña Ortodoncia específica</li>
+        <li>— Campaña Seguro Dental BeHappy</li>
+        <li>— A/B testing de anuncios</li>
+        <li>— Panel de métricas</li>
+        <li>— Reporte mensual #2</li>
+        <li>— Plan siguiente trimestre</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-rule">
+    <p class="sc mb-2">Secuencia de servicios a publicitar</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Etapa</th>
+          <th>Servicio</th>
+          <th>Canal</th>
+          <th>Por qué en ese orden</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-ink">Mes 1</span></td>
+          <td class="td-n">Evaluación dental, limpieza, urgencias</td>
+          <td class="td-s">Google Ads</td>
+          <td class="td-s">Alta intención. Puerta de entrada natural a tratamientos posteriores.</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-ink">Mes 2</span></td>
+          <td class="td-n">Ortodoncia · Invisalign</td>
+          <td class="td-s">Meta + Google</td>
+          <td class="td-s">Alto valor. Ciclo de decisión más largo; requiere confianza previa.</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-muted">Mes 3</span></td>
+          <td class="td-n">Estética, blanqueamiento, diseño de sonrisa</td>
+          <td class="td-s">Instagram</td>
+          <td class="td-s">Muy visual. Antes/después son el formato que más convierte en IG.</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-green">Mes 3</span></td>
+          <td class="td-n">Seguro Dental BeHappy</td>
+          <td class="td-s">Meta retargeting</td>
+          <td class="td-s">Diferenciador. Se activa cuando ya hay reconocimiento de marca local.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     § 05 — PRIMERA CAMPAÑA
+════════════════════════════════════════ -->
+<div class="page page-break" style="position:relative;">
+  <div class="wm">05</div>
+
+  <div class="ph">
+    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
+    <span class="ph-right">§ 05 · Primera campaña</span>
+  </div>
+
+  <div class="chapter-label">§ 05 &nbsp;·&nbsp; Primera campaña</div>
+  <h2 class="section-h">"Cuida tu sonrisa,<br><em>cuida tu salud."</em></h2>
+  <p class="section-lead">Evaluación dental de entrada · Ñuñoa y comunas cercanas · Semanas 1 y 2. El objetivo es generar contactos calificados con baja inversión inicial, validar el costo por lead real y ajustar antes de escalar.</p>
+
+  <div class="g2 mb-2">
+    <div>
+      <p class="sc mb-1">Configuración</p>
+      <table>
+        <tbody>
+          <tr><td class="td-n">Plataformas</td><td class="td-s">Google Ads (Search) + Meta Ads</td></tr>
+          <tr><td class="td-n">Duración inicial</td><td class="td-s">2 semanas (ajustable con datos reales)</td></tr>
+          <tr><td class="td-n">Inversión sugerida</td><td class="td-s">$150.000 – $250.000 CLP / semana</td></tr>
+          <tr><td class="td-n">Geografía</td><td class="td-s">Ñuñoa · Providencia · Macul · La Reina</td></tr>
+          <tr><td class="td-n">Público</td><td class="td-s">25–55 años, profesionales y familias</td></tr>
+          <tr><td class="td-n">Horario intensivo</td><td class="td-s">Viernes a domingo (+20 % presupuesto)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <p class="sc mb-1">Métricas objetivo</p>
+      <div class="metric-strip" style="flex-direction:column;border:none;gap:0;margin:0;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule);">
+          <div style="padding:12px 14px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);">
+            <span style="font-family:var(--serif);font-size:1.8rem;font-weight:300;color:var(--ink);display:block;line-height:1;">2–3%</span>
+            <span class="sc" style="font-size:0.52rem;">CTR mínimo</span>
+          </div>
+          <div style="padding:12px 14px;border-bottom:1px solid var(--rule);">
+            <span style="font-family:var(--serif);font-size:1.8rem;font-weight:300;color:var(--ink);display:block;line-height:1;">&lt;$1.50</span>
+            <span class="sc" style="font-size:0.52rem;">CPC en USD</span>
+          </div>
+          <div style="padding:12px 14px;border-right:1px solid var(--rule);">
+            <span style="font-family:var(--serif);font-size:1.8rem;font-weight:300;color:var(--ink);display:block;line-height:1;">15–25</span>
+            <span class="sc" style="font-size:0.52rem;">Contactos / semana</span>
+          </div>
+          <div style="padding:12px 14px;">
+            <span style="font-family:var(--serif);font-size:1.8rem;font-weight:300;color:var(--ink);display:block;line-height:1;">&lt;$10</span>
+            <span class="sc" style="font-size:0.52rem;">Costo por lead USD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-rule">
+    <p class="sc mb-2">Anuncios a crear en fase 1</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Titular principal</th>
+          <th>CTA</th>
+          <th>Formato</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-muted">Awareness</span></td>
+          <td class="td-n">"¿Sabes cuándo fue tu última revisión dental?"</td>
+          <td class="td-s">Agendar evaluación</td>
+          <td class="td-s">Feed 1:1</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-green">Conversión</span></td>
+          <td class="td-n">"Agenda tu evaluación en BeHappy Ñuñoa"</td>
+          <td class="td-s">Enviar WhatsApp</td>
+          <td class="td-s">Feed + Stories</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-ink">Servicios</span></td>
+          <td class="td-n">"Ortodoncia · Implantes · Diseño de Sonrisa · Prevención"</td>
+          <td class="td-s">Ver tratamientos</td>
+          <td class="td-s">Carrusel FB</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-muted">Reel</span></td>
+          <td class="td-n">"Tu salud bucal, nuestra prioridad. 8 especialistas en Ñuñoa."</td>
+          <td class="td-s">Agendar cita</td>
+          <td class="td-s">Vertical 9:16</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-green mt-2">
+    <p><strong>Antes de lanzar cualquier anuncio:</strong> validar por escrito con la clínica el precio real de la evaluación, qué incluye, vigencia de la oferta y qué ocurre cuando llega el primer contacto por WhatsApp. La promesa publicitaria debe ser exactamente lo que la clínica puede cumplir.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     § 06 — PLANES COMERCIALES
+════════════════════════════════════════ -->
+<div class="page page-break" style="position:relative;">
+  <div class="wm">06</div>
+
+  <div class="ph">
+    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
+    <span class="ph-right">§ 06 · Planes comerciales</span>
+  </div>
+
+  <div class="chapter-label">§ 06 &nbsp;·&nbsp; Planes y condiciones</div>
+  <h2 class="section-h">Tres niveles.<br><em>Una sola dirección.</em></h2>
+  <p class="section-lead">La inversión publicitaria nunca está incluida en los honorarios de servicio — es pagada directamente por la clínica a Google y Meta. Los planes cubren estrategia, configuración y gestión.</p>
+
+  <div class="plan-row mb-2">
+    <div class="plan-col">
+      <div class="plan-label">Plan A</div>
+      <div class="plan-name">Fundamentos<br>Digitales</div>
+      <div class="plan-price">Pago único · a convenir</div>
+      <div class="plan-feat">Traspaso y auditoría de activos</div>
+      <div class="plan-feat">Dominio a nombre de la clínica</div>
+      <div class="plan-feat">Deploy nueva plataforma en Vercel</div>
+      <div class="plan-feat">Supabase conectado</div>
+      <div class="plan-feat">Google Business Profile auditado</div>
+      <div class="plan-feat">GA4 + Meta Pixel configurados</div>
+      <div class="plan-feat">Plan de captación 90 días documentado</div>
+    </div>
+    <div class="plan-col featured">
+      <div class="plan-label">Plan B · Recomendado</div>
+      <div class="plan-name">Captación<br>Local Activa</div>
+      <div class="plan-price">Mensual · a convenir</div>
+      <div class="plan-feat">Todo lo de Plan A incluido</div>
+      <div class="plan-feat">Gestión mensual Google Ads</div>
+      <div class="plan-feat">1 campaña Meta/mes (IG + FB)</div>
+      <div class="plan-feat">Mejoras web mensuales</div>
+      <div class="plan-feat">Reporte mensual de resultados</div>
+      <div class="plan-feat">Reunión mensual de optimización</div>
+      <div class="plan-feat">Soporte técnico del sitio incluido</div>
+    </div>
+    <div class="plan-col">
+      <div class="plan-label">Plan C</div>
+      <div class="plan-name">Crecimiento<br>Integral</div>
+      <div class="plan-price">Mensual · a convenir</div>
+      <div class="plan-feat">Todo lo de Plan B incluido</div>
+      <div class="plan-feat">Campañas por línea de servicio</div>
+      <div class="plan-feat">Remarketing a visitantes web</div>
+      <div class="plan-feat">8 posts estratégicos/mes</div>
+      <div class="plan-feat">Automatizaciones de seguimiento</div>
+      <div class="plan-feat">Dashboard de métricas</div>
+      <div class="plan-feat">Planificación trimestral</div>
+    </div>
+  </div>
+
+  <p class="sc mb-2">Separación de costos — siempre por separado en el contrato</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Ítem</th>
+        <th>Quién paga</th>
+        <th>Nota</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-n">Honorarios de servicio</td>
+        <td><span class="tag tag-ink">La clínica</span></td>
+        <td class="td-s">Estrategia, configuración, gestión mensual y soporte técnico.</td>
+      </tr>
+      <tr>
+        <td class="td-n">Inversión publicitaria</td>
+        <td><span class="tag tag-ink">La clínica</span></td>
+        <td class="td-s">Pauta pagada directamente a Google Ads y Meta. No pasa por el proveedor.</td>
+      </tr>
+      <tr>
+        <td class="td-n">Hosting y base de datos</td>
+        <td><span class="tag tag-green">$0 operacional</span></td>
+        <td class="td-s">Vercel + Supabase plan gratuito. Dominio .cl ~$12 USD/año a nombre de la clínica.</td>
+      </tr>
+      <tr>
+        <td class="td-n">Canje dental</td>
+        <td><span class="tag tag-warn">Acordado por escrito</span></td>
+        <td class="td-s">Valor de referencia definido. Compensa entregables específicos de una etapa. El excedente se paga en dinero.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════════════════════════════════════
+     § 07 — ACTIVOS + CIERRE
+════════════════════════════════════════ -->
+<div class="page page-break" style="position:relative;">
+  <div class="wm">07</div>
+
+  <div class="ph">
+    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
+    <span class="ph-right">§ 07 · Activos y próximos pasos</span>
+  </div>
+
+  <div class="chapter-label">§ 07 &nbsp;·&nbsp; Activos digitales y cierre</div>
+  <h2 class="section-h">Propiedad<br><em>desde el día uno.</em></h2>
+  <p class="section-lead">Todos los activos digitales de BeHappy quedan bajo control de la clínica. Se entrega propiedad y continuidad, no la estructura interna del proveedor.</p>
+
+  <table class="inv mb-2">
+    <thead>
+      <tr>
+        <th>Activo</th>
+        <th>Acción</th>
+        <th>Estado</th>
+        <th style="text-align:right">Plazo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="td-n">Dominio behappydental.cl</td>
+        <td class="td-s">Gestionar cambio de titular a nombre de la clínica (NIC Chile)</td>
+        <td><span class="tag tag-warn">Coordinar</span></td>
+        <td class="td-s" style="text-align:right">Semana 1</td>
+      </tr>
+      <tr>
+        <td class="td-n">Sitio web (nueva plataforma)</td>
+        <td class="td-s">Código fuente entregado. Deploy en Vercel según plan.</td>
+        <td><span class="tag tag-green">Listo</span></td>
+        <td class="td-s" style="text-align:right">Inmediato</td>
+      </tr>
+      <tr>
+        <td class="td-n">Google Business Profile</td>
+        <td class="td-s">Verificar propietario. Agregar proveedor como gestor.</td>
+        <td><span class="tag tag-warn">Auditar</span></td>
+        <td class="td-s" style="text-align:right">Semana 1</td>
+      </tr>
+      <tr>
+        <td class="td-n">Google Analytics 4</td>
+        <td class="td-s">Instalar en nueva plataforma. Cuenta bajo correo de la clínica.</td>
+        <td><span class="tag tag-warn">Configurar</span></td>
+        <td class="td-s" style="text-align:right">Semana 1</td>
+      </tr>
+      <tr>
+        <td class="td-n">Meta Business Suite + Pixel</td>
+        <td class="td-s">Verificar propietario. Proveedor como socio de negocios.</td>
+        <td><span class="tag tag-warn">Auditar</span></td>
+        <td class="td-s" style="text-align:right">Semana 1</td>
+      </tr>
+      <tr>
+        <td class="td-n">WhatsApp Business</td>
+        <td class="td-s">Confirmar titular +56 9 4757 8597. Configurar respuesta automática.</td>
+        <td><span class="tag tag-warn">Verificar</span></td>
+        <td class="td-s" style="text-align:right">Semana 1</td>
+      </tr>
+      <tr>
+        <td class="td-n">Supabase (base de datos)</td>
+        <td class="td-s">Proyecto creado. Credenciales compartidas de forma segura.</td>
+        <td><span class="tag tag-green">Nuevo</span></td>
+        <td class="td-s" style="text-align:right">Semana 1</td>
+      </tr>
+      <tr>
+        <td class="td-n">Contenidos del sitio anterior</td>
+        <td class="td-s">Textos, fotos y estructura migrados. Respaldo disponible.</td>
+        <td><span class="tag tag-green">Respaldado</span></td>
+        <td class="td-s" style="text-align:right">Inmediato</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-rule">
+    <p class="sc mb-2">Cronograma de activación — 10 días hábiles tras la firma</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:80px">Día</th>
+          <th>Acción</th>
+          <th style="width:110px">Responsable</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-ink">Día 1–2</span></td>
+          <td class="td-n">Firma del acuerdo · Definición del plan · Apertura de accesos</td>
+          <td class="td-s">Ambas partes</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-muted">Día 2–3</span></td>
+          <td class="td-n">Deploy plataforma en Vercel · Supabase conectado · Dominio apuntado</td>
+          <td class="td-s">Proveedor</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-muted">Día 3–4</span></td>
+          <td class="td-n">Auditoría Google Business Profile · GA4 + Meta Pixel configurados</td>
+          <td class="td-s">Proveedor</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-muted">Día 5</span></td>
+          <td class="td-n">Inventario de activos documentado · Inicio cambio titular dominio</td>
+          <td class="td-s">Ambas partes</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-muted">Día 6–7</span></td>
+          <td class="td-n">Configuración Google Ads · Revisión y aprobación de copys por la clínica</td>
+          <td class="td-s">Proveedor + Clínica</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-green">Día 8</span></td>
+          <td class="td-n" style="color:var(--green);">Lanzamiento de primera campaña activa</td>
+          <td class="td-s">Proveedor</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-muted">Día 10</span></td>
+          <td class="td-n">Revisión inicial de datos · Ajustes de segmentación</td>
+          <td class="td-s">Ambas partes</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sig-row">
+    <div class="sig-block">
+      <label>Proveedor de servicios digitales</label>
+      <div class="sig-line"></div>
+      <div class="sig-name">Nombre · Firma · Fecha</div>
+    </div>
+    <div class="sig-block">
+      <label>Centro Dental BeHappy Spa</label>
+      <div class="sig-line"></div>
+      <div class="sig-name">Representante legal · Firma · Fecha</div>
+    </div>
+  </div>
+
+  <div class="doc-foot">
+    <p>Centro Dental BeHappy &nbsp;·&nbsp; Suecia 3580, Of. 304, Ñuñoa, Región Metropolitana &nbsp;·&nbsp; +56 9 4757 8597 &nbsp;·&nbsp; behappydental.cl</p>
+    <p>Documento confidencial &nbsp;·&nbsp; Propuesta válida hasta el 19 de octubre de 2026 &nbsp;·&nbsp; Preparada en octubre de 2026</p>
+  </div>
+</div>
+
+<!-- Botón imprimir -->
+<button class="print-btn no-print" onclick="window.print()">
+  Guardar como PDF
+</button>
+
+</body>
+</html>

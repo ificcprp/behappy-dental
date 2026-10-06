@@ -1,0 +1,32 @@
+{
+  "name": "behappy-dental",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbo",
+    "build": "next build --turbo",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-email/render": "^1.4.0",
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.103.0",
+    "@tanstack/react-query": "^5.100.5",
+    "lucide-react": "^1.8.0",
+    "next": "^15.3.8",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "resend": "^6.10.0",
+    "sonner": "^2.0.7",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
