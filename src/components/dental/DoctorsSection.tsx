@@ -1,11 +1,33 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { DOCTORS, Doctor } from "@/data/doctors";
+import { getCMSData, CMSData } from "@/lib/cmsStore";
 import { createWhatsAppUrl } from "@/data/clinicInfo";
 
 export function DoctorsSection() {
+  const [doctorsList, setDoctorsList] = useState<Doctor[]>(DOCTORS);
+
+  useEffect(() => {
+    const cms = getCMSData();
+    if (cms?.doctors && cms.doctors.length > 0) {
+      setDoctorsList(cms.doctors);
+    }
+
+    const handleUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      if (custom?.doctors && custom.doctors.length > 0) {
+        setDoctorsList(custom.doctors);
+      } else {
+        setDoctorsList(getCMSData().doctors);
+      }
+    };
+
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, []);
+
   const handleSelectDoctor = (doctor: Doctor) => {
     const el = document.getElementById("agendar");
     if (el) {
@@ -32,7 +54,7 @@ export function DoctorsSection() {
 
         {/* Doctors Grid (Editorial Medical Directory) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {DOCTORS.map((doc) => (
+          {doctorsList.map((doc) => (
             <div
               key={doc.id}
               className="group flex flex-col justify-between border border-[#e5e0d5] bg-white p-5 hover:border-[#141413] transition-colors"

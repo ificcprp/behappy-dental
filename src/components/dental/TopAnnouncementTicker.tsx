@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getCMSData, CMSData } from "@/lib/cmsStore";
 
-const SLIDES = [
+const DEFAULT_SLIDES = [
   { text: "¡Te estábamos esperando con alegría!", link: null },
   { text: "La transformación de tu sonrisa comienza aquí con nosotros.", link: null },
   { text: "Diseñamos con cuidado tu mejor versión.", link: null },
@@ -19,20 +20,39 @@ const SLIDES = [
 ];
 
 export function TopAnnouncementTicker() {
+  const [slides, setSlides] = useState<{ text: string; link: string | null }[]>(DEFAULT_SLIDES);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  useEffect(() => {
+    const cms = getCMSData();
+    if (cms?.announcements && cms.announcements.length > 0) {
+      setSlides(cms.announcements.map((text) => ({ text, link: null })));
+    }
+
+    const handleUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      const list = custom?.announcements || getCMSData()?.announcements;
+      if (list && list.length > 0) {
+        setSlides(list.map((text) => ({ text, link: null })));
+      }
+    };
+
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, []);
+
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % SLIDES.length);
+    setCurrentIndex((prev) => (prev + 1) % slides.length);
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
+    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || slides.length === 0) return;
 
     timerRef.current = setInterval(() => {
       nextSlide();
@@ -41,9 +61,9 @@ export function TopAnnouncementTicker() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isPaused]);
+  }, [isPaused, slides.length]);
 
-  const current = SLIDES[currentIndex];
+  const current = slides[currentIndex % slides.length] || slides[0] || DEFAULT_SLIDES[0];
 
   return (
     <div

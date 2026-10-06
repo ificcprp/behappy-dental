@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { registerNewUser } from "@/lib/authService";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -24,29 +25,28 @@ export default function RegisterPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const newPatient = {
-      id: `usr_paciente_${Date.now()}`,
-      email: formData.email,
-      fullName: formData.fullName,
-      rut: formData.rut,
-      phone: formData.phone,
-      role: "paciente",
-      prevision: formData.prevision,
-      convenioLevel: "20%",
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      registerNewUser({
+        fullName: formData.fullName,
+        email: formData.email,
+        rut: formData.rut,
+        phone: formData.phone,
+        prevision: formData.prevision,
+        password: formData.password || "BeHappy2026!",
+        role: "paciente",
+      });
 
-    if (typeof window !== "undefined") {
-      localStorage.setItem("behappy_active_user", JSON.stringify(newPatient));
-    }
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSuccess(true);
       setTimeout(() => {
-        router.push("/portal?role=paciente");
-      }, 1000);
-    }, 700);
+        setIsSubmitting(false);
+        setSuccess(true);
+        setTimeout(() => {
+          router.push("/portal?role=paciente");
+        }, 800);
+      }, 500);
+    } catch (err) {
+      setIsSubmitting(false);
+      console.error(err);
+    }
   };
 
   return (

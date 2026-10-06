@@ -1,19 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { TREATMENTS, CATEGORIES, Treatment } from "@/data/treatments";
+import { getCMSData, CMSData } from "@/lib/cmsStore";
 import { createWhatsAppUrl } from "@/data/clinicInfo";
 import { MessageCircle, Calendar, X, Check, ArrowRight } from "lucide-react";
 
 export function RealTreatmentsGrid() {
+  const [treatmentsList, setTreatmentsList] = useState<Treatment[]>(TREATMENTS);
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [selectedTreatment, setSelectedTreatment] = useState<Treatment | null>(null);
 
+  useEffect(() => {
+    const cms = getCMSData();
+    if (cms?.treatments && cms.treatments.length > 0) {
+      setTreatmentsList(cms.treatments);
+    }
+
+    const handleCmsUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      if (custom?.treatments && custom.treatments.length > 0) {
+        setTreatmentsList(custom.treatments);
+      } else {
+        setTreatmentsList(getCMSData().treatments);
+      }
+    };
+
+    window.addEventListener("behappy_cms_updated", handleCmsUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleCmsUpdate);
+  }, []);
+
   const filteredTreatments =
     activeCategory === "Todos"
-      ? TREATMENTS
-      : TREATMENTS.filter((t) => t.category === activeCategory);
+      ? treatmentsList
+      : treatmentsList.filter((t) => t.category === activeCategory);
 
   const handleBookTreatment = (treatment: Treatment) => {
     setSelectedTreatment(null);
@@ -42,8 +63,8 @@ export function RealTreatmentsGrid() {
           {CATEGORIES.map((cat) => {
             const count =
               cat === "Todos"
-                ? TREATMENTS.length
-                : TREATMENTS.filter((t) => t.category === cat).length;
+                ? treatmentsList.length
+                : treatmentsList.filter((t) => t.category === cat).length;
             const isActive = activeCategory === cat;
 
             return (

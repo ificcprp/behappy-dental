@@ -1,18 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DEMO_USERS, INITIAL_APPOINTMENTS, INITIAL_CLINICAL_RECORDS, INITIAL_ODONTOGRAM } from "@/data/portalMockData";
 import { UserRole, UserProfile, PatientAppointment, ClinicalRecord, OdontogramTooth } from "@/types/auth";
 import { createWhatsAppUrl } from "@/data/clinicInfo";
 import {
+  getCurrentSession,
+  setCurrentSession,
+  clearCurrentSession,
+  getRegisteredUsers,
+  updateUserRole,
+  registerNewUser
+} from "@/lib/authService";
+import { SiteCmsEditor } from "@/components/portal/SiteCmsEditor";
+import {
   Calendar,
   CheckCircle2,
   Plus,
   MessageCircle,
   LogOut,
-  ArrowRight
+  ArrowRight,
+  LayoutDashboard,
+  Globe,
+  Users as UsersIcon,
+  ExternalLink,
+  Search,
+  UserPlus,
+  X,
+  Clock,
+  Sparkles,
+  ShieldCheck
 } from "lucide-react";
 
 function PortalContent() {
@@ -21,8 +40,32 @@ function PortalContent() {
 
   // Active role state
   const initialRoleParam = searchParams.get("role") as UserRole | null;
+  const initialTabParam = searchParams.get("tab") as "dashboard" | "cms" | "citas" | "usuarios" | null;
+  
   const [activeRole, setActiveRole] = useState<UserRole>(initialRoleParam || "paciente");
   const [activeUser, setActiveUser] = useState<UserProfile>(DEMO_USERS[initialRoleParam || "paciente"]);
+
+  // Admin Sidebar Sub-tab
+  const [adminTab, setAdminTab] = useState<"dashboard" | "cms" | "citas" | "usuarios">(initialTabParam || "dashboard");
+  const [userSearch, setUserSearch] = useState("");
+  const [showNewUserModal, setShowNewUserModal] = useState(false);
+  const [newUserData, setNewUserData] = useState<{
+    fullName: string;
+    email: string;
+    rut: string;
+    phone: string;
+    role: UserRole;
+    prevision: string;
+    password?: string;
+  }>({
+    fullName: "",
+    email: "",
+    rut: "",
+    phone: "",
+    role: "paciente",
+    prevision: "Fonasa",
+    password: "admin"
+  });
 
   // Patient Sub-tabs
   const [patientTab, setPatientTab] = useState<"citas" | "ficha" | "odontograma" | "convenio">("citas");
@@ -46,29 +89,42 @@ function PortalContent() {
   const [walkinTreatment, setWalkinTreatment] = useState("Consulta de Urgencia Dental");
 
   // Admin user role management
-  const [userList, setUserList] = useState<UserProfile[]>([
-    DEMO_USERS.paciente,
-    DEMO_USERS.doctor,
-    DEMO_USERS.recepcion,
-    DEMO_USERS.admin,
-    {
-      id: "usr_05",
-      email: "matias.alarcon@gmail.com",
-      fullName: "Matías Alarcón Ramos",
-      rut: "20.184.920-5",
-      phone: "+56 9 7721 9402",
-      role: "paciente",
-      prevision: "Fonasa",
-      convenioLevel: "20%",
-      createdAt: "2025-02-10"
+  const [userList, setUserList] = useState<UserProfile[]>([]);
+
+  // Load session & users on mount
+  useEffect(() => {
+    const session = getCurrentSession();
+    if (initialRoleParam) {
+      setActiveRole(initialRoleParam);
+      if (session && session.role === initialRoleParam) {
+        setActiveUser(session);
+      } else {
+        const demo = DEMO_USERS[initialRoleParam] || DEMO_USERS.paciente;
+        setActiveUser(demo);
+        setCurrentSession(demo);
+      }
+    } else if (session) {
+      setActiveRole(session.role);
+      setActiveUser(session);
     }
-  ]);
+
+    const reg = getRegisteredUsers();
+    setUserList(reg);
+  }, [initialRoleParam]);
 
   // Sync role change
   const handleRoleSwitch = (newRole: UserRole) => {
     setActiveRole(newRole);
-    setActiveUser(DEMO_USERS[newRole]);
+    const demo = DEMO_USERS[newRole] || DEMO_USERS.paciente;
+    setActiveUser(demo);
+    setCurrentSession(demo);
     router.replace(`/portal?role=${newRole}`);
+  };
+
+  // Logout handler
+  const handleLogout = () => {
+    clearCurrentSession();
+    router.push("/login");
   };
 
   // SOAP Save
@@ -128,9 +184,34 @@ function PortalContent() {
 
   // Admin Change Role
   const handleAdminRoleChange = (userId: string, targetRole: UserRole) => {
-    setUserList((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: targetRole } : u))
-    );
+    updateUserRole(userId, targetRole);
+    setUserList(getRegisteredUsers());
+  };
+
+  // Admin Create New User
+  const handleCreateUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUserData.email || !newUserData.fullName) return;
+    registerNewUser({
+      fullName: newUserData.fullName,
+      email: newUserData.email,
+      password: newUserData.password || "BeHappy2026!",
+      rut: newUserData.rut || "11.222.333-4",
+      phone: newUserData.phone || "+56 9 1234 5678",
+      role: newUserData.role,
+      prevision: newUserData.prevision,
+    });
+    setUserList(getRegisteredUsers());
+    setShowNewUserModal(false);
+    setNewUserData({
+      fullName: "",
+      email: "",
+      rut: "",
+      phone: "",
+      role: "paciente",
+      prevision: "Fonasa",
+      password: "admin"
+    });
   };
 
   return (
@@ -211,17 +292,20 @@ function PortalContent() {
 
           {/* User profile & exit */}
           <div className="flex items-center gap-3">
-            <div className="text-right hidden lg:block">
+            <div className="text-right hidden sm:block">
               <div className="text-xs font-medium text-white">{activeUser.fullName}</div>
-              <div className="text-[10px] font-mono text-neutral-400">{activeUser.email}</div>
+              <div className="text-[10px] font-mono text-neutral-400">
+                {activeUser.email} · <span className="uppercase text-neutral-300 font-bold">{activeRole}</span>
+              </div>
             </div>
-            <a
-              href="/"
-              className="p-2 border border-[#2b2b34] bg-[#141419] hover:bg-neutral-800 text-neutral-300 hover:text-white transition"
-              title="Volver a la web pública"
+            <button
+              onClick={handleLogout}
+              className="px-3 py-1.5 border border-[#2b2b34] bg-[#141419] hover:bg-neutral-800 text-neutral-300 hover:text-white transition text-xs font-mono flex items-center gap-1.5"
+              title="Cerrar sesión"
             >
               <LogOut className="w-3.5 h-3.5" />
-            </a>
+              <span className="hidden md:inline">Salir</span>
+            </button>
           </div>
 
         </div>
@@ -763,103 +847,516 @@ function PortalContent() {
         )}
 
         {/* ========================================================================= */}
-        {/* 4. ROLE: ADMIN / CEO (Executive Management View) */}
+        {/* 4. ROLE: ADMIN / CEO (Executive Management View with Sidebar CMS) */}
         {/* ========================================================================= */}
         {activeRole === "admin" && (
-          <div className="space-y-8">
-            <div className="border border-[#222228] bg-[#121216] p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <div className="space-y-1">
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            
+            {/* Admin Sidebar Navigation */}
+            <aside className="w-full lg:w-72 shrink-0 bg-[#121216] border border-[#222228] p-5 lg:sticky lg:top-24 space-y-6">
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[10px] font-mono tracking-[0.2em] text-neutral-400 uppercase">
+                    ADMINISTRACIÓN CENTRAL
+                  </span>
+                </div>
+                <h3 className="text-base font-semibold text-white tracking-tight">
+                  Panel de Control
+                </h3>
+                <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
+                  Dirección · Centro Dental BeHappy
+                </p>
+              </div>
+
+              {/* Navigation Tabs */}
+              <nav className="space-y-1.5 font-mono text-xs">
+                <button
+                  type="button"
+                  onClick={() => setAdminTab("dashboard")}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 transition text-left ${
+                    adminTab === "dashboard"
+                      ? "bg-white text-black font-bold shadow-sm"
+                      : "text-neutral-300 hover:bg-[#1a1a22] hover:text-white"
+                  }`}
+                >
+                  <LayoutDashboard className="w-4 h-4 shrink-0" />
+                  <span>Dashboard Ejecutivo</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setAdminTab("cms")}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 transition text-left ${
+                    adminTab === "cms"
+                      ? "bg-white text-black font-bold shadow-sm"
+                      : "text-neutral-300 hover:bg-[#1a1a22] hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Globe className="w-4 h-4 shrink-0" />
+                    <span>Editor CMS Web</span>
+                  </div>
+                  <span
+                    className={`text-[9px] px-2 py-0.5 uppercase tracking-wider font-bold ${
+                      adminTab === "cms"
+                        ? "bg-black text-white"
+                        : "bg-emerald-950 text-emerald-300 border border-emerald-800"
+                    }`}
+                  >
+                    VIVO
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setAdminTab("citas")}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 transition text-left ${
+                    adminTab === "citas"
+                      ? "bg-white text-black font-bold shadow-sm"
+                      : "text-neutral-300 hover:bg-[#1a1a22] hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-4 h-4 shrink-0" />
+                    <span>Control de Citas</span>
+                  </div>
+                  <span className="text-[10px] text-neutral-400 font-mono">
+                    {appointments.length}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setAdminTab("usuarios")}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 transition text-left ${
+                    adminTab === "usuarios"
+                      ? "bg-white text-black font-bold shadow-sm"
+                      : "text-neutral-300 hover:bg-[#1a1a22] hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <UsersIcon className="w-4 h-4 shrink-0" />
+                    <span>Usuarios & Roles</span>
+                  </div>
+                  <span className="text-[10px] text-neutral-400 font-mono">
+                    {userList.length}
+                  </span>
+                </button>
+              </nav>
+
+              {/* Quick links to live public website */}
+              <div className="pt-5 border-t border-[#222228] space-y-2.5">
                 <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase block">
-                  DIRECCIÓN MÉDICA & ADMINISTRACIÓN CENTRAL
+                  Ver Sitio Web en Vivo
                 </span>
-                <h2 className="text-2xl font-normal text-white">Dashboard Ejecutivo</h2>
-                <p className="text-xs font-mono text-neutral-400">Métricas consolidadas BeHappy Ñuñoa</p>
+                <a
+                  href="/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between text-xs font-mono text-neutral-300 hover:text-white px-2.5 py-2 hover:bg-[#1a1a22] transition"
+                >
+                  <span>Página de Inicio</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+                <a
+                  href="/tratamientos"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between text-xs font-mono text-neutral-300 hover:text-white px-2.5 py-2 hover:bg-[#1a1a22] transition"
+                >
+                  <span>Los 20 Tratamientos</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+                <a
+                  href="/contacto"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between text-xs font-mono text-neutral-300 hover:text-white px-2.5 py-2 hover:bg-[#1a1a22] transition"
+                >
+                  <span>Contacto & Ubicación</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
               </div>
+            </aside>
 
-              <span className="px-3 py-1 border border-neutral-700 text-[10px] font-mono uppercase text-neutral-300">
-                Sistema Operativo · 2026
-              </span>
+            {/* Admin Content Area */}
+            <div className="flex-1 w-full min-w-0 space-y-6">
+
+              {/* 1. CMS TAB: Full Live CMS Editor */}
+              {adminTab === "cms" && (
+                <SiteCmsEditor />
+              )}
+
+              {/* 2. DASHBOARD TAB */}
+              {adminTab === "dashboard" && (
+                <div className="space-y-6">
+                  {/* Executive Header Banner */}
+                  <div className="border border-[#222228] bg-[#121216] p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase block">
+                        DIRECCIÓN MÉDICA & ADMINISTRACIÓN CENTRAL
+                      </span>
+                      <h2 className="text-2xl font-normal text-white">Dashboard Ejecutivo</h2>
+                      <p className="text-xs font-mono text-neutral-400">
+                        Métricas consolidadas BeHappy Ñuñoa · Conectado en tiempo real
+                      </p>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setAdminTab("cms")}
+                        className="px-4 py-2 bg-white text-black hover:bg-neutral-200 text-xs font-mono tracking-wider uppercase font-bold transition flex items-center gap-2"
+                      >
+                        <Globe className="w-3.5 h-3.5" />
+                        Abrir Editor CMS Web
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Executive KPIs */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
+                      <span className="text-[10px] font-mono text-neutral-400 uppercase block">Ingresos Mes</span>
+                      <span className="text-xl font-mono font-bold text-white block">$8.450.000 CLP</span>
+                      <span className="text-[10px] font-mono text-emerald-400 block">+14% vs anterior</span>
+                    </div>
+
+                    <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
+                      <span className="text-[10px] font-mono text-neutral-400 uppercase block">Citas del Mes</span>
+                      <span className="text-xl font-mono font-bold text-white block">142</span>
+                      <span className="text-[10px] font-mono text-neutral-400 block">94% asistencia</span>
+                    </div>
+
+                    <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
+                      <span className="text-[10px] font-mono text-neutral-400 uppercase block">Nuevos Pacientes</span>
+                      <span className="text-xl font-mono font-bold text-white block">+38</span>
+                      <span className="text-[10px] font-mono text-neutral-400 block">Captación orgánica & Meta</span>
+                    </div>
+
+                    <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
+                      <span className="text-[10px] font-mono text-neutral-400 uppercase block">Planes Convenio</span>
+                      <span className="text-xl font-mono font-bold text-white block">76 Activos</span>
+                      <span className="text-[10px] font-mono text-neutral-400 block">Retención 18 meses</span>
+                    </div>
+                  </div>
+
+                  {/* Operational Status & CMS Banner */}
+                  <div className="border border-[#222228] bg-[#121216] p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block">
+                        GESTIÓN DE CONTENIDOS EN TIEMPO REAL
+                      </span>
+                      <h4 className="text-base text-white font-medium">
+                        Edición Directa del Sitio Web Público
+                      </h4>
+                      <p className="text-xs text-neutral-400">
+                        Modifica los 20 tratamientos, los 8 doctores del equipo, los teléfonos de WhatsApp, los cintillos y las ofertas de convenios sin tocar código.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setAdminTab("cms")}
+                      className="px-5 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-mono tracking-wider uppercase whitespace-nowrap transition"
+                    >
+                      Ir a Módulo CMS →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* 3. CITAS TAB */}
+              {adminTab === "citas" && (
+                <div className="border border-[#222228] bg-[#121216] p-6 space-y-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#222228] pb-4">
+                    <div>
+                      <h3 className="font-normal text-lg text-white">Control General de Citas & Boxes</h3>
+                      <p className="text-xs font-mono text-neutral-400 mt-0.5">
+                        Supervisión integral de agendas de todos los odontólogos
+                      </p>
+                    </div>
+                    <span className="px-3 py-1 border border-neutral-700 text-xs font-mono text-neutral-300">
+                      {appointments.length} Citas Registradas
+                    </span>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs font-mono">
+                      <thead className="border-b border-[#222228] text-neutral-400 uppercase">
+                        <tr>
+                          <th className="py-3 px-3">Paciente</th>
+                          <th className="py-3 px-3">Fecha / Hora</th>
+                          <th className="py-3 px-3">Doctor & Tratamiento</th>
+                          <th className="py-3 px-3">Box</th>
+                          <th className="py-3 px-3">Total</th>
+                          <th className="py-3 px-3">Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#222228]">
+                        {appointments.map((a) => (
+                          <tr key={a.id} className="hover:bg-[#18181f] transition">
+                            <td className="py-3.5 px-3">
+                              <div className="font-medium text-white">{a.patientName || "Paciente Registrado"}</div>
+                              <div className="text-[10px] text-neutral-400">{a.patientPhone || "+56 9 4757 8597"}</div>
+                            </td>
+                            <td className="py-3.5 px-3">
+                              <div className="text-white">{a.date}</div>
+                              <div className="text-[10px] text-neutral-400">{a.time}</div>
+                            </td>
+                            <td className="py-3.5 px-3">
+                              <div className="text-white">{a.treatmentName}</div>
+                              <div className="text-[10px] text-neutral-400">{a.doctorName}</div>
+                            </td>
+                            <td className="py-3.5 px-3 text-neutral-300 font-bold">{a.box}</td>
+                            <td className="py-3.5 px-3 text-emerald-400 font-bold">
+                              ${((a.price ?? 35000) - (a.convenioDiscount ?? 0)).toLocaleString("es-CL")}
+                            </td>
+                            <td className="py-3.5 px-3">
+                              <select
+                                value={a.status}
+                                onChange={(e) => handleStatusChange(a.id, e.target.value as PatientAppointment["status"])}
+                                className="px-2.5 py-1 bg-[#18181f] border border-[#2b2b34] text-white text-[11px]"
+                              >
+                                <option value="confirmada">Confirmada</option>
+                                <option value="en_espera">En Espera</option>
+                                <option value="en_box">En Box</option>
+                                <option value="finalizada">Finalizada</option>
+                                <option value="cancelada">Cancelada</option>
+                              </select>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* 4. USUARIOS TAB */}
+              {adminTab === "usuarios" && (
+                <div className="border border-[#222228] bg-[#121216] p-6 space-y-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#222228] pb-4">
+                    <div>
+                      <h3 className="font-normal text-lg text-white">Segmentación y Control de Roles</h3>
+                      <p className="text-xs font-mono text-neutral-400 mt-0.5">
+                        Administración de cuentas con acceso al portal (Admin, Doctor, Recepción, Paciente)
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowNewUserModal(true)}
+                      className="px-4 py-2 bg-white text-black hover:bg-neutral-200 text-xs font-mono tracking-wider uppercase font-bold transition flex items-center gap-2"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" />
+                      + Nuevo Usuario
+                    </button>
+                  </div>
+
+                  {/* Search Filter */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex-1">
+                      <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+                      <input
+                        type="text"
+                        value={userSearch}
+                        onChange={(e) => setUserSearch(e.target.value)}
+                        placeholder="Buscar por nombre, email o RUT..."
+                        className="w-full pl-9 pr-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono placeholder-neutral-500 focus:outline-none focus:border-white"
+                      />
+                    </div>
+                    <span className="text-xs font-mono text-neutral-400 shrink-0">
+                      {userList.length} registrados
+                    </span>
+                  </div>
+
+                  {/* Users Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs font-mono">
+                      <thead className="border-b border-[#222228] text-neutral-400 uppercase">
+                        <tr>
+                          <th className="py-2.5 px-3">Usuario</th>
+                          <th className="py-2.5 px-3">RUT</th>
+                          <th className="py-2.5 px-3">Rol Asignado</th>
+                          <th className="py-2.5 px-3">Detalle</th>
+                          <th className="py-2.5 px-3 text-right">Modificar Rol</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#222228]">
+                        {userList
+                          .filter((u) => {
+                            if (!userSearch) return true;
+                            const query = userSearch.toLowerCase();
+                            return (
+                              u.fullName.toLowerCase().includes(query) ||
+                              u.email.toLowerCase().includes(query) ||
+                              (u.rut && u.rut.toLowerCase().includes(query))
+                            );
+                          })
+                          .map((usr) => (
+                            <tr key={usr.id} className="hover:bg-[#18181f] transition">
+                              <td className="py-3 px-3">
+                                <div className="font-medium text-white">{usr.fullName}</div>
+                                <div className="text-[10px] text-neutral-400">{usr.email}</div>
+                              </td>
+                              <td className="py-3 px-3 text-neutral-300">{usr.rut}</td>
+                              <td className="py-3 px-3">
+                                <span className={`px-2 py-0.5 border uppercase text-[10px] font-bold ${
+                                  usr.role === "admin"
+                                    ? "bg-purple-950/60 border-purple-700 text-purple-300"
+                                    : usr.role === "doctor"
+                                    ? "bg-blue-950/60 border-blue-700 text-blue-300"
+                                    : usr.role === "recepcion"
+                                    ? "bg-amber-950/60 border-amber-700 text-amber-300"
+                                    : "bg-neutral-800 border-neutral-700 text-neutral-300"
+                                }`}>
+                                  {usr.role}
+                                </span>
+                              </td>
+                              <td className="py-3 px-3 text-neutral-400">
+                                {usr.specialty || usr.prevision || "Convenio BeHappy"}
+                              </td>
+                              <td className="py-3 px-3 text-right">
+                                <select
+                                  value={usr.role}
+                                  onChange={(e) => handleAdminRoleChange(usr.id, e.target.value as UserRole)}
+                                  className="px-2 py-1 bg-[#18181f] border border-[#2b2b34] text-white text-[11px]"
+                                >
+                                  <option value="paciente">Paciente</option>
+                                  <option value="doctor">Doctor</option>
+                                  <option value="recepcion">Recepción</option>
+                                  <option value="admin">Admin</option>
+                                </select>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
             </div>
 
-            {/* Executive KPIs */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
-                <span className="text-[10px] font-mono text-neutral-400 uppercase block">Ingresos Mes</span>
-                <span className="text-xl font-mono font-bold text-white block">$8.450.000 CLP</span>
-                <span className="text-[10px] font-mono text-emerald-400 block">+14% vs anterior</span>
-              </div>
+            {/* Create New User Modal */}
+            {showNewUserModal && (
+              <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="bg-[#121216] border border-[#222228] max-w-md w-full p-6 space-y-4">
+                  <div className="flex items-center justify-between border-b border-[#222228] pb-3">
+                    <h3 className="text-base font-normal text-white">Registrar Nuevo Usuario / Rol</h3>
+                    <button
+                      onClick={() => setShowNewUserModal(false)}
+                      className="text-neutral-400 hover:text-white"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
 
-              <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
-                <span className="text-[10px] font-mono text-neutral-400 uppercase block">Citas del Mes</span>
-                <span className="text-xl font-mono font-bold text-white block">142</span>
-                <span className="text-[10px] font-mono text-neutral-400 block">94% asistencia</span>
-              </div>
+                  <form onSubmit={handleCreateUser} className="space-y-3 font-mono text-xs">
+                    <div>
+                      <label className="block text-[10px] uppercase text-neutral-400 mb-1">Nombre Completo *</label>
+                      <input
+                        type="text"
+                        required
+                        value={newUserData.fullName}
+                        onChange={(e) => setNewUserData({ ...newUserData, fullName: e.target.value })}
+                        placeholder="Ej: Dr. Roberto Gómez"
+                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+                      />
+                    </div>
 
-              <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
-                <span className="text-[10px] font-mono text-neutral-400 uppercase block">Nuevos Pacientes</span>
-                <span className="text-xl font-mono font-bold text-white block">+38</span>
-                <span className="text-[10px] font-mono text-neutral-400 block">Captación orgánica & Meta</span>
-              </div>
+                    <div>
+                      <label className="block text-[10px] uppercase text-neutral-400 mb-1">Correo Electrónico *</label>
+                      <input
+                        type="email"
+                        required
+                        value={newUserData.email}
+                        onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
+                        placeholder="usuario@behappydental.cl"
+                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+                      />
+                    </div>
 
-              <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
-                <span className="text-[10px] font-mono text-neutral-400 uppercase block">Planes Convenio</span>
-                <span className="text-xl font-mono font-bold text-white block">76 Activos</span>
-                <span className="text-[10px] font-mono text-neutral-400 block">Retención 18 meses</span>
-              </div>
-            </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] uppercase text-neutral-400 mb-1">RUT</label>
+                        <input
+                          type="text"
+                          value={newUserData.rut}
+                          onChange={(e) => setNewUserData({ ...newUserData, rut: e.target.value })}
+                          placeholder="18.990.221-5"
+                          className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+                        />
+                      </div>
 
-            {/* User & Role Management Table */}
-            <div className="border border-[#222228] bg-[#121216] p-6 space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#222228] pb-3">
-                <h3 className="font-normal text-base text-white">Segmentación y Control de Roles de Usuario</h3>
-                <span className="text-xs font-mono text-neutral-400">{userList.length} usuarios registrados</span>
-              </div>
+                      <div>
+                        <label className="block text-[10px] uppercase text-neutral-400 mb-1">Teléfono</label>
+                        <input
+                          type="tel"
+                          value={newUserData.phone}
+                          onChange={(e) => setNewUserData({ ...newUserData, phone: e.target.value })}
+                          placeholder="+56 9 8899 7766"
+                          className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+                        />
+                      </div>
+                    </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs font-mono">
-                  <thead className="border-b border-[#222228] text-neutral-400 uppercase">
-                    <tr>
-                      <th className="py-2.5 px-3">Usuario</th>
-                      <th className="py-2.5 px-3">RUT</th>
-                      <th className="py-2.5 px-3">Rol Asignado</th>
-                      <th className="py-2.5 px-3">Detalle</th>
-                      <th className="py-2.5 px-3 text-right">Modificar</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#222228]">
-                    {userList.map((usr) => (
-                      <tr key={usr.id} className="hover:bg-[#18181f] transition">
-                        <td className="py-3 px-3">
-                          <div className="font-medium text-white">{usr.fullName}</div>
-                          <div className="text-[10px] text-neutral-400">{usr.email}</div>
-                        </td>
-                        <td className="py-3 px-3 text-neutral-300">{usr.rut}</td>
-                        <td className="py-3 px-3">
-                          <span className="px-2 py-0.5 border border-neutral-700 uppercase text-[10px]">
-                            {usr.role}
-                          </span>
-                        </td>
-                        <td className="py-3 px-3 text-neutral-400">
-                          {usr.specialty || usr.prevision || "Convenio BeHappy"}
-                        </td>
-                        <td className="py-3 px-3 text-right">
-                          <select
-                            value={usr.role}
-                            onChange={(e) => handleAdminRoleChange(usr.id, e.target.value as UserRole)}
-                            className="px-2 py-1 bg-[#18181f] border border-[#2b2b34] text-white text-[11px]"
-                          >
-                            <option value="paciente">Paciente</option>
-                            <option value="doctor">Doctor</option>
-                            <option value="recepcion">Recepción</option>
-                            <option value="admin">Admin</option>
-                          </select>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] uppercase text-neutral-400 mb-1">Rol a Asignar *</label>
+                        <select
+                          value={newUserData.role}
+                          onChange={(e) => setNewUserData({ ...newUserData, role: e.target.value as UserRole })}
+                          className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+                        >
+                          <option value="paciente">Paciente</option>
+                          <option value="doctor">Doctor</option>
+                          <option value="recepcion">Recepción</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] uppercase text-neutral-400 mb-1">Previsión / Detalle</label>
+                        <input
+                          type="text"
+                          value={newUserData.prevision}
+                          onChange={(e) => setNewUserData({ ...newUserData, prevision: e.target.value })}
+                          placeholder="Fonasa / Isapre"
+                          className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] uppercase text-neutral-400 mb-1">Contraseña</label>
+                      <input
+                        type="password"
+                        value={newUserData.password}
+                        onChange={(e) => setNewUserData({ ...newUserData, password: e.target.value })}
+                        placeholder="admin"
+                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+                      />
+                    </div>
+
+                    <div className="flex justify-end gap-2.5 pt-3 border-t border-[#222228]">
+                      <button
+                        type="button"
+                        onClick={() => setShowNewUserModal(false)}
+                        className="px-4 py-2 border border-neutral-700 text-xs font-mono uppercase text-neutral-400 hover:text-white"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-4 py-2 bg-white text-black font-bold text-xs font-mono uppercase hover:bg-neutral-200"
+                      >
+                        Crear y Activar
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
-            </div>
+            )}
 
           </div>
         )}
