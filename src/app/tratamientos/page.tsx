@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { RealTreatmentsGrid } from "@/components/dental/RealTreatmentsGrid";
+import { TreatmentsSection } from "@/components/dental/TreatmentsSection";
 import { AppointmentBookingSection } from "@/components/dental/AppointmentBookingSection";
 
 export const metadata: Metadata = {
@@ -10,14 +10,12 @@ export const metadata: Metadata = {
 
 export default function TratamientosPage() {
   return (
-    <div className="bg-black text-white min-h-screen">
-      {/* 20 Real Treatment Cards Grid matching the Real Site */}
-      <RealTreatmentsGrid />
+    <div className="bg-[#faf8f5] text-[#141413] min-h-screen">
+      {/* 20 Real Treatment Cards Grid matching high-end editorial clinical design */}
+      <TreatmentsSection />
 
       {/* Appointment Booking Desk */}
-      <div className="bg-[#0f0f13] border-t border-neutral-900">
-        <AppointmentBookingSection />
-      </div>
+      <AppointmentBookingSection />
     </div>
   );
 }

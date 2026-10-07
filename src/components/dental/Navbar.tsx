@@ -15,7 +15,7 @@ export function Navbar() {
   const [sessionUser, setSessionUser] = useState<UserProfile | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const isDark = pathname === "/tratamientos" || pathname === "/portal";
+  const isDark = false;
 
   useEffect(() => {
     setSessionUser(getCurrentSession());
