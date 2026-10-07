@@ -69,7 +69,7 @@ export function ConveniosPromosSection() {
                 {/* Photo */}
                 <div className="relative w-full h-[240px] sm:h-[280px] bg-[#f5f2eb] overflow-hidden border border-[#e5e0d5]">
                   <Image
-                    src={promoImages[idx % promoImages.length]}
+                    src={promo.image || promoImages[idx % promoImages.length]}
                     alt={promo.title}
                     fill
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500"

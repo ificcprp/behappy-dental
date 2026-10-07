@@ -1,12 +1,37 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { createWhatsAppUrl } from "@/data/clinicInfo";
 import { ArrowUpRight } from "lucide-react";
+import { getCMSData, CMSData, CMSWelcomeSection, DEFAULT_WELCOME_SECTION } from "@/lib/cmsStore";
 
 export function RealCardsAndWelcomeSection() {
+  const [welcomeData, setWelcomeData] = useState<CMSWelcomeSection>(DEFAULT_WELCOME_SECTION);
+
+  useEffect(() => {
+    const cms = getCMSData();
+    if (cms?.welcomeSection) {
+      setWelcomeData(cms.welcomeSection);
+    }
+
+    const handleUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      if (custom?.welcomeSection) {
+        setWelcomeData(custom.welcomeSection);
+      } else {
+        const fresh = getCMSData();
+        if (fresh?.welcomeSection) setWelcomeData(fresh.welcomeSection);
+      }
+    };
+
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, []);
+
+  const cards = welcomeData.cards && welcomeData.cards.length === 4 ? welcomeData.cards : DEFAULT_WELCOME_SECTION.cards;
+  const newPatient = welcomeData.newPatient || DEFAULT_WELCOME_SECTION.newPatient;
+
   return (
     <section className="bg-[#faf8f5] text-[#141413] border-b border-[#e5e0d5]">
       
@@ -16,21 +41,20 @@ export function RealCardsAndWelcomeSection() {
         {/* Section Intro */}
         <div className="space-y-2 mb-10">
           <span className="text-[11px] font-mono tracking-[0.22em] text-[#6d6961] uppercase block">
-            ACCESOS Y PILARES INSTITUCIONALES
+            {welcomeData.kicker || "ACCESOS Y PILARES INSTITUCIONALES"}
           </span>
           <h2 className="text-xl sm:text-2xl font-normal tracking-tight text-[#141413]">
-            Un solo centro, todas las disciplinas de la salud dental.
+            {welcomeData.title || "Un solo centro, todas las disciplinas de la salud dental."}
           </h2>
           <p className="text-xs sm:text-sm text-[#66635d] font-light max-w-2xl leading-relaxed">
-            Consulte según su necesidad clínica. El método BeHappy no improvisa: diagnóstico digital, protocolo bioseguro y presupuesto claro desde la primera consulta.
+            {welcomeData.subtitle || "Consulte según su necesidad clínica. El método BeHappy no improvisa: diagnóstico digital, protocolo bioseguro y presupuesto claro desde la primera consulta."}
           </p>
         </div>
 
         {/* 4 Grid Columns with Fine Border Dividers */}
-        {/* 4 Grid Columns with Fine Border Dividers */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t border-l border-b border-[#e5e0d5]">
           
-          {/* Card 1: Conoce cómo llegar (Instagram Reel) */}
+          {/* Card 1 */}
           <div className="p-7 flex flex-col justify-between border-r border-[#e5e0d5] hover:bg-[#f3efe6] transition-colors group">
             <div className="space-y-4">
               <div className="h-14 flex items-center">
@@ -45,28 +69,28 @@ export function RealCardsAndWelcomeSection() {
 
               <div>
                 <span className="text-[10px] font-mono tracking-[0.2em] text-[#78736a] uppercase block mb-1">
-                  01 · LOCALIZACIÓN & ACCESO
+                  {cards[0].number} · {cards[0].tag}
                 </span>
                 <h3 className="text-base font-medium tracking-tight text-[#141413] leading-snug">
-                  Conoce cómo llegar a nuestra clínica
+                  {cards[0].title}
                 </h3>
                 <p className="text-xs text-[#66635d] font-light mt-2 leading-relaxed">
-                  Visítanos en Suecia 3580, of. 304, Ñuñoa. A pasos de Metro Chile España (Línea 3).
+                  {cards[0].description}
                 </p>
               </div>
             </div>
 
             <a
-              href="https://www.instagram.com/p/CktaZC8pojP/"
+              href={cards[0].linkUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-6 inline-flex items-center gap-1 text-[11px] font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4 decoration-1 group-hover:text-neutral-900 transition"
             >
-              Explorar <ArrowUpRight className="w-3.5 h-3.5" />
+              {cards[0].linkText} <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
           </div>
 
-          {/* Card 2: Convenio Dental */}
+          {/* Card 2 */}
           <div className="p-7 flex flex-col justify-between border-r border-[#e5e0d5] hover:bg-[#f3efe6] transition-colors group">
             <div className="space-y-4">
               <div className="h-14 flex items-center">
@@ -80,26 +104,26 @@ export function RealCardsAndWelcomeSection() {
 
               <div>
                 <span className="text-[10px] font-mono tracking-[0.2em] text-[#78736a] uppercase block mb-1">
-                  02 · SISTEMA PREVENTIVO
+                  {cards[1].number} · {cards[1].tag}
                 </span>
                 <h3 className="text-base font-medium tracking-tight text-[#141413] leading-snug">
-                  Descubre nuestro convenio dental
+                  {cards[1].title}
                 </h3>
                 <p className="text-xs text-[#66635d] font-light mt-2 leading-relaxed">
-                  Beneficios del convenio, coberturas escalonadas y tarifas preferenciales para toda la familia.
+                  {cards[1].description}
                 </p>
               </div>
             </div>
 
             <Link
-              href="/precios"
+              href={cards[1].linkUrl}
               className="mt-6 inline-flex items-center gap-1 text-[11px] font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4 decoration-1 transition"
             >
-              Lee sobre nuestro seguro →
+              {cards[1].linkText}
             </Link>
           </div>
 
-          {/* Card 3: Tratamientos */}
+          {/* Card 3 */}
           <div className="p-7 flex flex-col justify-between border-r border-[#e5e0d5] hover:bg-[#f3efe6] transition-colors group">
             <div className="space-y-4">
               <div className="h-14 flex items-center font-serif text-sm tracking-wide text-[#141413]">
@@ -110,26 +134,26 @@ export function RealCardsAndWelcomeSection() {
 
               <div>
                 <span className="text-[10px] font-mono tracking-[0.2em] text-[#78736a] uppercase block mb-1">
-                  03 · CATÁLOGO CLÍNICO
+                  {cards[2].number} · {cards[2].tag}
                 </span>
                 <h3 className="text-base font-medium tracking-tight text-[#141413] leading-snug">
-                  Revisa nuestros tratamientos y servicios dentales
+                  {cards[2].title}
                 </h3>
                 <p className="text-xs text-[#66635d] font-light mt-2 leading-relaxed">
-                  Desde ortodoncia invisible Invisalign e implantes hasta odontopediatría y blanqueamiento.
+                  {cards[2].description}
                 </p>
               </div>
             </div>
 
             <Link
-              href="/tratamientos"
+              href={cards[2].linkUrl}
               className="mt-6 inline-flex items-center gap-1 text-[11px] font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4 decoration-1 transition"
             >
-              Ver tratamientos →
+              {cards[2].linkText}
             </Link>
           </div>
 
-          {/* Card 4: Especialistas / Derivaciones */}
+          {/* Card 4 */}
           <div className="p-7 flex flex-col justify-between border-r border-[#e5e0d5] hover:bg-[#f3efe6] transition-colors group">
             <div className="space-y-4">
               <div className="h-14 flex items-center">
@@ -144,24 +168,24 @@ export function RealCardsAndWelcomeSection() {
 
               <div>
                 <span className="text-[10px] font-mono tracking-[0.2em] text-[#78736a] uppercase block mb-1">
-                  04 · EQUIPO ACREDITADO
+                  {cards[3].number} · {cards[3].tag}
                 </span>
                 <h3 className="text-base font-medium tracking-tight text-[#141413] leading-snug">
-                  ¿Necesita un especialista? Recibimos derivaciones
+                  {cards[3].title}
                 </h3>
                 <p className="text-xs text-[#66635d] font-light mt-2 leading-relaxed">
-                  8 especialistas registrados en la Superintendencia de Salud con derivaciones en diversas áreas.
+                  {cards[3].description}
                 </p>
               </div>
             </div>
 
             <a
-              href={createWhatsAppUrl("Hola Centro Dental BeHappy, me gustaría coordinar una cita con un especialista.")}
+              href={cards[3].linkUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-6 inline-flex items-center gap-1 text-[11px] font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4 decoration-1 transition"
             >
-              Agenda Aquí →
+              {cards[3].linkText}
             </a>
           </div>
 
@@ -177,31 +201,30 @@ export function RealCardsAndWelcomeSection() {
             {/* Left Copy */}
             <div className="lg:col-span-5 space-y-6">
               <span className="text-[11px] font-mono tracking-[0.2em] text-[#78736a] uppercase block">
-                PRIMERA ATENCIÓN & ADMISIÓN
+                {newPatient.tag || "PRIMERA ATENCIÓN & ADMISIÓN"}
               </span>
 
-              <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-[#141413] leading-tight">
-                ¿Nuevo como paciente?<br />
-                Contáctenos hoy mismo
+              <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-[#141413] leading-tight whitespace-pre-line">
+                {newPatient.title || "¿Nuevo como paciente?\nContáctenos hoy mismo"}
               </h2>
 
               <div className="space-y-3 text-sm text-[#5d5952] font-light leading-relaxed">
                 <p>
-                  Cámbiate a nosotros fácilmente. Gestiona y mantén tu salud dental.
+                  {newPatient.description1 || "Cámbiate a nosotros fácilmente. Gestiona y mantén tu salud dental."}
                 </p>
                 <p>
-                  Escríbenos directamente para recibir detalles personalizados y resolver tus dudas clínicas.
+                  {newPatient.description2 || "Escríbenos directamente para recibir detalles personalizados y resolver tus dudas clínicas."}
                 </p>
               </div>
 
               <div className="pt-2">
                 <a
-                  href={createWhatsAppUrl("Hola Centro Dental BeHappy, soy un nuevo paciente y me gustaría recibir información sobre la primera consulta.")}
+                  href={newPatient.buttonUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center px-7 py-3.5 rounded-[2px] bg-[#141413] text-[#faf8f5] hover:bg-black text-xs font-mono tracking-[0.16em] uppercase font-bold transition shadow-sm"
                 >
-                  Enviar mensaje por WhatsApp
+                  {newPatient.buttonText || "Enviar mensaje por WhatsApp"}
                 </a>
               </div>
             </div>
@@ -210,14 +233,14 @@ export function RealCardsAndWelcomeSection() {
             <div className="lg:col-span-7">
               <div className="relative w-full h-[340px] sm:h-[440px] rounded-[2px] overflow-hidden border border-[#ded9cd] bg-[#e8e4db] shadow-sm">
                 <Image
-                  src="/images/clinic-interior.jpg"
+                  src={newPatient.image || "/images/clinic-interior.jpg"}
                   alt="Instalaciones clínicas y box de atención en Centro Dental BeHappy Ñuñoa"
                   fill
                   className="object-cover filter contrast-[1.03]"
                   sizes="(max-width: 1024px) 100vw, 700px"
                 />
                 <div className="absolute bottom-3 right-3 bg-[#141413]/85 text-[#f5f2eb] px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase">
-                  Box Dental · Suecia 3580, Ñuñoa
+                  {newPatient.imageCaption || "Box Dental · Suecia 3580, Ñuñoa"}
                 </div>
               </div>
             </div>
