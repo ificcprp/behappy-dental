@@ -14,6 +14,16 @@ import {
   updateUserRole,
   registerNewUser
 } from "@/lib/authService";
+import {
+  getStoredAppointments,
+  addStoredAppointment,
+  updateStoredAppointmentStatus,
+  getStoredClinicalRecords,
+  addStoredClinicalRecord,
+  getStoredOdontogram,
+  updateStoredToothStatus,
+  CLINICAL_CHANGE_EVENT
+} from "@/lib/clinicalStore";
 import { SiteCmsEditor } from "@/components/portal/SiteCmsEditor";
 import {
   Calendar,
@@ -71,12 +81,12 @@ function PortalContent() {
   const [patientTab, setPatientTab] = useState<"citas" | "ficha" | "odontograma" | "convenio">("citas");
 
   // Local data state
-  const [appointments, setAppointments] = useState<PatientAppointment[]>(INITIAL_APPOINTMENTS);
-  const [clinicalRecords, setClinicalRecords] = useState<ClinicalRecord[]>(INITIAL_CLINICAL_RECORDS);
-  const [odontogram, setOdontogram] = useState<OdontogramTooth[]>(INITIAL_ODONTOGRAM);
+  const [appointments, setAppointments] = useState<PatientAppointment[]>([]);
+  const [clinicalRecords, setClinicalRecords] = useState<ClinicalRecord[]>([]);
+  const [odontogram, setOdontogram] = useState<OdontogramTooth[]>([]);
 
   // Doctor SOAP note form
-  const [soapPatient, setSoapPatient] = useState("Constanza Valenzuela Morales");
+  const [soapPatient, setSoapPatient] = useState("");
   const [soapDiagnosis, setSoapDiagnosis] = useState("");
   const [soapTreatment, setSoapTreatment] = useState("");
   const [soapPrescription, setSoapPrescription] = useState("");
@@ -112,6 +122,18 @@ function PortalContent() {
     setUserList(reg);
   }, [initialRoleParam]);
 
+  // Sync clinical store (appointments, SOAP records, odontogram) in real-time
+  useEffect(() => {
+    const syncClinical = () => {
+      setAppointments(getStoredAppointments());
+      setClinicalRecords(getStoredClinicalRecords());
+      setOdontogram(getStoredOdontogram());
+    };
+    syncClinical();
+    window.addEventListener(CLINICAL_CHANGE_EVENT, syncClinical);
+    return () => window.removeEventListener(CLINICAL_CHANGE_EVENT, syncClinical);
+  }, []);
+
   // Sync role change
   const handleRoleSwitch = (newRole: UserRole) => {
     setActiveRole(newRole);
@@ -132,21 +154,20 @@ function PortalContent() {
     e.preventDefault();
     if (!soapDiagnosis || !soapTreatment) return;
 
-    const newRecord: ClinicalRecord = {
-      id: `rec-${Date.now()}`,
-      patientId: "usr_paciente_01",
+    addStoredClinicalRecord({
+      patientId: soapPatient || "Paciente en Consulta",
       doctorName: activeUser.fullName,
       date: new Date().toISOString().split("T")[0],
       diagnosis: soapDiagnosis,
       treatmentPerformed: soapTreatment,
       prescription: soapPrescription,
       nextStep: "Control en 15 días"
-    };
+    });
 
-    setClinicalRecords([newRecord, ...clinicalRecords]);
     setSoapDiagnosis("");
     setSoapTreatment("");
     setSoapPrescription("");
+    setSoapPatient("");
     setSoapSavedToast(true);
     setTimeout(() => setSoapSavedToast(false), 3000);
   };
@@ -156,8 +177,7 @@ function PortalContent() {
     e.preventDefault();
     if (!walkinName) return;
 
-    const newAppointment: PatientAppointment = {
-      id: `cita-${Date.now()}`,
+    addStoredAppointment({
       date: "Hoy",
       time: "Ahora (Walk-in)",
       doctorName: walkinDoctor,
@@ -168,18 +188,23 @@ function PortalContent() {
       convenioDiscount: 14000,
       patientName: walkinName,
       patientPhone: "+56 9 4757 8597"
-    };
+    });
 
-    setAppointments([newAppointment, ...appointments]);
     setShowWalkinModal(false);
     setWalkinName("");
   };
 
   // Change Appointment Status
   const handleStatusChange = (id: string, newStatus: PatientAppointment["status"]) => {
-    setAppointments((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
-    );
+    updateStoredAppointmentStatus(id, newStatus);
+  };
+
+  // Interactive Odontogram Tooth Click
+  const handleToothClick = (tooth: OdontogramTooth) => {
+    const statuses: OdontogramTooth["status"][] = ["sano", "caries", "obturado", "corona", "implante", "extraccion_indicada"];
+    const currentIdx = statuses.indexOf(tooth.status);
+    const nextStatus = statuses[(currentIdx + 1) % statuses.length];
+    updateStoredToothStatus(tooth.toothNumber, nextStatus);
   };
 
   // Admin Change Role
@@ -324,13 +349,13 @@ function PortalContent() {
             <div className="border border-[#222228] bg-[#121216] p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="space-y-2">
                 <span className="text-[10px] font-mono tracking-[0.2em] text-neutral-400 uppercase block">
-                  EXPEDIENTE CLÍNICO Nº {activeUser.rut} · CONVENIO ACTIVO 40%
+                  EXPEDIENTE CLÍNICO · {activeUser.convenioLevel || "CONVENIO BEHAPPY"}
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-white">
                   {activeUser.fullName}
                 </h2>
                 <p className="text-xs font-mono text-neutral-400">
-                  Previsión: {activeUser.prevision} · Sede: Suecia 3580, Ñuñoa · Ficha activa
+                  RUT: {activeUser.rut} · Previsión: {activeUser.prevision} · Sede: Suecia 3580, Ñuñoa
                 </p>
               </div>
 
@@ -359,26 +384,43 @@ function PortalContent() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
                 <span className="text-[10px] font-mono tracking-widest text-neutral-400 block uppercase">Próxima Cita</span>
-                <span className="text-base font-normal text-white block">Hoy 10:30 hrs</span>
-                <span className="text-[11px] font-mono text-neutral-400 block">Dr. Johnny Lugo (Box 1)</span>
+                <span className="text-base font-normal text-white block">
+                  {appointments.length > 0 ? `${appointments[0].date} ${appointments[0].time}` : "Sin citas agendadas"}
+                </span>
+                <span className="text-[11px] font-mono text-neutral-400 block">
+                  {appointments.length > 0 ? `${appointments[0].doctorName} (${appointments[0].box || "Box 1"})` : "Disponible para agendar"}
+                </span>
               </div>
 
               <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
                 <span className="text-[10px] font-mono tracking-widest text-neutral-400 block uppercase">Ahorro Convenio</span>
-                <span className="text-base font-normal text-emerald-400 block">$184.000 CLP</span>
-                <span className="text-[11px] font-mono text-neutral-400 block">En ortodoncia & profilaxis</span>
+                <span className="text-base font-normal text-emerald-400 block">
+                  {(() => {
+                    const totalSavings = appointments.reduce((acc, a) => acc + (a.convenioDiscount || 0), 0);
+                    return totalSavings > 0 ? `$${totalSavings.toLocaleString("es-CL")} CLP` : "$0 CLP";
+                  })()}
+                </span>
+                <span className="text-[11px] font-mono text-neutral-400 block">Bonificación directa</span>
               </div>
 
               <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
                 <span className="text-[10px] font-mono tracking-widest text-neutral-400 block uppercase">Tratamiento Activo</span>
-                <span className="text-base font-normal text-white block">Invisalign®</span>
-                <span className="text-[11px] font-mono text-neutral-400 block">Alineador 14 de 24</span>
+                <span className="text-base font-normal text-white block">
+                  {appointments.length > 0 ? appointments[0].treatmentName : (clinicalRecords.length > 0 ? clinicalRecords[0].treatmentPerformed : "Sin tratamiento activo")}
+                </span>
+                <span className="text-[11px] font-mono text-neutral-400 block">
+                  {appointments.length > 0 ? "En curso" : "Consulta preventiva"}
+                </span>
               </div>
 
               <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
                 <span className="text-[10px] font-mono tracking-widest text-neutral-400 block uppercase">Estado Bucal</span>
-                <span className="text-base font-normal text-white block">Saludable</span>
-                <span className="text-[11px] font-mono text-neutral-400 block">Control semestral al día</span>
+                <span className="text-base font-normal text-white block">
+                  {clinicalRecords.length > 0 ? "Ficha al día" : "Ingreso Inicial"}
+                </span>
+                <span className="text-[11px] font-mono text-neutral-400 block">
+                  {clinicalRecords.length > 0 ? "Control registrado" : "Pendiente de diagnóstico"}
+                </span>
               </div>
             </div>
 
@@ -432,51 +474,81 @@ function PortalContent() {
             {/* Sub-Tab 1: Mis Citas */}
             {patientTab === "citas" && (
               <div className="border border-[#222228] bg-[#121216] divide-y divide-[#222228]">
-                {appointments.slice(0, 3).map((item) => (
-                  <div key={item.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-white">{item.treatmentName}</span>
-                        <span className="px-2 py-0.5 border border-neutral-700 text-[10px] font-mono uppercase text-neutral-300">
-                          {item.status.replace("_", " ")}
-                        </span>
-                      </div>
-                      <p className="text-xs text-neutral-400 font-light">
-                        Especialista: <strong className="text-white font-normal">{item.doctorName}</strong> · Box: {item.box || "Box 1"}
-                      </p>
-                      <p className="text-xs font-mono text-neutral-400">
-                        {item.date} a las {item.time} hrs
-                      </p>
-                    </div>
-
-                    <div className="text-right flex items-center sm:flex-col gap-2 shrink-0">
-                      <div>
-                        <span className="text-sm font-mono text-white block">
-                          ${(item.price! - item.convenioDiscount!).toLocaleString("es-CL")} CLP
-                        </span>
-                        <span className="text-[10px] font-mono text-neutral-400 block line-through">
-                          Arancel base: ${item.price?.toLocaleString("es-CL")}
-                        </span>
-                      </div>
-
+                {appointments.length === 0 ? (
+                  <div className="p-12 text-center space-y-3">
+                    <Calendar className="w-8 h-8 text-neutral-600 mx-auto" />
+                    <h3 className="text-sm font-medium text-white">No tienes citas agendadas</h3>
+                    <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+                      Puedes agendar tu hora de evaluación con nuestros especialistas mediante el agendador web o vía WhatsApp oficial.
+                    </p>
+                    <div className="pt-2">
                       <a
-                        href={createWhatsAppUrl(`Hola Centro Dental BeHappy, deseo consultar por mi cita de ${item.treatmentName} con ${item.doctorName}.`)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1.5 border border-neutral-700 hover:border-white text-[10px] font-mono uppercase tracking-wider text-neutral-300 transition"
+                        href="/#agendar"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition"
                       >
-                        Reagendar
+                        <Calendar className="w-3.5 h-3.5" />
+                        Agendar Cita Ahora
                       </a>
                     </div>
                   </div>
-                ))}
+                ) : (
+                  appointments.slice(0, 3).map((item) => (
+                    <div key={item.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-white">{item.treatmentName}</span>
+                          <span className="px-2 py-0.5 border border-neutral-700 text-[10px] font-mono uppercase text-neutral-300">
+                            {item.status.replace("_", " ")}
+                          </span>
+                        </div>
+                        <p className="text-xs text-neutral-400 font-light">
+                          Especialista: <strong className="text-white font-normal">{item.doctorName}</strong> · Box: {item.box || "Box 1"}
+                        </p>
+                        <p className="text-xs font-mono text-neutral-400">
+                          {item.date} a las {item.time} hrs
+                        </p>
+                      </div>
+
+                      <div className="text-right flex items-center sm:flex-col gap-2 shrink-0">
+                        <div>
+                          <span className="text-sm font-mono text-white block">
+                            ${((item.price ?? 35000) - (item.convenioDiscount ?? 0)).toLocaleString("es-CL")} CLP
+                          </span>
+                          {item.convenioDiscount ? (
+                            <span className="text-[10px] font-mono text-neutral-400 block line-through">
+                              Arancel base: ${item.price?.toLocaleString("es-CL")}
+                            </span>
+                          ) : null}
+                        </div>
+
+                        <a
+                          href={createWhatsAppUrl(`Hola Centro Dental BeHappy, deseo consultar por mi cita de ${item.treatmentName} con ${item.doctorName}.`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1.5 border border-neutral-700 hover:border-white text-[10px] font-mono uppercase tracking-wider text-neutral-300 transition"
+                        >
+                          Reagendar
+                        </a>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             )}
 
             {/* Sub-Tab 2: Ficha Clínica */}
             {patientTab === "ficha" && (
               <div className="space-y-4">
-                {clinicalRecords.map((rec) => (
+                {clinicalRecords.length === 0 ? (
+                  <div className="p-12 border border-[#222228] bg-[#121216] text-center space-y-3">
+                    <Sparkles className="w-8 h-8 text-neutral-600 mx-auto" />
+                    <h3 className="text-sm font-medium text-white">Sin registros clínicos aún</h3>
+                    <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+                      Tus evaluaciones, diagnósticos odontológicos, evolución de tratamientos y recetas electrónicas se reflejarán aquí una vez atendido por el doctor en box.
+                    </p>
+                  </div>
+                ) : (
+                  clinicalRecords.map((rec) => (
                   <div key={rec.id} className="p-6 border border-[#222228] bg-[#121216] space-y-3">
                     <div className="flex items-center justify-between border-b border-[#222228] pb-3 text-xs font-mono">
                       <div>
@@ -505,34 +577,66 @@ function PortalContent() {
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
+                ))
+              )}
+            </div>
             )}
 
             {/* Sub-Tab 3: Odontograma */}
             {patientTab === "odontograma" && (
               <div className="p-6 border border-[#222228] bg-[#121216] space-y-6">
-                <div>
-                  <h3 className="text-base font-normal tracking-tight text-white">Odontograma Digital</h3>
-                  <p className="text-xs font-mono text-neutral-400">Esquema clínico de piezas tratadas</p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222228] pb-4">
+                  <div>
+                    <h3 className="text-base font-normal tracking-tight text-white">Odontograma Digital Clínico</h3>
+                    <p className="text-xs font-mono text-neutral-400">
+                      Nomenclatura FDI estándar (32 piezas) · Haz clic en cualquier pieza para rotar su condición clínica
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-[10px] font-mono">
+                    <span className="px-2 py-0.5 border border-[#2b2b34] bg-[#16161d] text-emerald-400">● Sano</span>
+                    <span className="px-2 py-0.5 border border-rose-800 bg-rose-950/40 text-rose-300">● Caries</span>
+                    <span className="px-2 py-0.5 border border-blue-800 bg-blue-950/40 text-blue-300">● Obturado</span>
+                    <span className="px-2 py-0.5 border border-amber-800 bg-amber-950/40 text-amber-300">● Corona</span>
+                    <span className="px-2 py-0.5 border border-purple-800 bg-purple-950/40 text-purple-300">● Implante</span>
+                    <span className="px-2 py-0.5 border border-neutral-700 bg-neutral-900 text-neutral-400">● Extracción</span>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 gap-2 pt-2">
-                  {odontogram.map((tooth) => (
-                    <div
-                      key={tooth.toothNumber}
-                      className={`p-3 border text-center transition ${
-                        tooth.status === "sano"
-                          ? "border-[#2b2b34] bg-[#16161d]"
-                          : "border-neutral-500 bg-[#202028] text-white"
-                      }`}
-                    >
-                      <span className="text-xs font-mono font-bold block text-white">#{tooth.toothNumber}</span>
-                      <span className="text-[9px] font-mono uppercase block tracking-wider mt-1 text-neutral-400">
-                        {tooth.status}
-                      </span>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-11 gap-2 pt-2">
+                  {odontogram.map((tooth) => {
+                    const isHealthy = tooth.status === "sano";
+                    const isCaries = tooth.status === "caries";
+                    const isObturado = tooth.status === "obturado";
+                    const isCorona = tooth.status === "corona";
+                    const isImplante = tooth.status === "implante";
+
+                    return (
+                      <button
+                        key={tooth.toothNumber}
+                        type="button"
+                        onClick={() => handleToothClick(tooth)}
+                        title={`Pieza #${tooth.toothNumber}: ${tooth.status} (Clic para cambiar estado)`}
+                        className={`p-3 border text-center transition cursor-pointer hover:scale-105 select-none ${
+                          isHealthy
+                            ? "border-[#2b2b34] bg-[#16161d] hover:border-emerald-500 text-emerald-400"
+                            : isCaries
+                            ? "border-rose-700 bg-rose-950/50 hover:border-rose-400 text-rose-200"
+                            : isObturado
+                            ? "border-blue-700 bg-blue-950/50 hover:border-blue-400 text-blue-200"
+                            : isCorona
+                            ? "border-amber-700 bg-amber-950/50 hover:border-amber-400 text-amber-200"
+                            : isImplante
+                            ? "border-purple-700 bg-purple-950/50 hover:border-purple-400 text-purple-200"
+                            : "border-neutral-700 bg-neutral-900 line-through text-neutral-500"
+                        }`}
+                      >
+                        <span className="text-xs font-mono font-bold block text-white">#{tooth.toothNumber}</span>
+                        <span className="text-[9px] font-mono uppercase block tracking-wider mt-1 truncate">
+                          {tooth.status.replace("_", " ")}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -614,35 +718,45 @@ function PortalContent() {
                 <span className="text-neutral-400">Jornada 10:00 - 20:00 hrs</span>
               </div>
 
-              {appointments.map((item) => (
-                <div key={item.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-white">{item.time} hrs</span>
-                      <span className="text-sm font-medium text-white">· {item.patientName}</span>
-                      <span className="text-xs font-mono text-neutral-400">({item.patientRut || "Sin RUT"})</span>
-                    </div>
-                    <p className="text-xs text-neutral-400 font-light">
-                      Procedimiento: <strong className="text-white font-normal">{item.treatmentName}</strong> · {item.box || "Box 1"}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleStatusChange(item.id, "en_box")}
-                      className="px-3 py-1.5 border border-neutral-700 hover:border-white text-[11px] font-mono uppercase text-neutral-200 transition"
-                    >
-                      Pasar a Box
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(item.id, "completada")}
-                      className="px-3 py-1.5 bg-white text-black font-bold text-[11px] font-mono uppercase transition hover:bg-neutral-200"
-                    >
-                      Finalizar
-                    </button>
-                  </div>
+              {appointments.length === 0 ? (
+                <div className="p-10 text-center space-y-2">
+                  <Clock className="w-6 h-6 text-neutral-600 mx-auto" />
+                  <p className="text-xs text-neutral-300 font-medium">No hay pacientes citados para hoy</p>
+                  <p className="text-[11px] font-mono text-neutral-500">
+                    Las citas agendadas por la web o ingresadas en recepción aparecerán aquí en tiempo real.
+                  </p>
                 </div>
-              ))}
+              ) : (
+                appointments.map((item) => (
+                  <div key={item.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-white">{item.time} hrs</span>
+                        <span className="text-sm font-medium text-white">· {item.patientName}</span>
+                        <span className="text-xs font-mono text-neutral-400">({item.patientRut || "Sin RUT"})</span>
+                      </div>
+                      <p className="text-xs text-neutral-400 font-light">
+                        Procedimiento: <strong className="text-white font-normal">{item.treatmentName}</strong> · {item.box || "Box 1"}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleStatusChange(item.id, "en_box")}
+                        className="px-3 py-1.5 border border-neutral-700 hover:border-white text-[11px] font-mono uppercase text-neutral-200 transition"
+                      >
+                        Pasar a Box
+                      </button>
+                      <button
+                        onClick={() => handleStatusChange(item.id, "completada")}
+                        className="px-3 py-1.5 bg-white text-black font-bold text-[11px] font-mono uppercase transition hover:bg-neutral-200"
+                      >
+                        Finalizar
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* SOAP Form */}
@@ -660,15 +774,24 @@ function PortalContent() {
               <form onSubmit={handleSaveSoap} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">Paciente Citado</label>
-                    <select
+                    <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">Nombre o RUT del Paciente</label>
+                    <input
+                      type="text"
+                      required
                       value={soapPatient}
                       onChange={(e) => setSoapPatient(e.target.value)}
-                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
-                    >
-                      <option value="Constanza Valenzuela Morales">Constanza Valenzuela Morales (18.492.381-4)</option>
-                      <option value="Matías Alarcón Ramos">Matías Alarcón Ramos (20.184.920-5)</option>
-                    </select>
+                      list="soap-patients-list"
+                      placeholder="Escriba o seleccione paciente..."
+                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono placeholder-neutral-500 focus:outline-none focus:border-white"
+                    />
+                    <datalist id="soap-patients-list">
+                      {userList.map((u) => (
+                        <option key={u.id} value={`${u.fullName} (${u.rut || u.email})`} />
+                      ))}
+                      {appointments.map((a) => (
+                        <option key={a.id} value={`${a.patientName} (${a.patientPhone || "Sin fono"})`} />
+                      ))}
+                    </datalist>
                   </div>
 
                   <div>
@@ -716,6 +839,63 @@ function PortalContent() {
               </form>
             </div>
 
+            {/* Doctor Odontogram Quick-Chart */}
+            <div className="p-6 border border-[#222228] bg-[#121216] space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222228] pb-3">
+                <div>
+                  <h3 className="text-base font-normal text-white">Odontograma Clínico en Box</h3>
+                  <p className="text-xs font-mono text-neutral-400">
+                    Marca las piezas tratadas en esta sesión haciendo clic sobre la pieza dental
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2 text-[10px] font-mono">
+                  <span className="px-2 py-0.5 border border-[#2b2b34] bg-[#16161d] text-emerald-400">● Sano</span>
+                  <span className="px-2 py-0.5 border border-rose-800 bg-rose-950/40 text-rose-300">● Caries</span>
+                  <span className="px-2 py-0.5 border border-blue-800 bg-blue-950/40 text-blue-300">● Obturado</span>
+                  <span className="px-2 py-0.5 border border-amber-800 bg-amber-950/40 text-amber-300">● Corona</span>
+                  <span className="px-2 py-0.5 border border-purple-800 bg-purple-950/40 text-purple-300">● Implante</span>
+                  <span className="px-2 py-0.5 border border-neutral-700 bg-neutral-900 text-neutral-400">● Extracción</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-11 gap-2 pt-1">
+                {odontogram.map((tooth) => {
+                  const isHealthy = tooth.status === "sano";
+                  const isCaries = tooth.status === "caries";
+                  const isObturado = tooth.status === "obturado";
+                  const isCorona = tooth.status === "corona";
+                  const isImplante = tooth.status === "implante";
+
+                  return (
+                    <button
+                      key={tooth.toothNumber}
+                      type="button"
+                      onClick={() => handleToothClick(tooth)}
+                      title={`Pieza #${tooth.toothNumber}: ${tooth.status} (Clic para rotar estado)`}
+                      className={`p-3 border text-center transition cursor-pointer hover:scale-105 select-none ${
+                        isHealthy
+                          ? "border-[#2b2b34] bg-[#16161d] hover:border-emerald-500 text-emerald-400"
+                          : isCaries
+                          ? "border-rose-700 bg-rose-950/50 hover:border-rose-400 text-rose-200"
+                          : isObturado
+                          ? "border-blue-700 bg-blue-950/50 hover:border-blue-400 text-blue-200"
+                          : isCorona
+                          ? "border-amber-700 bg-amber-950/50 hover:border-amber-400 text-amber-200"
+                          : isImplante
+                          ? "border-purple-700 bg-purple-950/50 hover:border-purple-400 text-purple-200"
+                          : "border-neutral-700 bg-neutral-900 line-through text-neutral-500"
+                      }`}
+                    >
+                      <span className="text-xs font-mono font-bold block text-white">#{tooth.toothNumber}</span>
+                      <span className="text-[9px] font-mono uppercase block tracking-wider mt-1 truncate">
+                        {tooth.status.replace("_", " ")}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
           </div>
         )}
 
@@ -744,45 +924,64 @@ function PortalContent() {
 
             {/* Live Flow Table */}
             <div className="border border-[#222228] bg-[#121216] divide-y divide-[#222228]">
-              {appointments.map((item) => (
-                <div key={item.id} className="p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-white">{item.patientName}</span>
-                      <span className="text-xs font-mono text-neutral-400">· {item.patientPhone || "+56 9 4757 8597"}</span>
-                      <span className="px-2 py-0.5 border border-neutral-700 text-[10px] font-mono uppercase text-neutral-300">
-                        {item.status.replace("_", " ")}
-                      </span>
-                    </div>
-                    <p className="text-xs text-neutral-400 font-light">
-                      {item.treatmentName} · {item.doctorName} · {item.time} hrs
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={createWhatsAppUrl(`¡Hola ${item.patientName}! Le recordamos su cita de ${item.treatmentName} en BeHappy Ñuñoa para hoy a las ${item.time} hrs. ¿Nos confirma su asistencia?`)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1.5 border border-neutral-700 hover:border-white text-xs font-mono uppercase text-neutral-200 transition"
-                    >
-                      WhatsApp
-                    </a>
+              {appointments.length === 0 ? (
+                <div className="p-12 text-center space-y-3">
+                  <Clock className="w-8 h-8 text-neutral-600 mx-auto" />
+                  <h3 className="text-sm font-medium text-white">No hay citas registradas en recepción</h3>
+                  <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+                    Los pacientes que agenden en la web o lleguen a la clínica en Suecia 3580 se gestionan aquí.
+                  </p>
+                  <div className="pt-2">
                     <button
-                      onClick={() => handleStatusChange(item.id, "en_espera")}
-                      className="px-2.5 py-1.5 border border-neutral-700 hover:border-white text-xs font-mono uppercase text-neutral-300 transition"
+                      onClick={() => setShowWalkinModal(true)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black font-bold text-xs font-mono uppercase tracking-wider hover:bg-neutral-200 transition"
                     >
-                      Llegó
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange(item.id, "completada")}
-                      className="px-2.5 py-1.5 bg-white text-black font-bold text-xs font-mono uppercase transition hover:bg-neutral-200"
-                    >
-                      Cobrado ✓
+                      <Plus className="w-3.5 h-3.5" />
+                      Registrar Paciente Presencial
                     </button>
                   </div>
                 </div>
-              ))}
+              ) : (
+                appointments.map((item) => (
+                  <div key={item.id} className="p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-white">{item.patientName}</span>
+                        <span className="text-xs font-mono text-neutral-400">· {item.patientPhone || "+56 9 4757 8597"}</span>
+                        <span className="px-2 py-0.5 border border-neutral-700 text-[10px] font-mono uppercase text-neutral-300">
+                          {item.status.replace("_", " ")}
+                        </span>
+                      </div>
+                      <p className="text-xs text-neutral-400 font-light">
+                        {item.treatmentName} · {item.doctorName} · {item.time} hrs
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={createWhatsAppUrl(`¡Hola ${item.patientName}! Le recordamos su cita de ${item.treatmentName} en BeHappy Ñuñoa para hoy a las ${item.time} hrs. ¿Nos confirma su asistencia?`)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1.5 border border-neutral-700 hover:border-white text-xs font-mono uppercase text-neutral-200 transition"
+                      >
+                        WhatsApp
+                      </a>
+                      <button
+                        onClick={() => handleStatusChange(item.id, "en_espera")}
+                        className="px-2.5 py-1.5 border border-neutral-700 hover:border-white text-xs font-mono uppercase text-neutral-300 transition"
+                      >
+                        Llegó
+                      </button>
+                      <button
+                        onClick={() => handleStatusChange(item.id, "completada")}
+                        className="px-2.5 py-1.5 bg-white text-black font-bold text-xs font-mono uppercase transition hover:bg-neutral-200"
+                      >
+                        Cobrado ✓
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Walk-in Modal */}
@@ -1034,26 +1233,38 @@ function PortalContent() {
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
                       <span className="text-[10px] font-mono text-neutral-400 uppercase block">Ingresos Mes</span>
-                      <span className="text-xl font-mono font-bold text-white block">$8.450.000 CLP</span>
-                      <span className="text-[10px] font-mono text-emerald-400 block">+14% vs anterior</span>
+                      <span className="text-xl font-mono font-bold text-white block">
+                        ${appointments
+                          .filter((a) => a.status === "completada" || a.status === "en_box")
+                          .reduce((acc, curr) => acc + ((curr.price ?? 35000) - (curr.convenioDiscount ?? 0)), 0)
+                          .toLocaleString("es-CL")} CLP
+                      </span>
+                      <span className="text-[10px] font-mono text-emerald-400 block">Calculado en tiempo real</span>
                     </div>
 
                     <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
-                      <span className="text-[10px] font-mono text-neutral-400 uppercase block">Citas del Mes</span>
-                      <span className="text-xl font-mono font-bold text-white block">142</span>
-                      <span className="text-[10px] font-mono text-neutral-400 block">94% asistencia</span>
+                      <span className="text-[10px] font-mono text-neutral-400 uppercase block">Citas Registradas</span>
+                      <span className="text-xl font-mono font-bold text-white block">{appointments.length}</span>
+                      <span className="text-[10px] font-mono text-neutral-400 block">Agendadas en sistema</span>
                     </div>
 
                     <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
-                      <span className="text-[10px] font-mono text-neutral-400 uppercase block">Nuevos Pacientes</span>
-                      <span className="text-xl font-mono font-bold text-white block">+38</span>
-                      <span className="text-[10px] font-mono text-neutral-400 block">Captación orgánica & Meta</span>
+                      <span className="text-[10px] font-mono text-neutral-400 uppercase block">Pacientes en Base</span>
+                      <span className="text-xl font-mono font-bold text-white block">
+                        {new Set([
+                          ...userList.filter((u) => u.role === "paciente").map((u) => u.fullName),
+                          ...appointments.map((a) => a.patientName).filter(Boolean)
+                        ]).size}
+                      </span>
+                      <span className="text-[10px] font-mono text-neutral-400 block">Fichas activas</span>
                     </div>
 
                     <div className="p-5 border border-[#222228] bg-[#121216] space-y-1">
                       <span className="text-[10px] font-mono text-neutral-400 uppercase block">Planes Convenio</span>
-                      <span className="text-xl font-mono font-bold text-white block">76 Activos</span>
-                      <span className="text-[10px] font-mono text-neutral-400 block">Retención 18 meses</span>
+                      <span className="text-xl font-mono font-bold text-white block">
+                        {appointments.filter((a) => (a.convenioDiscount ?? 0) > 0).length} Activos
+                      </span>
+                      <span className="text-[10px] font-mono text-neutral-400 block">Con descuento aplicado</span>
                     </div>
                   </div>
 
@@ -1095,55 +1306,65 @@ function PortalContent() {
                     </span>
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs font-mono">
-                      <thead className="border-b border-[#222228] text-neutral-400 uppercase">
-                        <tr>
-                          <th className="py-3 px-3">Paciente</th>
-                          <th className="py-3 px-3">Fecha / Hora</th>
-                          <th className="py-3 px-3">Doctor & Tratamiento</th>
-                          <th className="py-3 px-3">Box</th>
-                          <th className="py-3 px-3">Total</th>
-                          <th className="py-3 px-3">Estado</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[#222228]">
-                        {appointments.map((a) => (
-                          <tr key={a.id} className="hover:bg-[#18181f] transition">
-                            <td className="py-3.5 px-3">
-                              <div className="font-medium text-white">{a.patientName || "Paciente Registrado"}</div>
-                              <div className="text-[10px] text-neutral-400">{a.patientPhone || "+56 9 4757 8597"}</div>
-                            </td>
-                            <td className="py-3.5 px-3">
-                              <div className="text-white">{a.date}</div>
-                              <div className="text-[10px] text-neutral-400">{a.time}</div>
-                            </td>
-                            <td className="py-3.5 px-3">
-                              <div className="text-white">{a.treatmentName}</div>
-                              <div className="text-[10px] text-neutral-400">{a.doctorName}</div>
-                            </td>
-                            <td className="py-3.5 px-3 text-neutral-300 font-bold">{a.box}</td>
-                            <td className="py-3.5 px-3 text-emerald-400 font-bold">
-                              ${((a.price ?? 35000) - (a.convenioDiscount ?? 0)).toLocaleString("es-CL")}
-                            </td>
-                            <td className="py-3.5 px-3">
-                              <select
-                                value={a.status}
-                                onChange={(e) => handleStatusChange(a.id, e.target.value as PatientAppointment["status"])}
-                                className="px-2.5 py-1 bg-[#18181f] border border-[#2b2b34] text-white text-[11px]"
-                              >
-                                <option value="confirmada">Confirmada</option>
-                                <option value="en_espera">En Espera</option>
-                                <option value="en_box">En Box</option>
-                                <option value="finalizada">Finalizada</option>
-                                <option value="cancelada">Cancelada</option>
-                              </select>
-                            </td>
+                  {appointments.length === 0 ? (
+                    <div className="p-12 text-center space-y-3">
+                      <Calendar className="w-8 h-8 text-neutral-600 mx-auto" />
+                      <h3 className="text-sm font-medium text-white">No hay citas registradas en el sistema</h3>
+                      <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+                        Cuando un paciente agende desde el sitio web o se registre en recepción, aparecerá listado aquí con su estado, doctor asignado y detalle de cobro.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs font-mono">
+                        <thead className="border-b border-[#222228] text-neutral-400 uppercase">
+                          <tr>
+                            <th className="py-3 px-3">Paciente</th>
+                            <th className="py-3 px-3">Fecha / Hora</th>
+                            <th className="py-3 px-3">Doctor & Tratamiento</th>
+                            <th className="py-3 px-3">Box</th>
+                            <th className="py-3 px-3">Total</th>
+                            <th className="py-3 px-3">Estado</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody className="divide-y divide-[#222228]">
+                          {appointments.map((a) => (
+                            <tr key={a.id} className="hover:bg-[#18181f] transition">
+                              <td className="py-3.5 px-3">
+                                <div className="font-medium text-white">{a.patientName || "Paciente Registrado"}</div>
+                                <div className="text-[10px] text-neutral-400">{a.patientPhone || "+56 9 4757 8597"}</div>
+                              </td>
+                              <td className="py-3.5 px-3">
+                                <div className="text-white">{a.date}</div>
+                                <div className="text-[10px] text-neutral-400">{a.time}</div>
+                              </td>
+                              <td className="py-3.5 px-3">
+                                <div className="text-white">{a.treatmentName}</div>
+                                <div className="text-[10px] text-neutral-400">{a.doctorName}</div>
+                              </td>
+                              <td className="py-3.5 px-3 text-neutral-300 font-bold">{a.box}</td>
+                              <td className="py-3.5 px-3 text-emerald-400 font-bold">
+                                ${((a.price ?? 35000) - (a.convenioDiscount ?? 0)).toLocaleString("es-CL")}
+                              </td>
+                              <td className="py-3.5 px-3">
+                                <select
+                                  value={a.status}
+                                  onChange={(e) => handleStatusChange(a.id, e.target.value as PatientAppointment["status"])}
+                                  className="px-2.5 py-1 bg-[#18181f] border border-[#2b2b34] text-white text-[11px]"
+                                >
+                                  <option value="confirmada">Confirmada</option>
+                                  <option value="en_espera">En Espera</option>
+                                  <option value="en_box">En Box</option>
+                                  <option value="completada">Completada</option>
+                                  <option value="cancelada">Cancelada</option>
+                                </select>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               )}
 

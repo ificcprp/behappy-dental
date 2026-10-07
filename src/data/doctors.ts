@@ -20,7 +20,7 @@ export const DOCTORS: Doctor[] = [
     description: "Especialista certificado en alineación dental invisible Invisalign y ortodoncia correctiva de alta precisión con más de 10 años de experiencia clínica.",
     image: "/images/doctors/dr-johnny-lugo.png",
     tags: ["Invisalign", "Brackets", "Alineadores"],
-    schedule: "Martes, Jueves y Sábados"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
   },
   {
     id: "dra-keila-rodriguez",
@@ -31,7 +31,7 @@ export const DOCTORS: Doctor[] = [
     description: "Especializada en diseño de sonrisa personalizado, carillas de porcelana y resina de alta estética, devolviendo armonía y naturalidad al rostro.",
     image: "/images/doctors/dra-keila-rodriguez.png",
     tags: ["Diseño de Sonrisa", "Carillas", "Blanqueamiento"],
-    schedule: "Lunes, Miércoles y Viernes"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
   },
   {
     id: "dra-gabriela-fernandez",
@@ -42,7 +42,7 @@ export const DOCTORS: Doctor[] = [
     description: "Certificada en sistemas Invisalign y ortodoncia interceptiva en adolescentes y adultos, enfocada en salud funcional de la articulación.",
     image: "/images/doctors/dra-gabriela-fernandez.png",
     tags: ["Ortodoncia", "Invisalign", "Mordida"],
-    schedule: "Lunes a Jueves"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
   },
   {
     id: "dr-juan-jose-herrera",
@@ -53,7 +53,7 @@ export const DOCTORS: Doctor[] = [
     description: "Especialista en regeneración ósea, tratamiento avanzado de encías y colocación de implantes de titanio que devuelven la función 100% natural.",
     image: "/images/doctors/dr-juan-jose-herrera.png",
     tags: ["Implantes", "Periodoncia", "Cirugía"],
-    schedule: "Miércoles y Viernes"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
   },
   {
     id: "dr-william",
@@ -64,7 +64,7 @@ export const DOCTORS: Doctor[] = [
     description: "Enfoque empático, libre de ansiedad y lúdico para niños y adolescentes. Prevención temprana y cuidado del desarrollo dental infantil.",
     image: "/images/doctors/dr-william.png",
     tags: ["Niños", "Prevención", "Sin Dolor"],
-    schedule: "Sábados y Miércoles"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
   },
   {
     id: "dra-maria-helena",
@@ -75,7 +75,7 @@ export const DOCTORS: Doctor[] = [
     description: "Experta en prótesis fijas, removibles y materiales de vanguardia para pacientes que buscan recuperar la función masticatoria completa.",
     image: "/images/doctors/dra-maria-helena.png",
     tags: ["Prótesis", "Coronas", "Rehabilitación"],
-    schedule: "Lunes y Jueves"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
   },
   {
     id: "dra-natascha-martins",
@@ -86,7 +86,7 @@ export const DOCTORS: Doctor[] = [
     description: "Manejo del dolor agudo y salvamento de piezas dentales comprometidas mediante instrumentación rotatoria y tecnología microscópica sin dolor.",
     image: "/images/doctors/dra-natascha-martins.png",
     tags: ["Tratamiento de Conducto", "Urgencias", "Sin Dolor"],
-    schedule: "Martes y Viernes"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
   },
   {
     id: "dra-maythe-gamboa",
@@ -97,6 +97,6 @@ export const DOCTORS: Doctor[] = [
     description: "Diagnóstico temprano y tratamiento especializado de lesiones de mucosa oral, glándulas salivales y salud bucal integral.",
     image: "/images/doctors/dra-maythe-gamboa.png",
     tags: ["Diagnóstico", "Medicina Bucal", "Prevención"],
-    schedule: "Jueves"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
   }
 ];

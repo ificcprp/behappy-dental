@@ -6,6 +6,7 @@ import { DOCTORS } from "@/data/doctors";
 import { CLINIC_INFO } from "@/data/clinicInfo";
 import { CheckCircle2, MessageCircle, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { addStoredAppointment } from "@/lib/clinicalStore";
 
 interface BookingFormProps {
   initialDoctorId?: string;
@@ -68,6 +69,21 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
       if (!res.ok) {
         throw new Error(data.error || "Error al procesar la cita");
       }
+
+      // Persist to local clinical store for instant visibility in Portal (Doctor, Recepción, Admin)
+      addStoredAppointment({
+        date: preferredDate || "Por coordinar",
+        time: preferredSlot === "manana" ? "10:00 - 14:00" : "14:00 - 20:00",
+        doctorName: doctorObj ? doctorObj.name : "Primer especialista disponible",
+        treatmentName: treatmentObj ? treatmentObj.name : "Evaluación General",
+        status: "pendiente",
+        box: "Box 1",
+        price: 35000,
+        convenioDiscount: 0,
+        patientName: patientName,
+        patientPhone: payload.patient_phone,
+        notes: notes || undefined,
+      });
 
       toast.success("¡Solicitud registrada correctamente!");
       setConfirmedData({

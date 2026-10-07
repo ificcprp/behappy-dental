@@ -1,16 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
+import { getCMSData, CMSData } from "@/lib/cmsStore";
+import { getCurrentSession, clearCurrentSession } from "@/lib/authService";
+import { UserProfile } from "@/types/auth";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
 export function Navbar() {
+  const [clinicInfo, setClinicInfo] = useState(CLINIC_INFO);
+  const [sessionUser, setSessionUser] = useState<UserProfile | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const isDark = pathname === "/tratamientos";
+  const isDark = pathname === "/tratamientos" || pathname === "/portal";
+
+  useEffect(() => {
+    setSessionUser(getCurrentSession());
+
+    const cms = getCMSData();
+    if (cms?.clinicInfo) setClinicInfo(cms.clinicInfo);
+
+    const handleUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      if (custom?.clinicInfo) setClinicInfo(custom.clinicInfo);
+      else setClinicInfo(getCMSData().clinicInfo);
+    };
+
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, [pathname]);
 
   const navLinks = [
     { name: "Inicio", href: "/" },
@@ -99,20 +120,62 @@ export function Navbar() {
           </nav>
 
           {/* Right Action Desk */}
-          <div className="hidden md:flex items-center space-x-3">
-            <Link
-              href="/portal"
-              className={`px-3.5 py-1.5 text-[11px] font-mono tracking-widest uppercase transition border ${
-                isDark
-                  ? "border-neutral-800 text-neutral-300 hover:bg-neutral-900 hover:border-neutral-600 hover:text-white"
-                  : "border-[#cfc9be] text-[#141413] hover:bg-[#eae5da] hover:border-[#141413]"
-              }`}
-            >
-              Portal Clínico
-            </Link>
+          <div className="hidden md:flex items-center space-x-2.5">
+            {sessionUser ? (
+              <>
+                <Link
+                  href={`/portal?role=${sessionUser.role}`}
+                  className={`px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase transition border flex items-center gap-1.5 ${
+                    isDark
+                      ? "border-neutral-700 bg-neutral-900 text-white hover:border-white"
+                      : "border-[#141413] bg-[#141413] text-[#faf8f5] hover:bg-black"
+                  }`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span>Portal ({sessionUser.role})</span>
+                </Link>
+                <button
+                  onClick={() => {
+                    clearCurrentSession();
+                    setSessionUser(null);
+                    window.location.href = "/";
+                  }}
+                  className={`px-2 py-1.5 text-[10px] font-mono tracking-widest uppercase transition ${
+                    isDark ? "text-neutral-400 hover:text-white" : "text-[#78736a] hover:text-[#141413]"
+                  }`}
+                  title="Cerrar sesión"
+                >
+                  Salir
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className={`px-2.5 py-1.5 text-[11px] font-mono tracking-widest uppercase transition ${
+                    isDark
+                      ? "text-neutral-300 hover:text-white"
+                      : "text-[#66635d] hover:text-[#141413]"
+                  }`}
+                >
+                  Acceso
+                </Link>
+                <Link
+                  href="/portal"
+                  className={`px-3 py-1.5 text-[11px] font-mono tracking-widest uppercase transition border ${
+                    isDark
+                      ? "border-neutral-800 text-neutral-300 hover:bg-neutral-900 hover:border-neutral-600 hover:text-white"
+                      : "border-[#cfc9be] text-[#141413] hover:bg-[#eae5da] hover:border-[#141413]"
+                  }`}
+                >
+                  Portal Clínico
+                </Link>
+              </>
+            )}
+
             <button
               onClick={handleScrollToBooking}
-              className={`px-4 py-1.5 text-[11px] font-mono tracking-widest uppercase transition font-medium ${
+              className={`px-3.5 py-1.5 text-[11px] font-mono tracking-widest uppercase transition font-medium ${
                 isDark
                   ? "bg-white text-black hover:bg-neutral-200"
                   : "bg-[#141413] text-[#faf8f5] hover:bg-black"
@@ -125,14 +188,14 @@ export function Navbar() {
           {/* Mobile Menu Trigger */}
           <div className="flex md:hidden items-center space-x-2">
             <Link
-              href="/portal"
+              href={sessionUser ? `/portal?role=${sessionUser.role}` : "/portal"}
               className={`px-2.5 py-1 text-[10px] font-mono tracking-wider uppercase border ${
                 isDark
                   ? "border-neutral-800 text-neutral-300"
                   : "border-[#cfc9be] text-[#141413]"
               }`}
             >
-              Portal
+              {sessionUser ? `Portal (${sessionUser.role})` : "Portal"}
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -180,6 +243,43 @@ export function Navbar() {
           </div>
 
           <div className="pt-2 flex flex-col gap-2">
+            {sessionUser ? (
+              <div className="flex items-center justify-between py-2 px-1 border-b border-neutral-800 text-xs font-mono">
+                <span className="text-emerald-400 text-[11px]">● {sessionUser.fullName}</span>
+                <button
+                  onClick={() => {
+                    clearCurrentSession();
+                    setSessionUser(null);
+                    window.location.href = "/";
+                  }}
+                  className="text-neutral-400 hover:text-white uppercase text-[10px]"
+                >
+                  Cerrar Sesión
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2 pb-1">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`py-2 text-center text-xs font-mono tracking-wider uppercase border ${
+                    isDark ? "border-neutral-800 text-neutral-300" : "border-[#cfc9be] text-[#141413]"
+                  }`}
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  href="/registro"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`py-2 text-center text-xs font-mono tracking-wider uppercase border ${
+                    isDark ? "border-neutral-800 text-neutral-300" : "border-[#cfc9be] text-[#141413]"
+                  }`}
+                >
+                  Crear Cuenta
+                </Link>
+              </div>
+            )}
+
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

@@ -1,11 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
+import { getCMSData, CMSData } from "@/lib/cmsStore";
 
 export function Footer() {
+  const [clinicInfo, setClinicInfo] = useState(CLINIC_INFO);
+
+  useEffect(() => {
+    const cms = getCMSData();
+    if (cms?.clinicInfo) setClinicInfo(cms.clinicInfo);
+
+    const handleUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      if (custom?.clinicInfo) setClinicInfo(custom.clinicInfo);
+      else setClinicInfo(getCMSData().clinicInfo);
+    };
+
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, []);
   return (
     <footer className="bg-[#0a0a0c] text-[#f4f4f6] text-xs border-t border-[#1f1f26] pt-16 pb-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -70,6 +86,11 @@ export function Footer() {
                   Portal Clínico (4 Roles)
                 </Link>
               </li>
+              <li>
+                <Link href="/login" className="hover:text-white transition text-neutral-400">
+                  Acceso / Iniciar Sesión ↗
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -80,19 +101,19 @@ export function Footer() {
             </span>
             <div className="space-y-2 text-xs text-neutral-300 font-light">
               <p>
-                <strong className="text-white block font-normal">Suecia 3580, OF. 304</strong>
-                Ñuñoa, Santiago, Chile
+                <strong className="text-white block font-normal">{clinicInfo.address.street}</strong>
+                {clinicInfo.address.commune}, {clinicInfo.address.city}, {clinicInfo.address.country}
               </p>
               <p className="pt-1">
                 <strong className="text-white block font-normal">WhatsApp / Teléfono:</strong>
-                <a href="tel:56947578597" className="hover:text-white font-mono">
-                  +56 9 4757 8597
+                <a href={`tel:${clinicInfo.contact.phoneClean}`} className="hover:text-white font-mono">
+                  {clinicInfo.contact.phone}
                 </a>
               </p>
               <p>
                 <strong className="text-white block font-normal">Correo:</strong>
-                <a href="mailto:ceobehappy@gmail.com" className="hover:text-white font-mono">
-                  ceobehappy@gmail.com
+                <a href={`mailto:${clinicInfo.contact.email}`} className="hover:text-white font-mono">
+                  {clinicInfo.contact.email}
                 </a>
               </p>
             </div>
