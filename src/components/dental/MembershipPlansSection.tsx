@@ -1,0 +1,299 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { getCMSData, CMSData, CMSMembershipPlan, DEFAULT_MEMBERSHIP_PLANS } from "@/lib/cmsStore";
+import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
+import { Check, ShieldCheck, Zap, Star, ArrowUpRight, HelpCircle, AlertCircle, HeartHandshake } from "lucide-react";
+
+export function MembershipPlansSection() {
+  const [plans, setPlans] = useState<CMSMembershipPlan[]>(DEFAULT_MEMBERSHIP_PLANS);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+
+  useEffect(() => {
+    const cms = getCMSData();
+    if (cms?.membershipPlans && cms.membershipPlans.length > 0) {
+      setPlans(cms.membershipPlans);
+    }
+
+    const handleUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      if (custom?.membershipPlans && custom.membershipPlans.length > 0) {
+        setPlans(custom.membershipPlans);
+      } else {
+        setPlans(getCMSData().membershipPlans || DEFAULT_MEMBERSHIP_PLANS);
+      }
+    };
+
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, []);
+
+  return (
+    <section id="club-behappy" className="py-24 px-4 sm:px-6 lg:px-8 border-b border-[#e5e0d5] bg-white">
+      <div className="max-w-7xl mx-auto space-y-16">
+        
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#e5e0d5] pb-10">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#f5f2eb] border border-[#e5e0d5] text-[11px] font-mono tracking-[0.2em] text-[#78736a] uppercase">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#141413]" />
+              SISTEMA DE MEMBRESÍA & SUSCRIPCIÓN DENTAL
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-normal tracking-[-0.03em] text-[#141413]">
+              Club Familiar BeHappy
+            </h2>
+            <p className="text-sm sm:text-base text-[#66635d] font-light leading-relaxed">
+              La alternativa honesta y predecible a los convenios corporativos con letra chica. Débito automático mensual con Flow.cl, limpiezas y radiografías con $0 copago y aranceles preferentes garantizados para ti y tu familia en Ñuñoa.
+            </p>
+          </div>
+
+          {/* Monthly / Annual Toggle */}
+          <div className="flex items-center self-start md:self-auto bg-[#faf8f5] p-1 border border-[#e5e0d5]">
+            <button
+              onClick={() => setBillingCycle("monthly")}
+              className={`px-4 py-2 text-xs font-mono tracking-wider uppercase transition-all ${
+                billingCycle === "monthly"
+                  ? "bg-[#141413] text-white shadow"
+                  : "text-[#78736a] hover:text-[#141413]"
+              }`}
+            >
+              Mensual (PAC/PAT)
+            </button>
+            <button
+              onClick={() => setBillingCycle("annual")}
+              className={`px-4 py-2 text-xs font-mono tracking-wider uppercase transition-all flex items-center gap-1.5 ${
+                billingCycle === "annual"
+                  ? "bg-[#141413] text-white shadow"
+                  : "text-[#78736a] hover:text-[#141413]"
+              }`}
+            >
+              <span>Anual</span>
+              <span className="text-[10px] px-1.5 py-0.2 bg-[#d4af37] text-white font-bold">2 MESES $0</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Dynamic Plans Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {plans.map((plan, idx) => {
+            const isPopular = plan.popular;
+            const price = billingCycle === "annual" && plan.annualPriceDisplay
+              ? plan.annualPriceDisplay
+              : `${plan.monthlyPriceDisplay} / ${plan.billingPeriod}`;
+
+            return (
+              <div
+                key={plan.id || idx}
+                className={`relative flex flex-col justify-between border transition-all duration-200 ${
+                  isPopular
+                    ? "border-[#141413] bg-[#faf8f5] shadow-xl ring-1 ring-[#141413]"
+                    : "border-[#e5e0d5] bg-white hover:border-[#141413]"
+                } p-7 sm:p-9`}
+              >
+                {/* Popular or Custom Badge */}
+                {plan.badge && (
+                  <div className="absolute -top-3 left-6">
+                    <span className={`px-3 py-1 text-[10px] font-mono tracking-[0.2em] uppercase font-semibold ${
+                      isPopular
+                        ? "bg-[#141413] text-white"
+                        : "bg-[#e5e0d5] text-[#141413]"
+                    }`}>
+                      {plan.badge}
+                    </span>
+                  </div>
+                )}
+
+                <div className="space-y-6 pt-2">
+                  {/* Tag and Title */}
+                  <div className="space-y-2 border-b border-[#e5e0d5] pb-5">
+                    <span className="text-[10px] font-mono tracking-[0.2em] text-[#78736a] uppercase block">
+                      {plan.tag}
+                    </span>
+                    <h3 className="text-2xl font-normal tracking-tight text-[#141413]">
+                      {plan.name}
+                    </h3>
+                    <p className="text-xs text-[#66635d] font-light leading-relaxed min-h-[44px]">
+                      {plan.description}
+                    </p>
+                  </div>
+
+                  {/* Pricing Box */}
+                  <div className="py-2 border-b border-[#e5e0d5]">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-3xl sm:text-4xl font-light tracking-tight text-[#141413]">
+                        {billingCycle === "annual" && plan.annualPriceDisplay ? plan.annualPriceDisplay.split(" ")[0] : plan.monthlyPriceDisplay}
+                      </span>
+                      <span className="text-xs font-mono text-[#78736a]">
+                        {billingCycle === "annual" ? "/año" : `/${plan.billingPeriod}`}
+                      </span>
+                    </div>
+                    {billingCycle === "annual" && plan.annualPriceDisplay && (
+                      <p className="text-[11px] font-mono text-[#2e7d32] mt-1">
+                        ✓ Incluye 2 meses de ahorro al pagar suscripción anual
+                      </p>
+                    )}
+                    {billingCycle === "monthly" && (
+                      <p className="text-[11px] font-mono text-[#78736a] mt-1">
+                        Débito automático vía Flow.cl (Tarjetas, PAC o Redcompra)
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Highlight pill */}
+                  {plan.coverageHighlight && (
+                    <div className="bg-[#f0ede6] px-3.5 py-2 border-l-2 border-[#141413] text-[11px] font-mono text-[#141413]">
+                      ✦ {plan.coverageHighlight}
+                    </div>
+                  )}
+
+                  {/* Features List */}
+                  <div className="space-y-3 pt-2">
+                    <span className="text-[10px] font-mono tracking-widest uppercase text-[#78736a] block">
+                      COBERTURA & BENEFICIOS INCLUIDOS:
+                    </span>
+                    <ul className="space-y-2.5">
+                      {plan.features.map((feature, fIdx) => (
+                        <li key={fIdx} className="flex items-start gap-2.5 text-xs text-[#403e3a] leading-relaxed">
+                          <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* CTA Action */}
+                <div className="pt-8 border-t border-[#e5e0d5] mt-6">
+                  <a
+                    href={createWhatsAppUrl(plan.ctaWhatsappMessage || `Hola Centro Dental BeHappy, deseo activar el ${plan.name}.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`w-full py-3.5 px-4 font-mono text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 transition-all ${
+                      isPopular
+                        ? "bg-[#141413] text-white hover:bg-neutral-800 shadow-md"
+                        : "bg-white text-[#141413] border border-[#141413] hover:bg-[#141413] hover:text-white"
+                    }`}
+                  >
+                    <span>{plan.ctaText || "Activar este Plan"}</span>
+                    <ArrowUpRight className="w-4 h-4" />
+                  </a>
+                  <p className="text-[10px] font-mono text-center text-[#78736a] mt-2">
+                    Sin contrato de permanencia forzada · Cancela cuando quieras
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Transparency Comparison Table (The Real Anti-Trap Factor) */}
+        <div className="border border-[#e5e0d5] bg-[#faf8f5] p-6 sm:p-10 space-y-6">
+          <div className="space-y-2">
+            <span className="text-[10px] font-mono tracking-[0.24em] text-[#78736a] uppercase block">
+              COMPARATIVA DE HONESTIDAD MÉDICA
+            </span>
+            <h3 className="text-xl sm:text-2xl font-normal tracking-tight text-[#141413]">
+              Por qué el Club BeHappy es diferente a las grandes cadenas dentales
+            </h3>
+            <p className="text-xs sm:text-sm text-[#66635d] font-light max-w-3xl leading-relaxed">
+              Muchas personas contratan convenios corporativos atraídos por promesas de “hasta 70% de descuento”, para luego descubrir precios base inflados, cargos sorpresa por guantes o anestesia y cláusulas de permanencia abusiva. En BeHappy diseñamos la suscripción que nosotros mismos querríamos para nuestra familia.
+            </p>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border border-[#e5e0d5] bg-white">
+              <thead>
+                <tr className="bg-[#f0ede6] border-b border-[#e5e0d5] font-mono text-[11px] text-[#141413] uppercase tracking-wider">
+                  <th className="p-3.5 sm:p-4">Criterio Clínico y Comercial</th>
+                  <th className="p-3.5 sm:p-4 text-red-700 bg-red-50/60">Grandes Cadenas Dentales</th>
+                  <th className="p-3.5 sm:p-4 text-emerald-800 bg-emerald-50/80 font-bold">Club Familiar BeHappy</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#e5e0d5] text-[#403e3a]">
+                <tr>
+                  <td className="p-3.5 sm:p-4 font-mono font-medium text-[#141413]">Descuentos y Aranceles</td>
+                  <td className="p-3.5 sm:p-4 bg-red-50/30 text-[#66635d]">
+                    “Hasta 70%” sobre aranceles de lista inflados artificialmente.
+                  </td>
+                  <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
+                    ✓ Aranceles preferentes netos y transparentes, sin inflar el precio base.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-3.5 sm:p-4 font-mono font-medium text-[#141413]">Limpiezas y Prevención</td>
+                  <td className="p-3.5 sm:p-4 bg-red-50/30 text-[#66635d]">
+                    Limpiezas parciales (destartraje supragingival básico); cobran extra por pulido o bicarbonato.
+                  </td>
+                  <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
+                    ✓ Profilaxis completa + destartraje + set de Rx Bite-wing con $0 copago real.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-3.5 sm:p-4 font-mono font-medium text-[#141413]">Permanencia y Letra Chica</td>
+                  <td className="p-3.5 sm:p-4 bg-red-50/30 text-[#66635d]">
+                    Contratos forzosos de 12 a 24 meses con multas si intentas desvincularte.
+                  </td>
+                  <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
+                    ✓ Sin ataduras: suscripción mensual PAC con Flow.cl, cancelable avisando por WhatsApp.
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-3.5 sm:p-4 font-mono font-medium text-[#141413]">Cargas Familiares</td>
+                  <td className="p-3.5 sm:p-4 bg-red-50/30 text-[#66635d]">
+                    Exigen certificados de cargas Fonasa/Isapre y cobran planes individuales por cada hijo.
+                  </td>
+                  <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
+                    ✓ Titular + 2 cargas incluidas libremente (hijos, pareja o padres mayores).
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-3.5 sm:p-4 font-mono font-medium text-[#141413]">Equipo Odontológico</td>
+                  <td className="p-3.5 sm:p-4 bg-red-50/30 text-[#66635d]">
+                    Alta rotación de profesionales recién egresados; rara vez te atiende el mismo dentista.
+                  </td>
+                  <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
+                    ✓ 8 especialistas acreditados en SIS Chile con seguimiento de tu historial en Suecia 3580.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Quick FAQ / Doubts */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+          <div className="p-5 border border-[#e5e0d5] bg-[#faf8f5] space-y-2">
+            <h4 className="text-sm font-medium text-[#141413] flex items-center gap-1.5">
+              <Zap className="w-4 h-4 text-[#d4af37]" />
+              ¿Cómo se paga mensualmente?
+            </h4>
+            <p className="text-xs text-[#66635d] font-light leading-relaxed">
+              Mediante suscripción de débito automático mensual procesada con Flow.cl. Puedes utilizar tarjeta de débito, crédito o cuenta corriente de cualquier banco chileno de forma segura.
+            </p>
+          </div>
+
+          <div className="p-5 border border-[#e5e0d5] bg-[#faf8f5] space-y-2">
+            <h4 className="text-sm font-medium text-[#141413] flex items-center gap-1.5">
+              <HeartHandshake className="w-4 h-4 text-[#d4af37]" />
+              ¿Puedo usarlo de inmediato?
+            </h4>
+            <p className="text-xs text-[#66635d] font-light leading-relaxed">
+              Sí. Apenas activas tu membresía puedes agendar tu evaluación diagnóstica, set radiográfico y primera profilaxis en nuestra sede de Suecia 3580, Ñuñoa. Sin periodos de carencia injustificados.
+            </p>
+          </div>
+
+          <div className="p-5 border border-[#e5e0d5] bg-[#faf8f5] space-y-2">
+            <h4 className="text-sm font-medium text-[#141413] flex items-center gap-1.5">
+              <AlertCircle className="w-4 h-4 text-[#d4af37]" />
+              ¿Reembolsa en Isapres?
+            </h4>
+            <p className="text-xs text-[#66635d] font-light leading-relaxed">
+              Totalmente. Por cada prestación realizada emitimos boleta electrónica oficial de servicios médicos y formulario timbrado para que solicites el reintegro en tu Isapre o seguro de salud complementario.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}

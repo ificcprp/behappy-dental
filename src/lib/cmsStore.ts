@@ -64,12 +64,31 @@ export interface CMSPreventionSection {
   ctaUrl: string;
 }
 
+export interface CMSMembershipPlan {
+  id: string;
+  name: string;
+  tag: string;
+  monthlyPrice: number;
+  monthlyPriceDisplay: string;
+  annualPriceDisplay?: string;
+  billingPeriod: string;
+  description: string;
+  popular?: boolean;
+  badge?: string;
+  features: string[];
+  ctaText: string;
+  ctaWhatsappMessage: string;
+  ctaUrl?: string;
+  coverageHighlight: string;
+}
+
 export interface CMSData {
   treatments: Treatment[];
   doctors: Doctor[];
   clinicInfo: typeof CLINIC_INFO;
   announcements: string[];
   promotions: CMSPromotion[];
+  membershipPlans: CMSMembershipPlan[];
   hero: CMSHero;
   welcomeSection: CMSWelcomeSection;
   preventionSection: CMSPreventionSection;
@@ -192,12 +211,89 @@ export const DEFAULT_PROMOTIONS: CMSPromotion[] = [
   }
 ];
 
+export const DEFAULT_MEMBERSHIP_PLANS: CMSMembershipPlan[] = [
+  {
+    id: "plan-sonrisa",
+    name: "Plan BeHappy Sonrisa",
+    tag: "INDIVIDUAL · PREVENCIÓN TOTAL",
+    monthlyPrice: 14990,
+    monthlyPriceDisplay: "$14.990",
+    annualPriceDisplay: "$149.900 al año (Ahorra 2 meses)",
+    billingPeriod: "mes",
+    description: "Cuidado preventivo continuo para adultos y jóvenes profesionales. Elimina gastos imprevistos y mantén tu salud bucal impecable todo el año.",
+    popular: false,
+    badge: "Acceso Inmediato",
+    features: [
+      "2 Limpiezas y Destartrajes completos al año ($0 copago)",
+      "Set de Radiografías Bite-wing digitales anuales ($0 copago)",
+      "Evaluación y diagnóstico clínico semestral ($0 copago)",
+      "1 Atención de Urgencia diurna al año sin costo de consulta",
+      "45% arancel preferente en resinas compuestas y tapaduras",
+      "40% de descuento en Blanqueamiento dental LED",
+      "Sin permanencia obligatoria: cancela o pausa cuando quieras"
+    ],
+    ctaText: "Suscribirme al Plan Sonrisa",
+    ctaWhatsappMessage: "Hola Centro Dental BeHappy, me interesa suscribirme al Plan BeHappy Sonrisa ($14.990/mes). ¿Me pueden guiar con la activación?",
+    coverageHighlight: "2 limpiezas al año + Radiografías $0 copago"
+  },
+  {
+    id: "plan-familia",
+    name: "Plan Familia Protegida",
+    tag: "TITULAR + 2 CARGAS DIRECTAS",
+    monthlyPrice: 32990,
+    monthlyPriceDisplay: "$32.990",
+    annualPriceDisplay: "$329.900 al año (Ahorra 2 meses)",
+    billingPeriod: "mes (total familia)",
+    description: "Cobertura integral para el titular y hasta 2 cargas familiares (hijos, pareja o padres). La forma más honesta de proteger la salud dental sin letra chica.",
+    popular: true,
+    badge: "MÁS ELEGIDO POR FAMILIAS",
+    features: [
+      "Cobertura para 3 beneficiarios (carga adicional: +$8.990/mes)",
+      "Limpieza y profilaxis semestral para todos los inscritos ($0 copago)",
+      "Set radiográfico y diagnóstico preventivo para toda la familia ($0 copago)",
+      "1 Aplicación de Flúor barniz y sellantes para niños al año ($0 copago)",
+      "50% de arancel preferente en restauraciones y odontopediatría",
+      "Arancel preferencial fijado en controles mensuales de ortodoncia",
+      "Prioridad de atención en box Suecia 3580 ante urgencias",
+      "Débito automático mensual vía Flow.cl (Webpay / Débito / Tarjetas)"
+    ],
+    ctaText: "Activar Plan Familiar",
+    ctaWhatsappMessage: "Hola Centro Dental BeHappy, quiero activar el Plan Familia Protegida ($32.990/mes para 3 personas). ¿Cómo procedemos?",
+    coverageHighlight: "3 personas cubiertas · Limpiezas semestrales $0 copago"
+  },
+  {
+    id: "plan-pyme",
+    name: "Plan BeHappy Convenio Pyme",
+    tag: "EMPRESAS & EQUIPOS (DESDE 4 PERSONAS)",
+    monthlyPrice: 11900,
+    monthlyPriceDisplay: "$11.900",
+    annualPriceDisplay: "Facturación mensual exenta de IVA",
+    billingPeriod: "mes por colaborador",
+    description: "Convenio dental ágil para pymes, startups y locales comerciales de Ñuñoa y Santiago. Bienestar real para el equipo sin trámites burocráticos.",
+    popular: false,
+    badge: "Convenio Local Ñuñoa",
+    features: [
+      "Desde 4 colaboradores con incorporación flexible",
+      "Facturación directa exenta a la empresa (gasto deducible)",
+      "1 Limpieza anual profunda con ultrasonido por colaborador ($0 copago)",
+      "Diagnóstico radiográfico digital de admisión ($0 copago)",
+      "40% al 55% arancel preferente en todos los tratamientos",
+      "Extensible con arancel preferente al grupo familiar directo",
+      "Canal prioritario de agendamiento ejecutivo por WhatsApp"
+    ],
+    ctaText: "Cotizar Convenio Pyme",
+    ctaWhatsappMessage: "Hola Centro Dental BeHappy, represento a una empresa/pyme y me interesa cotizar el Plan Convenio Corporativo para nuestro equipo.",
+    coverageHighlight: "Factura exenta deducible + Chequeo anual $0 copago"
+  }
+];
+
 export const DEFAULT_CMS_DATA: CMSData = {
   treatments: TREATMENTS,
   doctors: DOCTORS,
   clinicInfo: CLINIC_INFO,
   announcements: DEFAULT_ANNOUNCEMENTS,
   promotions: DEFAULT_PROMOTIONS,
+  membershipPlans: DEFAULT_MEMBERSHIP_PLANS,
   hero: DEFAULT_HERO,
   welcomeSection: DEFAULT_WELCOME_SECTION,
   preventionSection: DEFAULT_PREVENTION_SECTION,
@@ -232,6 +328,7 @@ export function getCMSData(): CMSData {
         newPatient: { ...DEFAULT_WELCOME_SECTION.newPatient, ...(parsed.welcomeSection.newPatient || {}) }
       } : DEFAULT_WELCOME_SECTION,
       preventionSection: parsed.preventionSection ? { ...DEFAULT_PREVENTION_SECTION, ...parsed.preventionSection } : DEFAULT_PREVENTION_SECTION,
+      membershipPlans: parsed.membershipPlans && parsed.membershipPlans.length > 0 ? parsed.membershipPlans : DEFAULT_MEMBERSHIP_PLANS,
       promotions: parsed.promotions && parsed.promotions.length > 0 ? parsed.promotions.map((p: any, idx: number) => ({
         ...p,
         image: p.image || (idx === 0 ? "/images/promos/seguro-dental.png" : "/images/promos/promos-vigentes.png")

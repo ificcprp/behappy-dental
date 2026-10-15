@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { MembershipPlansSection } from "@/components/dental/MembershipPlansSection";
 import { DentalPricingCalculator } from "@/components/dental/DentalPricingCalculator";
 import { AppointmentBookingSection } from "@/components/dental/AppointmentBookingSection";
 import { ArrowUpRight, Shield, CreditCard, Receipt } from "lucide-react";
@@ -26,6 +27,9 @@ export default function PreciosPage() {
           En Centro Dental BeHappy creemos en la transparencia médica: diagnósticos honestos, presupuestos cerrados y opciones de financiamiento para que el costo no sea una barrera.
         </p>
       </div>
+
+      {/* Club BeHappy Membership Plans (Live CMS Reactive) */}
+      <MembershipPlansSection />
 
       {/* Interactive Copay & Previsión Calculator (State-of-the-Art) */}
       <DentalPricingCalculator />

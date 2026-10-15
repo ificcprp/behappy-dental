@@ -37,6 +37,7 @@ export function Navbar() {
     { name: "Inicio", href: "/" },
     { name: "Tratamientos", href: "/tratamientos" },
     { name: "Precios", href: "/precios" },
+    { name: "Club BeHappy", href: "/club" },
     { name: "Nosotros", href: "/nosotros" },
     { name: "Galería", href: "/galeria" },
     { name: "Contacto", href: "/contacto" },

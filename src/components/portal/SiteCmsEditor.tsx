@@ -8,6 +8,8 @@ import {
   resetCMSData,
   CMSData,
   CMSPromotion,
+  CMSMembershipPlan,
+  DEFAULT_MEMBERSHIP_PLANS,
   CMSHero,
   DEFAULT_HERO,
   CMSWelcomeSection,
@@ -34,6 +36,7 @@ import {
   Home,
   ShieldCheck,
   Layers,
+  CreditCard,
   Image as ImageIcon
 } from "lucide-react";
 
@@ -74,7 +77,7 @@ const CLINIC_PRESET_IMAGES = {
 export function SiteCmsEditor() {
   const [cmsData, setCmsData] = useState<CMSData>(getCMSData());
   const [activeTab, setActiveTab] = useState<
-    "hero" | "pilares" | "prevencion" | "tratamientos" | "doctores" | "contacto" | "promos" | "anuncios"
+    "hero" | "pilares" | "prevencion" | "membresias" | "tratamientos" | "doctores" | "contacto" | "promos" | "anuncios"
   >("hero");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -83,6 +86,7 @@ export function SiteCmsEditor() {
   const [treatmentSearch, setTreatmentSearch] = useState("");
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
   const [newAnnouncement, setNewAnnouncement] = useState("");
+  const [newFeatureInputs, setNewFeatureInputs] = useState<{ [planIdx: number]: string }>({});
 
   useEffect(() => {
     setCmsData(getCMSData());
@@ -103,6 +107,96 @@ export function SiteCmsEditor() {
       const reset = resetCMSData();
       setCmsData(reset);
       triggerToast("✓ Contenido restaurado a los valores predeterminados oficiales");
+    }
+  };
+
+  // Membership Plan Handlers
+  const handlePlanChange = (index: number, field: keyof CMSMembershipPlan, value: any) => {
+    const currentPlans = cmsData.membershipPlans && cmsData.membershipPlans.length > 0
+      ? cmsData.membershipPlans
+      : DEFAULT_MEMBERSHIP_PLANS;
+    const updated = [...currentPlans];
+    updated[index] = { ...updated[index], [field]: value };
+    setCmsData({ ...cmsData, membershipPlans: updated });
+  };
+
+  const handlePlanFeatureChange = (planIndex: number, featureIndex: number, value: string) => {
+    const currentPlans = cmsData.membershipPlans && cmsData.membershipPlans.length > 0
+      ? cmsData.membershipPlans
+      : DEFAULT_MEMBERSHIP_PLANS;
+    const updated = [...currentPlans];
+    const features = [...updated[planIndex].features];
+    features[featureIndex] = value;
+    updated[planIndex] = { ...updated[planIndex], features };
+    setCmsData({ ...cmsData, membershipPlans: updated });
+  };
+
+  const handleAddPlanFeature = (planIndex: number, newFeature: string) => {
+    if (!newFeature.trim()) return;
+    const currentPlans = cmsData.membershipPlans && cmsData.membershipPlans.length > 0
+      ? cmsData.membershipPlans
+      : DEFAULT_MEMBERSHIP_PLANS;
+    const updated = [...currentPlans];
+    const features = [...updated[planIndex].features, newFeature.trim()];
+    updated[planIndex] = { ...updated[planIndex], features };
+    setCmsData({ ...cmsData, membershipPlans: updated });
+    setNewFeatureInputs((prev) => ({ ...prev, [planIndex]: "" }));
+    triggerToast("✓ Beneficio añadido al plan");
+  };
+
+  const handleRemovePlanFeature = (planIndex: number, featureIndex: number) => {
+    const currentPlans = cmsData.membershipPlans && cmsData.membershipPlans.length > 0
+      ? cmsData.membershipPlans
+      : DEFAULT_MEMBERSHIP_PLANS;
+    const updated = [...currentPlans];
+    const features = updated[planIndex].features.filter((_, i) => i !== featureIndex);
+    updated[planIndex] = { ...updated[planIndex], features };
+    setCmsData({ ...cmsData, membershipPlans: updated });
+    triggerToast("✓ Beneficio eliminado");
+  };
+
+  const handleAddNewPlan = () => {
+    const currentPlans = cmsData.membershipPlans && cmsData.membershipPlans.length > 0
+      ? cmsData.membershipPlans
+      : DEFAULT_MEMBERSHIP_PLANS;
+    const newPlan: CMSMembershipPlan = {
+      id: `plan-${Date.now()}`,
+      name: "Nuevo Plan BeHappy",
+      tag: "PLAN PERSONALIZADO",
+      monthlyPrice: 19990,
+      monthlyPriceDisplay: "$19.990",
+      annualPriceDisplay: "$199.900 al año",
+      billingPeriod: "mes",
+      description: "Descripción de la cobertura y beneficios exclusivos de este plan...",
+      popular: false,
+      badge: "Nuevo Beneficio",
+      features: [
+        "1 Limpieza y profilaxis anual ($0 copago)",
+        "Evaluación clínica y radiografías ($0 copago)",
+        "40% arancel preferente en tratamientos"
+      ],
+      ctaText: "Activar Plan",
+      ctaWhatsappMessage: "Hola Centro Dental BeHappy, me interesa información sobre el Nuevo Plan.",
+      coverageHighlight: "Cobertura preventiva $0 copago"
+    };
+    const updatedPlans = [...currentPlans, newPlan];
+    const updated = { ...cmsData, membershipPlans: updatedPlans };
+    setCmsData(updated);
+    saveCMSData(updated);
+    triggerToast("✓ Nuevo plan de membresía añadido");
+  };
+
+  const handleDeletePlan = (index: number) => {
+    const currentPlans = cmsData.membershipPlans && cmsData.membershipPlans.length > 0
+      ? cmsData.membershipPlans
+      : DEFAULT_MEMBERSHIP_PLANS;
+    const planName = currentPlans[index]?.name || "este plan";
+    if (confirm(`¿Estás seguro de eliminar el plan "${planName}"?`)) {
+      const updatedPlans = currentPlans.filter((_, i) => i !== index);
+      const updated = { ...cmsData, membershipPlans: updatedPlans };
+      setCmsData(updated);
+      saveCMSData(updated);
+      triggerToast(`✓ Plan "${planName}" eliminado`);
     }
   };
 
@@ -318,7 +412,7 @@ export function SiteCmsEditor() {
       </div>
 
       {/* Categorized Hierarchy Navigation Tabs */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-1.5 border-b border-[#222228] pb-3">
+      <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-1.5 border-b border-[#222228] pb-3">
         <button
           onClick={() => setActiveTab("hero")}
           className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
@@ -356,6 +450,18 @@ export function SiteCmsEditor() {
         </button>
 
         <button
+          onClick={() => setActiveTab("membresias")}
+          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+            activeTab === "membresias"
+              ? "bg-[#1f1f26] text-white border-amber-500 font-semibold shadow"
+              : "bg-[#121216] text-neutral-400 border-[#222228] hover:text-white"
+          }`}
+        >
+          <CreditCard className="w-4 h-4 text-amber-400" />
+          <span className="text-[10px]">4. Membresías ({(cmsData.membershipPlans || DEFAULT_MEMBERSHIP_PLANS).length})</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab("tratamientos")}
           className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
             activeTab === "tratamientos"
@@ -364,7 +470,7 @@ export function SiteCmsEditor() {
           }`}
         >
           <Stethoscope className="w-4 h-4 text-cyan-400" />
-          <span className="text-[10px]">4. Catálogo ({cmsData.treatments.length})</span>
+          <span className="text-[10px]">5. Catálogo ({cmsData.treatments.length})</span>
         </button>
 
         <button
@@ -376,7 +482,7 @@ export function SiteCmsEditor() {
           }`}
         >
           <Users className="w-4 h-4 text-blue-400" />
-          <span className="text-[10px]">5. Equipo ({cmsData.doctors.length})</span>
+          <span className="text-[10px]">6. Equipo ({cmsData.doctors.length})</span>
         </button>
 
         <button
@@ -388,7 +494,7 @@ export function SiteCmsEditor() {
           }`}
         >
           <Sparkles className="w-4 h-4 text-pink-400" />
-          <span className="text-[10px]">6. Promociones</span>
+          <span className="text-[10px]">7. Promociones</span>
         </button>
 
         <button
@@ -400,7 +506,7 @@ export function SiteCmsEditor() {
           }`}
         >
           <PhoneCall className="w-4 h-4 text-amber-400" />
-          <span className="text-[10px]">7. Sede & Datos</span>
+          <span className="text-[10px]">8. Sede & Datos</span>
         </button>
 
         <button
@@ -412,7 +518,7 @@ export function SiteCmsEditor() {
           }`}
         >
           <Bell className="w-4 h-4 text-rose-400" />
-          <span className="text-[10px]">8. Ticker ({cmsData.announcements.length})</span>
+          <span className="text-[10px]">9. Ticker ({cmsData.announcements.length})</span>
         </button>
       </div>
 
@@ -899,7 +1005,275 @@ export function SiteCmsEditor() {
       )}
 
       {/* ========================================================================= */}
-      {/* SECCIÓN 4: CATÁLOGO DE TRATAMIENTOS */}
+      {/* SECCIÓN 4: PLANES DE MEMBRESÍA & CLUB BEHAPPY (ESSENTIALFLOW DENTAL) */}
+      {/* ========================================================================= */}
+      {activeTab === "membresias" && (
+        <div className="space-y-6">
+          <div className="border border-[#222228] bg-[#121216] p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h3 className="text-base font-normal text-white flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-amber-400" />
+                <span>Club BeHappy · Planes de Membresía & Suscripción Recurrente</span>
+              </h3>
+              <p className="text-xs text-neutral-400 font-light mt-1 max-w-2xl">
+                Configura los planes de suscripción mensual (PAC/PAT con Flow.cl). Las modificaciones se reflejan en tiempo real en la página <strong className="text-white">/club</strong> y en <strong className="text-white">/precios</strong>.
+              </p>
+            </div>
+            <button
+              onClick={handleAddNewPlan}
+              className="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-black font-mono text-xs uppercase font-bold flex items-center gap-1.5 transition shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Añadir Nuevo Plan</span>
+            </button>
+          </div>
+
+          <div className="space-y-6">
+            {(cmsData.membershipPlans || DEFAULT_MEMBERSHIP_PLANS).map((plan, pIdx) => (
+              <div
+                key={plan.id || pIdx}
+                className={`border p-6 space-y-6 bg-[#121216] transition-all ${
+                  plan.popular
+                    ? "border-amber-500/80 ring-1 ring-amber-500/30"
+                    : "border-[#222228]"
+                }`}
+              >
+                {/* Header of the plan card */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#222228] gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-mono text-amber-400 font-bold uppercase">
+                      PLAN 0{pIdx + 1}
+                    </span>
+                    <input
+                      type="text"
+                      value={plan.name}
+                      onChange={(e) => handlePlanChange(pIdx, "name", e.target.value)}
+                      placeholder="Nombre del Plan (ej: Plan BeHappy Sonrisa)"
+                      className="text-base font-semibold text-white bg-transparent border-b border-transparent hover:border-[#3a3a44] focus:border-amber-400 outline-none px-1 py-0.5"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-1.5 cursor-pointer text-xs font-mono text-neutral-300">
+                      <input
+                        type="checkbox"
+                        checked={!!plan.popular}
+                        onChange={(e) => handlePlanChange(pIdx, "popular", e.target.checked)}
+                        className="rounded border-[#2b2b34] text-amber-500 focus:ring-0"
+                      />
+                      <span>Destacado (Más Elegido)</span>
+                    </label>
+
+                    <button
+                      onClick={() => handleDeletePlan(pIdx)}
+                      className="p-1 text-neutral-500 hover:text-red-400 transition"
+                      title="Eliminar este plan"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Form fields grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
+                      Etiqueta / Tag Superior
+                    </label>
+                    <input
+                      type="text"
+                      value={plan.tag}
+                      onChange={(e) => handlePlanChange(pIdx, "tag", e.target.value)}
+                      placeholder="INDIVIDUAL · PREVENCIÓN TOTAL"
+                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono uppercase focus:border-amber-400 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
+                      Insignia / Badge Destacado
+                    </label>
+                    <input
+                      type="text"
+                      value={plan.badge || ""}
+                      onChange={(e) => handlePlanChange(pIdx, "badge", e.target.value)}
+                      placeholder="MÁS ELEGIDO POR FAMILIAS"
+                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono focus:border-amber-400 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
+                      Destacado de Cobertura (Pill)
+                    </label>
+                    <input
+                      type="text"
+                      value={plan.coverageHighlight || ""}
+                      onChange={(e) => handlePlanChange(pIdx, "coverageHighlight", e.target.value)}
+                      placeholder="2 limpiezas al año + Rx $0 copago"
+                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono focus:border-amber-400 outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
+                      Precio Mensual Mostrado
+                    </label>
+                    <input
+                      type="text"
+                      value={plan.monthlyPriceDisplay}
+                      onChange={(e) => handlePlanChange(pIdx, "monthlyPriceDisplay", e.target.value)}
+                      placeholder="$14.990"
+                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono focus:border-amber-400 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
+                      Período de Facturación
+                    </label>
+                    <input
+                      type="text"
+                      value={plan.billingPeriod}
+                      onChange={(e) => handlePlanChange(pIdx, "billingPeriod", e.target.value)}
+                      placeholder="mes (o mes por colaborador)"
+                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono focus:border-amber-400 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
+                      Precio Anual (con descuento)
+                    </label>
+                    <input
+                      type="text"
+                      value={plan.annualPriceDisplay || ""}
+                      onChange={(e) => handlePlanChange(pIdx, "annualPriceDisplay", e.target.value)}
+                      placeholder="$149.900 al año (Ahorra 2 meses)"
+                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono focus:border-amber-400 outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
+                    Descripción del Plan
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={plan.description}
+                    onChange={(e) => handlePlanChange(pIdx, "description", e.target.value)}
+                    placeholder="Descripción para el paciente..."
+                    className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs leading-relaxed focus:border-amber-400 outline-none"
+                  />
+                </div>
+
+                {/* Features List Section */}
+                <div className="space-y-3 pt-2 border-t border-[#222228]">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-mono text-neutral-300 uppercase tracking-wider block">
+                      Beneficios & Prestaciones Incluidas ({plan.features.length})
+                    </label>
+                    <span className="text-[10px] font-mono text-neutral-500">
+                      Edita cada beneficio o añade nuevos
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {plan.features.map((feature, fIdx) => (
+                      <div key={fIdx} className="flex items-center gap-2">
+                        <span className="text-emerald-400 text-xs">✓</span>
+                        <input
+                          type="text"
+                          value={feature}
+                          onChange={(e) => handlePlanFeatureChange(pIdx, fIdx, e.target.value)}
+                          className="flex-1 px-3 py-1.5 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono focus:border-amber-400 outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePlanFeature(pIdx, fIdx)}
+                          className="p-1.5 text-neutral-500 hover:text-red-400 transition"
+                          title="Eliminar beneficio"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add New Feature Row */}
+                  <div className="flex items-center gap-2 pt-2">
+                    <input
+                      type="text"
+                      placeholder="Escribe un nuevo beneficio y presiona Enter o Añadir..."
+                      value={newFeatureInputs[pIdx] || ""}
+                      onChange={(e) => setNewFeatureInputs((prev) => ({ ...prev, [pIdx]: e.target.value }))}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddPlanFeature(pIdx, newFeatureInputs[pIdx] || "");
+                        }
+                      }}
+                      className="flex-1 px-3 py-2 bg-[#1a1a24] border border-dashed border-[#3a3a48] text-white text-xs font-mono placeholder:text-neutral-500 focus:border-amber-400 outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAddPlanFeature(pIdx, newFeatureInputs[pIdx] || "")}
+                      className="px-3 py-2 bg-[#2b2b36] hover:bg-[#3a3a48] text-white font-mono text-xs uppercase transition flex items-center gap-1"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Añadir</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* WhatsApp CTA Action Config */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-[#222228]">
+                  <div>
+                    <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
+                      Texto del Botón CTA
+                    </label>
+                    <input
+                      type="text"
+                      value={plan.ctaText}
+                      onChange={(e) => handlePlanChange(pIdx, "ctaText", e.target.value)}
+                      placeholder="Suscribirme al Plan Sonrisa"
+                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono focus:border-amber-400 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
+                      Mensaje Prefijado para WhatsApp
+                    </label>
+                    <input
+                      type="text"
+                      value={plan.ctaWhatsappMessage}
+                      onChange={(e) => handlePlanChange(pIdx, "ctaWhatsappMessage", e.target.value)}
+                      placeholder="Hola Centro Dental BeHappy, me interesa..."
+                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono focus:border-amber-400 outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end pt-4 border-t border-[#222228]">
+            <button
+              onClick={handleSaveAll}
+              className="px-6 py-2.5 bg-amber-400 hover:bg-amber-300 text-black font-bold font-mono text-xs uppercase tracking-wider transition"
+            >
+              Guardar Todos los Planes de Membresía
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SECCIÓN 5: CATÁLOGO DE TRATAMIENTOS */}
       {/* ========================================================================= */}
       {activeTab === "tratamientos" && (
         <div className="space-y-4">

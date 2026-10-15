@@ -72,6 +72,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/club" className="hover:text-white transition">
+                  Club BeHappy (Planes de Membresía)
+                </Link>
+              </li>
+              <li>
                 <Link href="/nosotros" className="hover:text-white transition">
                   Cuerpo Médico (8 Especialistas)
                 </Link>
