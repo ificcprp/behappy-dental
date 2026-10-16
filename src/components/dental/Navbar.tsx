@@ -56,7 +56,7 @@ export function Navbar() {
     }
   };
 
-  if (pathname?.startsWith("/portal") || pathname === "/login" || pathname === "/registro") return null;
+  if (pathname?.startsWith("/portal") || pathname === "/login" || pathname === "/registro" || pathname === "/demo") return null;
 
   return (
     <header

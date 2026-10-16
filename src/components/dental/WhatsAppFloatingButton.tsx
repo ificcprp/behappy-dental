@@ -7,7 +7,7 @@ import { MessageCircle } from "lucide-react";
 
 export function WhatsAppFloatingButton() {
   const pathname = usePathname();
-  if (pathname?.startsWith("/portal") || pathname === "/login" || pathname === "/registro") return null;
+  if (pathname?.startsWith("/portal") || pathname === "/login" || pathname === "/registro" || pathname === "/demo") return null;
 
   const whatsappLink =
     "https://api.whatsapp.com/send/?phone=56947578597&text&type=phone_number&app_absent=0";
