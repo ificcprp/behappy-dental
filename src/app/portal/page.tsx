@@ -109,12 +109,16 @@ function PortalContent() {
   });
 
   // Patient Sub-tabs
-  const [patientTab, setPatientTab] = useState<"citas" | "ficha" | "odontograma" | "convenio">("citas");
+  const [patientTab, setPatientTab] = useState<"citas" | "ficha" | "odontograma" | "presupuesto" | "consentimientos" | "convenio">("citas");
 
   // Clinical data store state
   const [appointments, setAppointments] = useState<PatientAppointment[]>([]);
   const [clinicalRecords, setClinicalRecords] = useState<ClinicalRecord[]>([]);
   const [odontogram, setOdontogram] = useState<OdontogramTooth[]>([]);
+  const [consents, setConsents] = useState<InformedConsent[]>([]);
+  const [budgets, setBudgets] = useState<DentalBudget[]>([]);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [showBudgetModal, setShowBudgetModal] = useState(false);
 
   // Legal Document & Flow Payment states
   const [selectedRecordForDocument, setSelectedRecordForDocument] = useState<ClinicalRecord | null>(null);
