@@ -13,18 +13,18 @@ export default function NotFound() {
         Lo sentimos, la página que buscas no existe o ha sido movida. Puedes volver al catálogo principal de tratamientos.
       </p>
       <div className="pt-4 flex gap-3">
-        <Link
+        <a
           href="/"
           className="px-5 py-2.5 bg-[#141413] text-[#faf8f5] text-xs font-mono uppercase tracking-wider hover:bg-black transition"
         >
           Ir al Inicio
-        </Link>
-        <Link
+        </a>
+        <a
           href="/tratamientos"
           className="px-5 py-2.5 border border-[#cfc9be] text-[#141413] text-xs font-mono uppercase tracking-wider hover:border-[#141413] transition"
         >
           Ver Tratamientos
-        </Link>
+        </a>
       </div>
     </div>
   );

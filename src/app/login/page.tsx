@@ -47,7 +47,7 @@ export default function LoginPage() {
       
       {/* Brand & Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-3">
-        <Link href="/" className="inline-block group">
+        <a href="/" className="inline-block group">
           <div className="relative w-14 h-14 mx-auto rounded-full overflow-hidden bg-white p-0.5 border border-[#ded9cd] shadow-sm group-hover:scale-105 transition-transform">
             <Image
               src="/images/brand/logo.png"
@@ -56,7 +56,7 @@ export default function LoginPage() {
               className="object-cover rounded-full"
             />
           </div>
-        </Link>
+        </a>
         <div className="space-y-1">
           <span className="text-[10px] font-mono tracking-[0.24em] text-[#78736a] uppercase block">
             CONTROL DE ACCESO SEGURO · SEDE ÑUÑOA
@@ -185,9 +185,9 @@ export default function LoginPage() {
           <div className="pt-4 border-t border-[#f0ede6] text-center">
             <p className="text-xs text-[#66635d]">
               ¿Eres un nuevo paciente o deseas registrar una cuenta?{" "}
-              <Link href="/registro" className="text-[#141413] font-bold underline underline-offset-4">
+              <a href="/registro" className="text-[#141413] font-bold underline underline-offset-4">
                 Crear cuenta aquí →
-              </Link>
+              </a>
             </p>
           </div>
         </div>

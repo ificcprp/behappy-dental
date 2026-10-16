@@ -373,7 +373,7 @@ function PortalContent() {
           
           {/* Brand & Clinic Context */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2.5 group">
+            <a href="/" className="flex items-center gap-2.5 group">
               <div className="relative w-8 h-8 rounded-full overflow-hidden bg-white p-0.5 border border-slate-300 shadow-sm">
                 <Image
                   src="/images/brand/logo.png"
@@ -390,7 +390,7 @@ function PortalContent() {
                   {currentRoleMeta.subtitle}
                 </span>
               </div>
-            </Link>
+            </a>
 
             <span className={`hidden sm:inline-flex px-2.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider uppercase border ${currentRoleMeta.color}`}>
               {currentRoleMeta.badge}
@@ -421,14 +421,14 @@ function PortalContent() {
             </div>
 
             {/* Link back to public web */}
-            <Link
+            <a
               href="/"
               className="px-2.5 py-1.5 rounded border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition text-xs font-mono flex items-center gap-1 shadow-2xs shrink-0"
               title="Volver al sitio web principal"
             >
               <ArrowLeft className="w-3.5 h-3.5 text-slate-500" />
               <span className="hidden sm:inline">Web</span>
-            </Link>
+            </a>
 
             {/* Authenticated User Identity */}
             <div className="text-right hidden xl:block">

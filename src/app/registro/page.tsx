@@ -54,7 +54,7 @@ export default function RegisterPage() {
       
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-4">
-        <Link href="/" className="inline-block group">
+        <a href="/" className="inline-block group">
           <div className="relative w-14 h-14 mx-auto rounded-full overflow-hidden bg-white p-0.5 border border-[#ded9cd] shadow-sm group-hover:scale-105 transition-transform">
             <Image
               src="/images/brand/logo.png"
@@ -63,7 +63,7 @@ export default function RegisterPage() {
               className="object-cover rounded-full"
             />
           </div>
-        </Link>
+        </a>
         <div className="space-y-1">
           <span className="text-[10px] font-mono tracking-[0.24em] text-[#78736a] uppercase block">
             NUEVO PACIENTE · REGISTRO INSTITUCIONAL
@@ -197,17 +197,17 @@ export default function RegisterPage() {
 
           <div className="pt-4 border-t border-[#f0ede6] text-center text-xs text-[#66635d]">
             ¿Ya posee cuenta?{" "}
-            <Link href="/login" className="text-[#141413] font-bold hover:underline font-mono">
+            <a href="/login" className="text-[#141413] font-bold hover:underline font-mono">
               Iniciar sesión
-            </Link>
+            </a>
           </div>
 
         </div>
 
         <div className="mt-4 text-center">
-          <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-mono text-[#78736a] hover:text-[#141413] transition">
+          <a href="/" className="inline-flex items-center gap-1.5 text-xs font-mono text-[#78736a] hover:text-[#141413] transition">
             <ArrowLeft className="w-3.5 h-3.5" /> Volver al sitio principal
-          </Link>
+          </a>
         </div>
 
       </div>
