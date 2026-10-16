@@ -1,6 +1,7 @@
 import { TREATMENTS, Treatment } from "@/data/treatments";
 import { DOCTORS, Doctor } from "@/data/doctors";
 import { CLINIC_INFO } from "@/data/clinicInfo";
+import { CMSHeaderConfig } from "@/types/cms";
 
 export interface CMSPromotion {
   id: string;
@@ -94,6 +95,21 @@ export interface CMSMembershipPlan {
   zeroCopayProcedures?: string[];
 }
 
+export interface CMSAuthPortal {
+  badge: string;
+  title: string;
+  titleHighlight: string;
+  subtitle: string;
+  loginTabLabel: string;
+  registerTabLabel: string;
+  loginButtonText: string;
+  registerButtonText: string;
+  forgotPasswordText: string;
+  directBookingText: string;
+  demoAccessText: string;
+  securityNotice: string;
+}
+
 export interface CMSData {
   treatments: Treatment[];
   doctors: Doctor[];
@@ -104,6 +120,8 @@ export interface CMSData {
   hero: CMSHero;
   welcomeSection: CMSWelcomeSection;
   preventionSection: CMSPreventionSection;
+  authPortal: CMSAuthPortal;
+  headerConfig: CMSHeaderConfig;
   heroHeadline: string;
   heroSubheadline: string;
   lastUpdated: string;
@@ -309,6 +327,42 @@ export const DEFAULT_MEMBERSHIP_PLANS: CMSMembershipPlan[] = [
   }
 ];
 
+export const DEFAULT_AUTH_PORTAL: CMSAuthPortal = {
+  badge: "SEDE ÑUÑOA · SUECIA 3580",
+  title: "Portal Clínico & Pacientes",
+  titleHighlight: "BeHappy",
+  subtitle: "Acceso seguro a ficha clínica digital, citas, presupuestos y convenios.",
+  loginTabLabel: "Iniciar Sesión",
+  registerTabLabel: "Crear Ficha Paciente",
+  loginButtonText: "Ingresar al Portal",
+  registerButtonText: "Crear Ficha y Acceder",
+  forgotPasswordText: "¿Olvidaste tu clave?",
+  directBookingText: "¿Deseas atención directa? Reservar cita online",
+  demoAccessText: "Acceso a Entorno de Demostración (Pitch & Roles)",
+  securityNotice: "Acceso protegido bajo Ley 20.584 · Cifrado Clínico TLS 1.3"
+};
+
+export const DEFAULT_HEADER_CONFIG: CMSHeaderConfig = {
+  layout: "classic",
+  mobileMenuType: "fullscreen",
+  burgerOnDesktop: false,
+  desktopHeight: 84,
+  mobileHeight: 72,
+  logoSize: 52,
+  showBrandText: true,
+  linksSpacing: 28,
+  fontSize: 12,
+  letterSpacing: "0.16em",
+  textTransform: "uppercase",
+  fontFamily: "mono",
+  showDemoButton: true,
+  demoButtonText: "Demo Suite (4 Roles)",
+  portalButtonText: "Portal Clínico",
+  bookingButtonText: "Reservar Cita",
+  isSticky: true,
+  enableBlur: true,
+};
+
 export const DEFAULT_CMS_DATA: CMSData = {
   treatments: TREATMENTS,
   doctors: DOCTORS,
@@ -319,6 +373,8 @@ export const DEFAULT_CMS_DATA: CMSData = {
   hero: DEFAULT_HERO,
   welcomeSection: DEFAULT_WELCOME_SECTION,
   preventionSection: DEFAULT_PREVENTION_SECTION,
+  authPortal: DEFAULT_AUTH_PORTAL,
+  headerConfig: DEFAULT_HEADER_CONFIG,
   heroHeadline: "Centro Dental BeHappy",
   heroSubheadline: "Centro dental en Ñuñoa con la última tecnología y tratamientos de la más alta calidad.",
   lastUpdated: new Date().toISOString()
@@ -375,6 +431,8 @@ export async function syncCMSFromServer(): Promise<CMSData | null> {
       const merged: CMSData = normalizeLegacySeguroTerms({
         ...DEFAULT_CMS_DATA,
         ...json.data,
+        authPortal: json.data.authPortal ? { ...DEFAULT_AUTH_PORTAL, ...json.data.authPortal } : DEFAULT_AUTH_PORTAL,
+        headerConfig: json.data.headerConfig ? { ...DEFAULT_HEADER_CONFIG, ...json.data.headerConfig } : DEFAULT_HEADER_CONFIG,
         membershipPlans:
           json.data.membershipPlans && json.data.membershipPlans.length > 0
             ? json.data.membershipPlans
@@ -420,6 +478,8 @@ export function getCMSData(): CMSData {
       } : DEFAULT_WELCOME_SECTION,
       preventionSection: parsed.preventionSection ? { ...DEFAULT_PREVENTION_SECTION, ...parsed.preventionSection } : DEFAULT_PREVENTION_SECTION,
       membershipPlans: parsed.membershipPlans && parsed.membershipPlans.length > 0 ? parsed.membershipPlans : DEFAULT_MEMBERSHIP_PLANS,
+      authPortal: parsed.authPortal ? { ...DEFAULT_AUTH_PORTAL, ...parsed.authPortal } : DEFAULT_AUTH_PORTAL,
+      headerConfig: parsed.headerConfig ? { ...DEFAULT_HEADER_CONFIG, ...parsed.headerConfig } : DEFAULT_HEADER_CONFIG,
       promotions: parsed.promotions && parsed.promotions.length > 0 ? parsed.promotions.map((p: any, idx: number) => ({
         ...p,
         image: p.image || (idx === 0 ? "/images/promos/seguro-dental.png" : "/images/promos/promos-vigentes.png")

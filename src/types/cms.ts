@@ -141,3 +141,25 @@ export interface StructuredAnnouncement {
   linkUrl?: string;
   active: boolean;
 }
+
+export interface CMSHeaderConfig {
+  layout: "classic" | "centered" | "split";
+  mobileMenuType: "fullscreen" | "drawer-right" | "drawer-left";
+  burgerOnDesktop: boolean;
+  desktopHeight: number; // px
+  mobileHeight: number; // px
+  logoSize: number; // px
+  showBrandText: boolean;
+  linksSpacing: number; // px
+  fontSize: number; // px
+  letterSpacing: string; // em
+  textTransform: "uppercase" | "normal" | "capitalize";
+  fontFamily: "mono" | "sans" | "serif";
+  showDemoButton: boolean;
+  demoButtonText: string;
+  portalButtonText: string;
+  bookingButtonText: string;
+  isSticky: boolean;
+  enableBlur: boolean;
+}
+

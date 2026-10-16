@@ -11,6 +11,7 @@ import {
   DEFAULT_HERO,
   DEFAULT_WELCOME_SECTION,
   DEFAULT_PREVENTION_SECTION,
+  DEFAULT_AUTH_PORTAL,
 } from "@/lib/cmsStore";
 import { Treatment } from "@/data/treatments";
 import { Doctor } from "@/data/doctors";
@@ -25,6 +26,7 @@ import {
   PhoneCall,
   Bell,
   Check,
+  KeyRound,
 } from "lucide-react";
 
 // Submódulos modulares Enterprise
@@ -39,6 +41,7 @@ import { DoctorsStaffEditor } from "./cms/DoctorsStaffEditor";
 import { CampaignsEditor } from "./cms/CampaignsEditor";
 import { ContactLocationEditor } from "./cms/ContactLocationEditor";
 import { AnnouncementsTickerEditor } from "./cms/AnnouncementsTickerEditor";
+import { AuthPortalEditor } from "./cms/AuthPortalEditor";
 
 // Presets de imágenes oficiales de Centro Dental BeHappy
 const CLINIC_PRESET_IMAGES = {
@@ -77,6 +80,7 @@ const CLINIC_PRESET_IMAGES = {
 export function SiteCmsEditor() {
   const [cmsData, setCmsData] = useState<CMSData>(getCMSData());
   const [activeTab, setActiveTab] = useState<
+    | "header"
     | "hero"
     | "pilares"
     | "prevencion"
@@ -86,7 +90,8 @@ export function SiteCmsEditor() {
     | "promos"
     | "contacto"
     | "anuncios"
-  >("hero");
+    | "auth"
+  >("header");
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -174,7 +179,19 @@ export function SiteCmsEditor() {
       />
 
       {/* Tabs Navigation Grid */}
-      <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-1.5 bg-[#0e0e12] p-1.5 border border-[#222228]">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-11 gap-1.5 bg-[#0e0e12] p-1.5 border border-[#222228]">
+        <button
+          onClick={() => setActiveTab("header")}
+          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+            activeTab === "header"
+              ? "bg-[#18181f] text-sky-400 border-sky-500/70 font-bold"
+              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
+          }`}
+        >
+          <Layout className="w-3.5 h-3.5" />
+          <span className="text-[10px] truncate w-full">0. Menú</span>
+        </button>
+
         <button
           onClick={() => setActiveTab("hero")}
           className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
@@ -281,6 +298,18 @@ export function SiteCmsEditor() {
         >
           <Bell className="w-3.5 h-3.5" />
           <span className="text-[10px] truncate w-full">9. Marquesina</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("auth")}
+          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+            activeTab === "auth"
+              ? "bg-[#18181f] text-emerald-400 border-emerald-500/70 font-bold"
+              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
+          }`}
+        >
+          <KeyRound className="w-3.5 h-3.5" />
+          <span className="text-[10px] truncate w-full">10. Acceso</span>
         </button>
       </div>
 
@@ -392,6 +421,19 @@ export function SiteCmsEditor() {
             saveCMSData(next);
             triggerToast("✓ Anuncios marquesina actualizados");
           }}
+        />
+      )}
+
+      {activeTab === "auth" && (
+        <AuthPortalEditor
+          authPortal={cmsData.authPortal || DEFAULT_AUTH_PORTAL}
+          onUpdateAuthPortal={(updated) => {
+            const next = { ...cmsData, authPortal: updated };
+            setCmsData(next);
+            saveCMSData(next);
+            triggerToast("✓ Portal de Acceso actualizado");
+          }}
+          triggerToast={triggerToast}
         />
       )}
 

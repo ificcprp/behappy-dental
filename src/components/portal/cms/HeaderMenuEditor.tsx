@@ -1,0 +1,550 @@
+"use client";
+
+import React, { useState } from "react";
+import Image from "next/image";
+import { CMSHeaderConfig } from "@/types/cms";
+import {
+  Layout,
+  Menu,
+  Sliders,
+  Type,
+  Maximize2,
+  Smartphone,
+  Monitor,
+  Eye,
+  Check,
+  Sparkles,
+  ShieldCheck,
+  Calendar,
+  Layers,
+  ChevronRight
+} from "lucide-react";
+
+interface HeaderMenuEditorProps {
+  headerConfig: CMSHeaderConfig;
+  onChange: (updated: CMSHeaderConfig) => void;
+}
+
+export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorProps) {
+  const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
+
+  const update = <K extends keyof CMSHeaderConfig>(key: K, value: CMSHeaderConfig[K]) => {
+    onChange({
+      ...headerConfig,
+      [key]: value,
+    });
+  };
+
+  return (
+    <div className="space-y-8 animate-in fade-in duration-300">
+      
+      {/* Top Section Intro */}
+      <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-xs space-y-2">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#0284c7] font-bold">
+          <Layout className="w-4 h-4" />
+          <span>Editor de Menú, Jerarquía & Cabecera</span>
+        </div>
+        <h2 className="text-xl font-normal text-slate-900 tracking-tight">
+          Estilo del Header, Navegación y Jerarquía Visual
+        </h2>
+        <p className="text-xs text-slate-600 font-light leading-relaxed max-w-2xl">
+          Configura la distribución espacial, tamaño del logotipo, presencia de aire entre enlaces, menú móvil y la visibilidad explícita del acceso al Portal Clínico y al Modo Demo.
+        </p>
+      </div>
+
+      {/* Simulator / Interactive Header Preview */}
+      <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-4 text-white">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2">
+            <Eye className="w-4 h-4 text-sky-400" />
+            <span className="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">
+              Simulador en Vivo de Cabecera
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1 bg-slate-800 p-1 rounded text-xs font-mono">
+            <button
+              onClick={() => setPreviewMode("desktop")}
+              className={`px-3 py-1 rounded flex items-center gap-1.5 transition ${
+                previewMode === "desktop" ? "bg-slate-700 text-white font-bold" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Monitor className="w-3.5 h-3.5" />
+              <span>Escritorio ({headerConfig.desktopHeight}px)</span>
+            </button>
+            <button
+              onClick={() => setPreviewMode("mobile")}
+              className={`px-3 py-1 rounded flex items-center gap-1.5 transition ${
+                previewMode === "mobile" ? "bg-slate-700 text-white font-bold" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+              <span>Móvil ({headerConfig.mobileHeight}px)</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Live Preview Container */}
+        <div className="bg-[#faf8f5] text-[#141413] rounded-md overflow-hidden border border-slate-300 shadow-md">
+          <div
+            style={{
+              height: previewMode === "desktop" ? `${headerConfig.desktopHeight}px` : `${headerConfig.mobileHeight}px`,
+            }}
+            className="px-6 flex items-center justify-between transition-all"
+          >
+            {/* Logo area */}
+            <div className="flex items-center gap-3">
+              <div
+                style={{
+                  width: `${previewMode === "desktop" ? headerConfig.logoSize : Math.min(headerConfig.logoSize, 42)}px`,
+                  height: `${previewMode === "desktop" ? headerConfig.logoSize : Math.min(headerConfig.logoSize, 42)}px`,
+                }}
+                className="relative rounded-full overflow-hidden bg-white border border-[#ded9cd] p-0.5 shadow-2xs flex-shrink-0"
+              >
+                <Image
+                  src="/images/brand/logo.png"
+                  alt="BeHappy"
+                  fill
+                  className="object-cover rounded-full"
+                />
+              </div>
+
+              {headerConfig.showBrandText && (
+                <div>
+                  <span className="text-xs font-semibold block leading-tight text-[#141413]">
+                    Centro Dental BeHappy
+                  </span>
+                  <span className="text-[9px] font-mono tracking-wider text-[#78736a] block">
+                    Ñuñoa · Suecia 3580
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Desktop Links preview */}
+            {previewMode === "desktop" && !headerConfig.burgerOnDesktop && (
+              <div
+                style={{ gap: `${headerConfig.linksSpacing}px` }}
+                className="hidden lg:flex items-center"
+              >
+                {["Inicio", "Tratamientos", "Precios", "Club BeHappy", "Nosotros", "Contacto"].map((name) => (
+                  <span
+                    key={name}
+                    style={{
+                      fontSize: `${headerConfig.fontSize}px`,
+                      letterSpacing: headerConfig.letterSpacing,
+                      textTransform: headerConfig.textTransform,
+                      fontFamily:
+                        headerConfig.fontFamily === "serif"
+                          ? "Newsreader, Georgia, serif"
+                          : headerConfig.fontFamily === "sans"
+                          ? "system-ui, sans-serif"
+                          : "monospace",
+                    }}
+                    className="text-[#66635d] font-normal"
+                  >
+                    {name}
+                  </span>
+                ))}
+
+                {/* Explicit Demo Mode Tag */}
+                {headerConfig.showDemoButton && (
+                  <span
+                    style={{
+                      fontSize: `${headerConfig.fontSize}px`,
+                      letterSpacing: headerConfig.letterSpacing,
+                      textTransform: headerConfig.textTransform,
+                    }}
+                    className="text-[#0284c7] font-bold border-b border-[#0284c7]/40 pb-0.5 inline-flex items-center gap-1"
+                  >
+                    <Sparkles className="w-3 h-3 text-amber-500" />
+                    <span>{headerConfig.demoButtonText}</span>
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Right Buttons preview */}
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase border border-[#141413] text-[#141413] font-medium rounded-xs">
+                {headerConfig.portalButtonText}
+              </span>
+              <span className="px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase bg-[#141413] text-white font-medium rounded-xs">
+                {headerConfig.bookingButtonText}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Control Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* BLOQUE 1: Formato de Layout & Disposición */}
+        <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-xs space-y-6">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+            <Layout className="w-4 h-4 text-slate-700" />
+            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider font-mono">
+              1. Formato del Menú (Escritorio)
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              {
+                id: "classic" as const,
+                title: "Clásico",
+                desc: "Logo izq · Menú centro · Acciones der",
+              },
+              {
+                id: "centered" as const,
+                title: "Centrado",
+                desc: "Logo centro · Navegación alineada",
+              },
+              {
+                id: "split" as const,
+                title: "Dividido",
+                desc: "Logo izq · Enlaces y botones agrupados der",
+              },
+            ].map((layout) => (
+              <button
+                key={layout.id}
+                onClick={() => update("layout", layout.id)}
+                className={`p-3.5 text-left border rounded-md transition space-y-1.5 ${
+                  headerConfig.layout === layout.id
+                    ? "border-[#0284c7] bg-sky-50/50 ring-1 ring-[#0284c7]"
+                    : "border-slate-200 hover:border-slate-400 bg-white"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900">{layout.title}</span>
+                  {headerConfig.layout === layout.id && <Check className="w-3.5 h-3.5 text-[#0284c7]" />}
+                </div>
+                <p className="text-[10px] text-slate-500 leading-tight">{layout.desc}</p>
+              </button>
+            ))}
+          </div>
+
+          {/* Menú Móvil & Burger */}
+          <div className="space-y-4 pt-4 border-t border-slate-100">
+            <label className="block text-xs font-mono uppercase tracking-wider text-slate-700 font-bold">
+              Menú Móvil (Panel Desplegable)
+            </label>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { id: "fullscreen" as const, title: "Pantalla Completa", desc: "Cubre toda la vista con scroll" },
+                { id: "drawer-right" as const, title: "Panel Derecho", desc: "Slide desde la derecha" },
+                { id: "drawer-left" as const, title: "Panel Izquierdo", desc: "Slide desde la izquierda" },
+              ].map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => update("mobileMenuType", m.id)}
+                  className={`p-3 text-left border rounded-md transition space-y-1 ${
+                    headerConfig.mobileMenuType === m.id
+                      ? "border-slate-900 bg-slate-50 ring-1 ring-slate-900"
+                      : "border-slate-200 hover:border-slate-300"
+                  }`}
+                >
+                  <div className="text-xs font-bold text-slate-900">{m.title}</div>
+                  <div className="text-[10px] text-slate-500">{m.desc}</div>
+                </button>
+              ))}
+            </div>
+
+            {/* Burger en escritorio */}
+            <div className="flex items-center justify-between p-3 rounded-md bg-slate-50 border border-slate-200">
+              <div>
+                <span className="text-xs font-medium text-slate-900 block">Burger también en escritorio</span>
+                <span className="text-[11px] text-slate-500 font-light">
+                  Oculta la barra de enlaces horizontal y muestra únicamente el icono hamburguesa
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                checked={headerConfig.burgerOnDesktop}
+                onChange={(e) => update("burgerOnDesktop", e.target.checked)}
+                className="w-4 h-4 text-[#0284c7] rounded border-slate-300 focus:ring-[#0284c7]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* BLOQUE 2: Dimensiones, Logo & Aire Vertical */}
+        <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-xs space-y-6">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+            <Sliders className="w-4 h-4 text-slate-700" />
+            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider font-mono">
+              2. Altura de Cabecera y Tamaño de Logo
+            </h3>
+          </div>
+
+          {/* Altura Escritorio */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-medium text-slate-800">Altura de Cabecera en Escritorio</span>
+              <span className="font-mono font-bold text-[#0284c7] bg-sky-50 px-2 py-0.5 rounded">
+                {headerConfig.desktopHeight}px (Aire generoso)
+              </span>
+            </div>
+            <input
+              type="range"
+              min="68"
+              max="115"
+              step="2"
+              value={headerConfig.desktopHeight}
+              onChange={(e) => update("desktopHeight", parseInt(e.target.value, 10))}
+              className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0284c7]"
+            />
+            <div className="flex justify-between text-[10px] font-mono text-slate-400">
+              <span>68px (Ajustada)</span>
+              <span>84px (Recomendada con aire)</span>
+              <span>115px (Monumental)</span>
+            </div>
+          </div>
+
+          {/* Tamaño del Logo */}
+          <div className="space-y-2 pt-3 border-t border-slate-100">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-medium text-slate-800">Tamaño del Logotipo BeHappy</span>
+              <span className="font-mono font-bold text-[#059669] bg-emerald-50 px-2 py-0.5 rounded">
+                {headerConfig.logoSize}px de diámetro
+              </span>
+            </div>
+            <input
+              type="range"
+              min="36"
+              max="72"
+              step="2"
+              value={headerConfig.logoSize}
+              onChange={(e) => update("logoSize", parseInt(e.target.value, 10))}
+              className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#059669]"
+            />
+            <div className="flex justify-between text-[10px] font-mono text-slate-400">
+              <span>36px (Anterior pequeño)</span>
+              <span>52px (Óptimo actual)</span>
+              <span>72px (Grande)</span>
+            </div>
+          </div>
+
+          {/* Mostrar texto institucional */}
+          <div className="flex items-center justify-between p-3 rounded-md bg-slate-50 border border-slate-200">
+            <div>
+              <span className="text-xs font-medium text-slate-900 block">
+                Mostrar nombre y sede junto al logo
+              </span>
+              <span className="text-[11px] text-slate-500 font-light">
+                "Centro Dental BeHappy · Ñuñoa Suecia 3580"
+              </span>
+            </div>
+            <input
+              type="checkbox"
+              checked={headerConfig.showBrandText}
+              onChange={(e) => update("showBrandText", e.target.checked)}
+              className="w-4 h-4 text-[#0284c7] rounded border-slate-300 focus:ring-[#0284c7]"
+            />
+          </div>
+
+          {/* Sticky & Blur */}
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <div className="flex items-center justify-between p-3 rounded-md bg-slate-50 border border-slate-200">
+              <span className="text-xs font-medium text-slate-900">Cabecera fija (Sticky)</span>
+              <input
+                type="checkbox"
+                checked={headerConfig.isSticky}
+                onChange={(e) => update("isSticky", e.target.checked)}
+                className="w-4 h-4 text-[#0284c7] rounded border-slate-300 focus:ring-[#0284c7]"
+              />
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-md bg-slate-50 border border-slate-200">
+              <span className="text-xs font-medium text-slate-900">Desenfoque (Blur)</span>
+              <input
+                type="checkbox"
+                checked={headerConfig.enableBlur}
+                onChange={(e) => update("enableBlur", e.target.checked)}
+                className="w-4 h-4 text-[#0284c7] rounded border-slate-300 focus:ring-[#0284c7]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* BLOQUE 3: Tipografía, Separación & Estilo de Enlaces */}
+        <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-xs space-y-6">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+            <Type className="w-4 h-4 text-slate-700" />
+            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider font-mono">
+              3. Tipografía & Separación de Enlaces
+            </h3>
+          </div>
+
+          {/* Separación entre botones */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-medium text-slate-800">Separación horizontal entre enlaces</span>
+              <span className="font-mono font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">
+                {headerConfig.linksSpacing}px
+              </span>
+            </div>
+            <input
+              type="range"
+              min="16"
+              max="48"
+              step="2"
+              value={headerConfig.linksSpacing}
+              onChange={(e) => update("linksSpacing", parseInt(e.target.value, 10))}
+              className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-800"
+            />
+            <div className="flex justify-between text-[10px] font-mono text-slate-400">
+              <span>16px (Compacto)</span>
+              <span>28px (Equilibrado)</span>
+              <span>48px (Muy espacioso)</span>
+            </div>
+          </div>
+
+          {/* Tamaño de texto & Transformación */}
+          <div className="grid grid-cols-2 gap-4 pt-3 border-t border-slate-100">
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-700 font-bold mb-1.5">
+                Tamaño de Texto
+              </label>
+              <select
+                value={headerConfig.fontSize}
+                onChange={(e) => update("fontSize", parseInt(e.target.value, 10))}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-xs font-mono rounded"
+              >
+                <option value={11}>11px (Fino)</option>
+                <option value={12}>12px (Estándar recomendado)</option>
+                <option value={13}>13px (Medio)</option>
+                <option value={14}>14px (Grande)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-700 font-bold mb-1.5">
+                Transformación
+              </label>
+              <select
+                value={headerConfig.textTransform}
+                onChange={(e) => update("textTransform", e.target.value as any)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-xs font-mono rounded"
+              >
+                <option value="uppercase">MAYÚSCULAS</option>
+                <option value="normal">Normal</option>
+                <option value="capitalize">Capitalizar</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Familia Tipográfica */}
+          <div className="space-y-2 pt-2">
+            <label className="block text-xs font-mono uppercase tracking-wider text-slate-700 font-bold">
+              Tipografía del Menú
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: "mono" as const, title: "Monoespaciada", sub: "Look técnico Geist Mono" },
+                { id: "sans" as const, title: "Sans-Serif", sub: "Limpia y moderna" },
+                { id: "serif" as const, title: "Display Editorial", sub: "Elegante Newsreader" },
+              ].map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => update("fontFamily", f.id)}
+                  className={`p-2.5 text-left border rounded transition ${
+                    headerConfig.fontFamily === f.id
+                      ? "border-[#141413] bg-slate-50 font-bold ring-1 ring-[#141413]"
+                      : "border-slate-200 hover:border-slate-300"
+                  }`}
+                >
+                  <div className="text-xs text-slate-900">{f.title}</div>
+                  <div className="text-[10px] text-slate-500 font-light">{f.sub}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* BLOQUE 4: Jerarquía de Botones & Explicitación Modo Demo */}
+        <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-xs space-y-6">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+            <Sparkles className="w-4 h-4 text-amber-600" />
+            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider font-mono">
+              4. Jerarquía de Botones & Modo Demo
+            </h3>
+          </div>
+
+          {/* Switch Modo Demo en Nav */}
+          <div className="p-4 rounded-md bg-amber-50/60 border border-amber-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold text-amber-950 block flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Explicitar Modo Demo en la barra de navegación</span>
+                </span>
+                <span className="text-[11px] text-amber-800 font-light">
+                  Muestra un enlace distintivo hacia la suite de presentación (/demo)
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                checked={headerConfig.showDemoButton}
+                onChange={(e) => update("showDemoButton", e.target.checked)}
+                className="w-4 h-4 text-amber-600 rounded border-amber-300 focus:ring-amber-500"
+              />
+            </div>
+
+            {headerConfig.showDemoButton && (
+              <div>
+                <label className="block text-[10px] font-mono uppercase tracking-wider text-amber-900 font-bold mb-1">
+                  Texto del enlace Demo
+                </label>
+                <input
+                  type="text"
+                  value={headerConfig.demoButtonText}
+                  onChange={(e) => update("demoButtonText", e.target.value)}
+                  placeholder="ej: Demo OS (4 Roles)"
+                  className="w-full px-3 py-1.5 bg-white border border-amber-200 text-xs font-mono rounded text-slate-900"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Botones de Acción: Portal Clínico y Cita */}
+          <div className="space-y-3 pt-2">
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-700 font-bold mb-1">
+                Botón Portal Clínico (Modo Real / Acceso)
+              </label>
+              <input
+                type="text"
+                value={headerConfig.portalButtonText}
+                onChange={(e) => update("portalButtonText", e.target.value)}
+                placeholder="ej: Portal Clínico"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-xs font-mono rounded text-slate-900"
+              />
+              <span className="text-[10px] text-slate-500 block mt-1">
+                Lleva directamente al acceso real y ficha médica del paciente o doctor.
+              </span>
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-700 font-bold mb-1">
+                Botón Principal CTA (Reservar Cita)
+              </label>
+              <input
+                type="text"
+                value={headerConfig.bookingButtonText}
+                onChange={(e) => update("bookingButtonText", e.target.value)}
+                placeholder="ej: Reservar Cita"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-xs font-mono rounded text-slate-900"
+              />
+              <span className="text-[10px] text-slate-500 block mt-1">
+                Desplaza al formulario de agendamiento online (#agendar).
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  );
+}

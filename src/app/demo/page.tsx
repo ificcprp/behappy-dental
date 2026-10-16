@@ -38,7 +38,7 @@ export default function DemoPage() {
         <div className="text-center space-y-3 max-w-xl mx-auto">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#f0ede6] border border-[#ded8cb] text-[10px] font-mono tracking-widest uppercase text-[#78736a]">
             <Sparkles className="w-3.5 h-3.5 text-[#0284c7]" />
-            <span>Suite de Demostración · BeHappy Dental OS</span>
+            <span>Suite de Demostración · Plataforma Clínica BeHappy</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-light tracking-tight text-[#141413]">
             Entorno de Presentación <span className="font-serif italic text-neutral-800">Interactivo</span>
