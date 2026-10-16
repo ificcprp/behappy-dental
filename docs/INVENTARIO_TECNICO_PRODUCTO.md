@@ -30,6 +30,7 @@
 | :--- | :--- | :--- |
 | `/api/cms` | `GET`, `POST` | Obtención y actualización del payload de contenido del sitio web (tratamientos, doctores, contacto, ticker) |
 | `/api/citas` | `GET`, `POST`, `PATCH` | Agendamiento de citas, consulta de agenda por Box y actualización de estado de atención |
+| `/api/clinica/records` | `GET`, `POST` | Sincronización en la nube (Supabase PostgreSQL) de notas SOAP, odontogramas, presupuestos y consentimientos con fallback local |
 | `/api/pagos/flow/create` | `POST` | Generación de orden de pago en Flow.cl (Abono de reserva, copagos, suscripciones Club) |
 | `/api/pagos/flow/webhook` | `POST` | Callback server-to-server con verificación criptográfica HMAC-SHA256 y actualización en Supabase |
 | `/api/pagos/flow/status` | `GET` | Consulta y validación de estado de pago por token |
@@ -40,9 +41,11 @@
 
 ### Portal Clínico & Administración
 - `AnatomicalOdontogram.tsx`: Odontograma FDI 2.0 anatómico en 4 cuadrantes (Q1, Q2, Q4, Q3), plano oclusal y línea media facial.
+- `ClinicalBudgetPlan.tsx`: Generador automatizado de presupuestos dentales en 3 fases (Preventiva, Curativa, Rehabilitadora) derivado del odontograma, con pago directo Flow.cl y exportación para impresión/PDF.
+- `InformedConsentModal.tsx`: Generador y visor de Consentimiento Informado Digital bajo Ley 20.584 y normas MINSAL con rúbrica biométrica en canvas (Cirugía, Endodoncia, Implantes, Ortodoncia, Estética).
 - `ClinicalDocumentModal.tsx`: Generador de Ficha Clínica y Receta Médica legal auditable según Ley 20.584 de Chile.
 - `SiteCmsEditor.tsx`: Editor visual para los 20 tratamientos, 8 doctores, datos de contacto, ticker de anuncios y seguros.
-- `PortalContent`: Núcleo de Dental OS con lógica condicional para los 4 roles (Paciente, Doctor, Recepción, Admin).
+- `PortalContent`: Núcleo de Dental OS con lógica condicional para los 4 roles (Paciente, Doctor, Recepción, Admin) y barra universal de navegación por roles.
 
 ### Componentes Públicos del Centro Dental
 - `ClinicalTriageSection.tsx`: Triage inteligente con pre-asignación inmediata de tratamientos y especialistas.

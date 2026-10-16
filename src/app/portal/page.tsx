@@ -186,6 +186,8 @@ function PortalContent() {
       setAppointments(getStoredAppointments());
       setClinicalRecords(getStoredClinicalRecords());
       setOdontogram(getStoredOdontogram());
+      setConsents(getStoredConsents());
+      setBudgets(getStoredBudgets());
     };
     syncClinical();
     window.addEventListener(CLINICAL_CHANGE_EVENT, syncClinical);
@@ -522,10 +524,10 @@ function PortalContent() {
             </div>
 
             {/* Sub-Tabs Navigation */}
-            <div className="border-b border-slate-200 flex gap-6 text-xs font-mono tracking-wider uppercase">
+            <div className="border-b border-slate-200 flex gap-6 text-xs font-mono tracking-wider uppercase overflow-x-auto scrollbar-none">
               <button
                 onClick={() => setPatientTab("citas")}
-                className={`pb-3 transition ${
+                className={`pb-3 transition shrink-0 ${
                   patientTab === "citas"
                     ? "text-slate-900 border-b-2 border-slate-900 font-bold"
                     : "text-slate-500 hover:text-slate-900"
@@ -536,7 +538,7 @@ function PortalContent() {
 
               <button
                 onClick={() => setPatientTab("ficha")}
-                className={`pb-3 transition ${
+                className={`pb-3 transition shrink-0 ${
                   patientTab === "ficha"
                     ? "text-slate-900 border-b-2 border-slate-900 font-bold"
                     : "text-slate-500 hover:text-slate-900"
@@ -547,7 +549,7 @@ function PortalContent() {
 
               <button
                 onClick={() => setPatientTab("odontograma")}
-                className={`pb-3 transition ${
+                className={`pb-3 transition shrink-0 ${
                   patientTab === "odontograma"
                     ? "text-slate-900 border-b-2 border-slate-900 font-bold"
                     : "text-slate-500 hover:text-slate-900"
@@ -557,14 +559,36 @@ function PortalContent() {
               </button>
 
               <button
+                onClick={() => setPatientTab("presupuesto")}
+                className={`pb-3 transition shrink-0 ${
+                  patientTab === "presupuesto"
+                    ? "text-slate-900 border-b-2 border-slate-900 font-bold"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
+              >
+                4. Mi Presupuesto Dental
+              </button>
+
+              <button
+                onClick={() => setPatientTab("consentimientos")}
+                className={`pb-3 transition shrink-0 ${
+                  patientTab === "consentimientos"
+                    ? "text-slate-900 border-b-2 border-slate-900 font-bold"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
+              >
+                5. Consentimientos ({consents.length})
+              </button>
+
+              <button
                 onClick={() => setPatientTab("convenio")}
-                className={`pb-3 transition ${
+                className={`pb-3 transition shrink-0 ${
                   patientTab === "convenio"
                     ? "text-slate-900 border-b-2 border-slate-900 font-bold"
                     : "text-slate-500 hover:text-slate-900"
                 }`}
               >
-                4. Mi Convenio & Beneficios
+                6. Convenio & Beneficios
               </button>
             </div>
 
@@ -720,7 +744,109 @@ function PortalContent() {
               </div>
             )}
 
-            {/* Sub-Tab 4: Convenio */}
+            {/* Sub-Tab 4: Mi Presupuesto Dental */}
+            {patientTab === "presupuesto" && (
+              <div className="bg-white border border-slate-200 rounded-lg p-6 sm:p-8 shadow-2xs">
+                <ClinicalBudgetPlan
+                  odontogram={odontogram}
+                  patientName={currentUser.fullName}
+                  patientRut={currentUser.rut || "18.452.931-K"}
+                  patientEmail={currentUser.email}
+                  patientPhone={currentUser.phone || "+56 9 4757 8597"}
+                  convenioLevel={currentUser.convenioLevel || "40%"}
+                  onPayWithFlow={(amount, subject) => {
+                    setFlowPaymentData({
+                      patientName: currentUser.fullName,
+                      patientEmail: currentUser.email || "paciente@behappydental.cl",
+                      patientPhone: currentUser.phone || "+56 9 4757 8597",
+                      amount,
+                      subject,
+                    });
+                    setShowFlowPaymentModal(true);
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Sub-Tab 5: Consentimientos Informados (Ley 20.584) */}
+            {patientTab === "consentimientos" && (
+              <div className="space-y-6">
+                <div className="bg-white border border-slate-200 rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono tracking-widest text-teal-700 uppercase font-bold block">
+                      MARCO LEGAL CHILENO · LEY 20.584
+                    </span>
+                    <h3 className="text-xl font-semibold text-slate-900">
+                      Consentimientos Informados Digitales
+                    </h3>
+                    <p className="text-xs text-slate-500 font-light">
+                      Documentos suscritos con firma biométrica digital para procedimientos clínicos y quirúrgicos en box.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowConsentModal(true)}
+                    className="px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-mono uppercase tracking-wider font-bold rounded flex items-center gap-2 shadow-xs transition cursor-pointer"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <span>Firmar Nuevo Consentimiento</span>
+                  </button>
+                </div>
+
+                {consents.length === 0 ? (
+                  <div className="p-12 bg-white border border-slate-200 rounded-lg text-center space-y-3 shadow-2xs">
+                    <ShieldCheck className="w-8 h-8 text-slate-400 mx-auto" />
+                    <h3 className="text-sm font-semibold text-slate-900">Sin consentimientos firmados aún</h3>
+                    <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                      Antes de someterse a cirugías de exodoncia, endodoncia o implantes, firmará digitalmente el consentimiento informado reglamentario con su odontólogo tratante.
+                    </p>
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowConsentModal(true)}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 border border-slate-300 hover:border-slate-800 bg-white text-slate-800 text-xs font-mono uppercase rounded transition cursor-pointer"
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                        Revisar y Firmar Protocolo
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {consents.map((c) => (
+                      <div key={c.id} className="p-5 bg-white border border-slate-200 rounded-lg space-y-3 shadow-2xs">
+                        <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
+                          <div className="space-y-0.5">
+                            <span className="text-[10px] font-mono uppercase text-emerald-700 font-bold block flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              Firmado Digitalmente
+                            </span>
+                            <h4 className="font-semibold text-slate-900 text-sm">{c.title}</h4>
+                          </div>
+                          <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-mono shrink-0">
+                            {c.signedDate ? c.signedDate.split("T")[0] : ""}
+                          </span>
+                        </div>
+                        <div className="text-xs font-mono text-slate-500 space-y-1">
+                          <p>Paciente: <strong className="text-slate-800">{c.patientName}</strong> ({c.patientRut})</p>
+                          <p>Cirujano Dentista: <span className="text-slate-800">{c.doctorName}</span></p>
+                          <p className="text-[10px] text-slate-400 truncate">Folio Certificado: {c.id}</p>
+                        </div>
+                        {c.signatureDataUrl && (
+                          <div className="p-2 border border-slate-100 bg-slate-50 rounded flex items-center justify-between">
+                            <span className="text-[10px] font-mono text-slate-500">Rúbrica registrada:</span>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={c.signatureDataUrl} alt="Firma" className="h-8 max-w-[120px] object-contain" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Sub-Tab 6: Convenio */}
             {patientTab === "convenio" && (
               <div className="p-6 sm:p-8 bg-white border border-slate-200 rounded-lg space-y-6 shadow-2xs">
                 <div className="space-y-1">
@@ -925,6 +1051,30 @@ function PortalContent() {
 
             {/* Doctor Odontogram Quick-Chart */}
             <div className="p-6 bg-white border border-slate-200 rounded-lg space-y-4 shadow-2xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div>
+                  <h3 className="text-base font-semibold text-slate-900">Odontograma Interactivo FDI & Diagnóstico</h3>
+                  <p className="text-xs font-mono text-slate-500">Mapeo anatómico en sillón con derivación arancelaria directa</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowBudgetModal(true)}
+                    className="px-3.5 py-1.5 bg-teal-800 hover:bg-teal-900 text-white rounded text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                  >
+                    <Layers className="w-3.5 h-3.5" />
+                    <span>Presupuesto desde Odontograma</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowConsentModal(true)}
+                    className="px-3.5 py-1.5 bg-slate-900 hover:bg-black text-white rounded text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Consentimiento Ley 20.584</span>
+                  </button>
+                </div>
+              </div>
               <AnatomicalOdontogram
                 teeth={odontogram}
                 isDoctorMode={true}
@@ -1637,6 +1787,48 @@ function PortalContent() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Modal Presupuesto Odontológico Integral */}
+        {showBudgetModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto">
+            <div className="bg-white border border-slate-300 rounded-lg max-w-4xl w-full p-6 sm:p-8 space-y-4 shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+              <ClinicalBudgetPlan
+                odontogram={odontogram}
+                patientName={soapPatient || currentUser?.fullName || "Paciente en Box"}
+                patientRut={currentUser?.rut || "18.452.931-K"}
+                patientEmail={currentUser?.email}
+                patientPhone={currentUser?.phone || "+56 9 4757 8597"}
+                convenioLevel={currentUser?.convenioLevel || "40%"}
+                onClose={() => setShowBudgetModal(false)}
+                onPayWithFlow={(amount, subject) => {
+                  setShowBudgetModal(false);
+                  setFlowPaymentData({
+                    patientName: soapPatient || currentUser?.fullName || "Paciente en Box",
+                    patientEmail: currentUser?.email || "paciente@behappydental.cl",
+                    patientPhone: currentUser?.phone || "+56 9 4757 8597",
+                    amount,
+                    subject,
+                  });
+                  setShowFlowPaymentModal(true);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Modal Consentimiento Informado (Ley 20.584) */}
+        {showConsentModal && (
+          <InformedConsentModal
+            patientName={soapPatient || currentUser?.fullName || "Paciente en Box"}
+            patientRut={currentUser?.rut || "18.452.931-K"}
+            doctorName={activeRole === "doctor" ? currentUser?.fullName : "Dr. Johnny Lugo"}
+            onClose={() => setShowConsentModal(false)}
+            onConsentSigned={(consent) => {
+              addStoredConsent(consent);
+              setShowConsentModal(false);
+            }}
+          />
         )}
 
       </main>
