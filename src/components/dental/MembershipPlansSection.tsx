@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { getCMSData, CMSData, CMSMembershipPlan, DEFAULT_MEMBERSHIP_PLANS } from "@/lib/cmsStore";
 import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
-import { Check, ShieldCheck, Zap, Star, ArrowUpRight, HelpCircle, AlertCircle, HeartHandshake, X, CreditCard } from "lucide-react";
+import { Check, ShieldCheck, Zap, Star, ArrowUpRight, HelpCircle, AlertCircle, HeartHandshake, X, CreditCard, Award, Clock } from "lucide-react";
 
 export function MembershipPlansSection() {
   const [plans, setPlans] = useState<CMSMembershipPlan[]>(DEFAULT_MEMBERSHIP_PLANS);
@@ -45,13 +45,13 @@ export function MembershipPlansSection() {
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#f5f2eb] border border-[#e5e0d5] text-[11px] font-mono tracking-[0.2em] text-[#78736a] uppercase">
               <ShieldCheck className="w-3.5 h-3.5 text-[#141413]" />
-              SISTEMA DE MEMBRESÍA & SUSCRIPCIÓN DENTAL
+              PLANES DENTALES · COBERTURA FAMILIAR
             </div>
             <h2 className="text-3xl sm:text-5xl font-normal tracking-[-0.03em] text-[#141413]">
-              Club Familiar BeHappy
+              La mejor solución a tu Salud Dental
             </h2>
             <p className="text-sm sm:text-base text-[#66635d] font-light leading-relaxed">
-              La alternativa honesta y predecible a los convenios corporativos con letra chica. Débito automático mensual con Flow.cl, limpiezas y radiografías con $0 copago y aranceles preferentes garantizados para ti y tu familia en Ñuñoa.
+              Centro Dental BeHappy te ofrece planes dentales especialmente diseñados para entregarte a ti y a tu familia cobertura en todas las especialidades, 2 años de garantía en tratamientos restauradores, destacados especialistas y la más avanzada tecnología en Suecia 3580, Ñuñoa.
             </p>
           </div>
 
@@ -142,7 +142,7 @@ export function MembershipPlansSection() {
                     )}
                     {billingCycle === "monthly" && (
                       <p className="text-[11px] font-mono text-[#78736a] mt-1">
-                        Débito automático vía Flow.cl (Tarjetas, PAC o Redcompra)
+                        Pago automático (PAC/PAT) vía Cuenta Corriente o Tarjeta
                       </p>
                     )}
                   </div>
@@ -157,15 +157,32 @@ export function MembershipPlansSection() {
                   {/* Features List */}
                   <div className="space-y-3 pt-2">
                     <span className="text-[10px] font-mono tracking-widest uppercase text-[#78736a] block">
-                      COBERTURA & BENEFICIOS INCLUIDOS:
+                      COBERTURA &amp; BENEFICIOS INCLUIDOS:
                     </span>
                     <ul className="space-y-2.5">
-                      {plan.features.map((feature, fIdx) => (
-                        <li key={fIdx} className="flex items-start gap-2.5 text-xs text-[#403e3a] leading-relaxed">
-                          <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
+                      {plan.features.map((feature, fIdx) => {
+                        const is100 = feature.includes("100% Cobertura");
+                        const is70 = feature.includes("70% Cobertura");
+                        const isGuarantee = feature.includes("Garantía");
+                        const isDiscount = feature.includes("Descuento por permanencia");
+
+                        return (
+                          <li key={fIdx} className="flex items-start gap-2.5 text-xs text-[#403e3a] leading-relaxed">
+                            <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                            <span>
+                              {is100 ? (
+                                <strong className="text-[#141413] font-semibold">{feature}</strong>
+                              ) : is70 ? (
+                                <strong className="text-[#2e7d32] font-semibold">{feature}</strong>
+                              ) : isGuarantee || isDiscount ? (
+                                <span className="text-[#141413] font-medium">{feature}</span>
+                              ) : (
+                                feature
+                              )}
+                            </span>
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 </div>
@@ -202,7 +219,7 @@ export function MembershipPlansSection() {
                   </a>
 
                   <p className="text-[10px] font-mono text-center text-[#78736a] pt-1">
-                    Sin multas de salida · 1ª profilaxis, Rx y descuentos activos desde Día 1
+                    Garantía clínica certificada · Sin multas de salida · Atención en Suecia 3580
                   </p>
                 </div>
               </div>
@@ -210,77 +227,140 @@ export function MembershipPlansSection() {
           })}
         </div>
 
-        {/* Transparency Comparison Table (The Real Anti-Trap Factor) */}
-        <div className="border border-[#e5e0d5] bg-[#faf8f5] p-6 sm:p-10 space-y-6">
-          <div className="space-y-2">
+        {/* Clinical Coverage, Guarantees & Permanence (Inspired by Clinical Excellence) */}
+        <div className="border border-[#e5e0d5] bg-[#faf8f5] p-6 sm:p-10 space-y-8">
+          <div className="space-y-2 max-w-3xl">
             <span className="text-[10px] font-mono tracking-[0.24em] text-[#78736a] uppercase block">
-              COMPARATIVA DE HONESTIDAD MÉDICA
+              COBERTURA INTEGRAL &amp; COMPROMISO MÉDICO
             </span>
-            <h3 className="text-xl sm:text-2xl font-normal tracking-tight text-[#141413]">
-              Por qué el Club BeHappy es diferente a las grandes cadenas dentales
+            <h3 className="text-xl sm:text-3xl font-normal tracking-tight text-[#141413]">
+              Coberturas garantizadas, garantías y descuentos por permanencia
             </h3>
-            <p className="text-xs sm:text-sm text-[#66635d] font-light max-w-3xl leading-relaxed">
-              Muchas personas contratan convenios corporativos atraídos por promesas de “hasta 70% de descuento”, para luego descubrir precios base inflados, cargos sorpresa por guantes o anestesia y cláusulas de permanencia abusiva. En BeHappy diseñamos la suscripción que nosotros mismos querríamos para nuestra familia.
+            <p className="text-xs sm:text-sm text-[#66635d] font-light leading-relaxed">
+              En Centro Dental BeHappy respaldamos tu salud bucal con protocolos clínicos certificados, tecnología diagnóstica en box y aranceles preferenciales transparentes. Diseñado para ti y tu familia en Ñuñoa.
             </p>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border border-[#e5e0d5] bg-white">
-              <thead>
-                <tr className="bg-[#f0ede6] border-b border-[#e5e0d5] font-mono text-[11px] text-[#141413] uppercase tracking-wider">
-                  <th className="p-3.5 sm:p-4">Criterio Clínico y Comercial</th>
-                  <th className="p-3.5 sm:p-4 text-red-700 bg-red-50/60">Grandes Cadenas Dentales</th>
-                  <th className="p-3.5 sm:p-4 text-emerald-800 bg-emerald-50/80 font-bold">Club Familiar BeHappy</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#e5e0d5] text-[#403e3a]">
-                <tr>
-                  <td className="p-3.5 sm:p-4 font-mono font-medium text-[#141413]">Descuentos y Aranceles</td>
-                  <td className="p-3.5 sm:p-4 bg-red-50/30 text-[#66635d]">
-                    “Hasta 70%” sobre aranceles de lista inflados artificialmente.
-                  </td>
-                  <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
-                    ✓ Aranceles preferentes netos y transparentes, sin inflar el precio base.
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 sm:p-4 font-mono font-medium text-[#141413]">Limpiezas y Prevención</td>
-                  <td className="p-3.5 sm:p-4 bg-red-50/30 text-[#66635d]">
-                    Limpiezas parciales (destartraje supragingival básico); cobran extra por pulido o bicarbonato.
-                  </td>
-                  <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
-                    ✓ Profilaxis completa + destartraje + set de Rx Bite-wing con $0 copago real.
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 sm:p-4 font-mono font-medium text-[#141413]">Permanencia y Letra Chica</td>
-                  <td className="p-3.5 sm:p-4 bg-red-50/30 text-[#66635d]">
-                    Contratos forzosos de 12 a 24 meses con multas si intentas desvincularte.
-                  </td>
-                  <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
-                    ✓ Sin multas de salida: suscripción mensual vía Flow.cl, pausable o cancelable avisando antes de tu siguiente ciclo.
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 sm:p-4 font-mono font-medium text-[#141413]">Cargas Familiares</td>
-                  <td className="p-3.5 sm:p-4 bg-red-50/30 text-[#66635d]">
-                    Exigen certificados de cargas Fonasa/Isapre y cobran planes individuales por cada hijo.
-                  </td>
-                  <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
-                    ✓ Titular + 2 cargas incluidas libremente (hijos, pareja o padres mayores).
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-3.5 sm:p-4 font-mono font-medium text-[#141413]">Equipo Odontológico</td>
-                  <td className="p-3.5 sm:p-4 bg-red-50/30 text-[#66635d]">
-                    Alta rotación de profesionales recién egresados; rara vez te atiende el mismo dentista.
-                  </td>
-                  <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
-                    ✓ 8 especialistas acreditados en SIS Chile con seguimiento de tu historial en Suecia 3580.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Pilar 1: 100% Cobertura */}
+            <div className="bg-white border border-[#e5e0d5] p-6 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="w-8 h-8 rounded-full bg-[#f0ede6] flex items-center justify-center text-[#141413] font-mono text-xs font-bold">
+                  100%
+                </div>
+                <h4 className="font-medium text-sm text-[#141413]">Diagnóstico y Prevención</h4>
+                <ul className="space-y-1.5 text-xs text-[#66635d] font-light">
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Evaluación dental y diagnóstico integral</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Limpieza general y destartraje</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Rx Panorámica, Bite-Wing y Periapical</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Urgencias (mitigación del dolor)</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="text-[10px] font-mono text-[#2e7d32] bg-[#f0fdf4] px-2.5 py-1 border border-[#bbf7d0]">
+                ✓ $0 Copago en todas las consultas
+              </div>
+            </div>
+
+            {/* Pilar 2: 70% Cobertura Especialidades */}
+            <div className="bg-white border border-[#e5e0d5] p-6 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="w-8 h-8 rounded-full bg-[#f0ede6] flex items-center justify-center text-[#141413] font-mono text-xs font-bold">
+                  70%
+                </div>
+                <h4 className="font-medium text-sm text-[#141413]">Todas las Especialidades</h4>
+                <ul className="space-y-1.5 text-xs text-[#66635d] font-light">
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Restauraciones resina (composite)</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Ortodoncia tradicional e Invisalign</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Endodoncia y periodoncia integral</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Cirugía e implantes dentales</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="text-[10px] font-mono text-[#141413] bg-[#f5f2eb] px-2.5 py-1 border border-[#e5e0d5]">
+                ✦ Bonificación sobre arancel neto
+              </div>
+            </div>
+
+            {/* Pilar 3: Garantía 2 Años */}
+            <div className="bg-white border border-[#e5e0d5] p-6 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="w-8 h-8 rounded-full bg-[#f0ede6] flex items-center justify-center text-[#141413]">
+                  <Award className="w-4 h-4 text-[#d4af37]" />
+                </div>
+                <h4 className="font-medium text-sm text-[#141413]">Garantía Clínica Real</h4>
+                <ul className="space-y-1.5 text-xs text-[#66635d] font-light">
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span><strong>2 años de garantía</strong> en prestaciones restauradoras</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Garantía clínica en implantes oseointegrados</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Insumos certificados (3M / Dentsply)</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="text-[10px] font-mono text-[#78736a] bg-[#faf8f5] px-2.5 py-1 border border-[#e5e0d5]">
+                Certificado formal por escrito
+              </div>
+            </div>
+
+            {/* Pilar 4: Descuentos por Permanencia */}
+            <div className="bg-white border border-[#e5e0d5] p-6 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="w-8 h-8 rounded-full bg-[#f0ede6] flex items-center justify-center text-[#141413]">
+                  <Clock className="w-4 h-4 text-[#141413]" />
+                </div>
+                <h4 className="font-medium text-sm text-[#141413]">Descuentos por Permanencia</h4>
+                <ul className="space-y-1.5 text-xs text-[#66635d] font-light">
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span><strong>Año 1:</strong> Mensualidad se reduce <strong>10%</strong></span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span><strong>Año 2:</strong> 10% adicional (20% rebaja)</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span><strong>Año 3:</strong> 10% adicional (<strong>30% permanente</strong>)</span>
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#2e7d32] shrink-0 mt-0.5" />
+                    <span>Hijos mantienen permanencia al ser adultos</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="text-[10px] font-mono text-[#d4af37] bg-[#fefce8] px-2.5 py-1 border border-[#fef08a]">
+                ★ Recompensa a la fidelidad
+              </div>
+            </div>
           </div>
         </div>
 

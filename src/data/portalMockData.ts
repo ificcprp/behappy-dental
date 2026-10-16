@@ -5,11 +5,11 @@ export const DEMO_USERS: Record<string, UserProfile> = {
     id: "usr_paciente_01",
     email: "paciente@behappydental.cl",
     fullName: "Paciente BeHappy",
-    rut: "Por registrar",
+    rut: "18.452.931-K",
     phone: "+56 9 4757 8597",
     role: "paciente",
     prevision: "Particular / Fonasa / Isapre",
-    convenioLevel: "Ninguno",
+    convenioLevel: "20%",
     createdAt: new Date().toISOString().split("T")[0]
   },
   doctor: {

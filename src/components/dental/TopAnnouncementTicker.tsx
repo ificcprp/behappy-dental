@@ -67,7 +67,7 @@ export function TopAnnouncementTicker() {
 
   const current = slides[currentIndex % slides.length] || slides[0] || DEFAULT_SLIDES[0];
 
-  if (pathname?.startsWith("/portal")) return null;
+  if (pathname?.startsWith("/portal") || pathname === "/login" || pathname === "/registro") return null;
 
   return (
     <div

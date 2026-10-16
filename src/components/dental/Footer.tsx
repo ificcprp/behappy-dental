@@ -25,7 +25,7 @@ export function Footer() {
     return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
   }, []);
 
-  if (pathname?.startsWith("/portal")) return null;
+  if (pathname?.startsWith("/portal") || pathname === "/login" || pathname === "/registro") return null;
 
   return (
     <footer className="bg-[#0a0a0c] text-[#f4f4f6] text-xs border-t border-[#1f1f26] pt-16 pb-14">

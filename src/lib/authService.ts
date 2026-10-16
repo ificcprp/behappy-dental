@@ -1,5 +1,6 @@
 import { UserProfile, UserRole } from "@/types/auth";
 import { DEMO_USERS } from "@/data/portalMockData";
+import { cleanRut } from "@/lib/rutValidator";
 
 const STORAGE_USERS_KEY = "behappy_registered_users";
 const STORAGE_SESSION_KEY = "behappy_active_session";
@@ -98,13 +99,16 @@ export function clearCurrentSession() {
   }
 }
 
-export function authenticateUser(email: string, password?: string): UserProfile | null {
+export function authenticateUser(identifier: string, password?: string): UserProfile | null {
   const users = getRegisteredUsers();
-  const normalizedEmail = email.trim().toLowerCase();
+  const rawIdentifier = identifier.trim().toLowerCase();
+  const cleanedIdRut = cleanRut(rawIdentifier);
   
-  const found = users.find(
-    (u) => u.email.toLowerCase() === normalizedEmail
-  );
+  const found = users.find((u) => {
+    if (u.email.toLowerCase() === rawIdentifier) return true;
+    if (u.rut && cleanedIdRut.length >= 7 && cleanRut(u.rut) === cleanedIdRut) return true;
+    return false;
+  });
 
   if (!found) return null;
 
