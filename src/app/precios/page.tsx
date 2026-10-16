@@ -6,9 +6,9 @@ import { ArrowUpRight, Shield, CreditCard, Receipt } from "lucide-react";
 import { createWhatsAppUrl } from "@/data/clinicInfo";
 
 export const metadata: Metadata = {
-  title: "Precios, Convenios y Aranceles | Centro Dental BeHappy Ñuñoa",
+  title: "Precios, Club BeHappy y Aranceles | Centro Dental BeHappy Ñuñoa",
   description:
-    "Precios transparentes y simulador de copago en Ñuñoa. Seguro Dental BeHappy con cobertura del 20% al 60%, cuotas sin interés y reembolso en Isapres.",
+    "Precios transparentes y simulador de copago en Ñuñoa. Club Familiar BeHappy con 2 limpiezas anuales $0 copago, hasta 50% de arancel preferente, cuotas sin interés y reembolso en Isapres.",
 };
 
 export default function PreciosPage() {
@@ -82,36 +82,34 @@ export default function PreciosPage() {
               </div>
             </div>
 
-            {/* Pillar 2: Seguro BeHappy */}
+            {/* Pillar 2: Club Familiar BeHappy */}
             <div className="p-8 space-y-4 hover:bg-[#faf8f5] transition-colors flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="w-10 h-10 rounded border border-[#e5e0d5] bg-[#faf8f5] flex items-center justify-center text-[#141413]">
                   <Shield className="w-5 h-5" />
                 </div>
                 <span className="text-[10px] font-mono tracking-[0.2em] text-[#78736a] uppercase block">
-                  02 · PLAN FAMILIAR
+                  02 · MEMBRESÍA PREVENTIVA
                 </span>
                 <h3 className="text-xl font-normal tracking-tight text-[#141413]">
-                  Seguro Dental Propio BeHappy
+                  Club Familiar BeHappy
                 </h3>
                 <p className="text-xs sm:text-sm text-[#5d5952] font-light leading-relaxed">
-                  Membresía anual para pacientes frecuentes y familias con descuentos acumulativos del 20% al 60% en prestaciones clínicas, sin letra chica ni copagos abusivos.
+                  Suscripción mensual o anual para personas, familias y pymes en Ñuñoa con prevención cubierta a $0 copago y aranceles clínicos preferentes.
                 </p>
                 <ul className="space-y-1.5 text-xs font-mono text-[#78736a] pt-3 border-t border-[#f0ede6]">
-                  <li>✓ Año 1: 20% ~ 30% cobertura</li>
-                  <li>✓ Año 2: 40% cobertura integral</li>
-                  <li>✓ Año 3+: hasta 60% en arancel clínico</li>
+                  <li>✓ 2 Limpiezas anuales + Set Rx $0 copago</li>
+                  <li>✓ 40% al 55% en arancel clínico preferente</li>
+                  <li>✓ Plan Individual ($14.990) y Familiar ($32.990)</li>
                 </ul>
               </div>
 
               <div className="pt-4">
                 <a
-                  href={createWhatsAppUrl("Hola Centro Dental BeHappy, deseo activar mi Seguro Dental Familiar.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#club-behappy"
                   className="inline-flex items-center gap-1 text-xs font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4"
                 >
-                  Activar Membresía Familiar <ArrowUpRight className="w-3.5 h-3.5" />
+                  Ver planes del Club arriba <ArrowUpRight className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>

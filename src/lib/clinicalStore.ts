@@ -57,6 +57,15 @@ export function updateStoredAppointmentStatus(
   const current = getStoredAppointments();
   const updated = current.map((a) => (a.id === id ? { ...a, status: newStatus } : a));
   saveStoredAppointments(updated);
+
+  if (typeof window !== "undefined") {
+    fetch("/api/citas", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status: newStatus }),
+    }).catch(() => {});
+  }
+
   return updated;
 }
 

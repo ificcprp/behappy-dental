@@ -165,7 +165,14 @@ export function MembershipPlansSection() {
                 {/* CTA Action */}
                 <div className="pt-8 border-t border-[#e5e0d5] mt-6">
                   <a
-                    href={createWhatsAppUrl(plan.ctaWhatsappMessage || `Hola Centro Dental BeHappy, deseo activar el ${plan.name}.`)}
+                    href={
+                      plan.ctaUrl && plan.ctaUrl.trim() !== ""
+                        ? plan.ctaUrl.trim()
+                        : createWhatsAppUrl(
+                            plan.ctaWhatsappMessage ||
+                              `Hola Centro Dental BeHappy, deseo activar el ${plan.name}.`
+                          )
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`w-full py-3.5 px-4 font-mono text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 transition-all ${
@@ -178,7 +185,7 @@ export function MembershipPlansSection() {
                     <ArrowUpRight className="w-4 h-4" />
                   </a>
                   <p className="text-[10px] font-mono text-center text-[#78736a] mt-2">
-                    Sin contrato de permanencia forzada · Cancela cuando quieras
+                    Sin multas de salida · 1ª profilaxis, Rx y descuentos activos desde Día 1
                   </p>
                 </div>
               </div>
@@ -234,7 +241,7 @@ export function MembershipPlansSection() {
                     Contratos forzosos de 12 a 24 meses con multas si intentas desvincularte.
                   </td>
                   <td className="p-3.5 sm:p-4 bg-emerald-50/40 text-[#141413] font-medium">
-                    ✓ Sin ataduras: suscripción mensual PAC con Flow.cl, cancelable avisando por WhatsApp.
+                    ✓ Sin multas de salida: suscripción mensual vía Flow.cl, pausable o cancelable avisando antes de tu siguiente ciclo.
                   </td>
                 </tr>
                 <tr>
@@ -268,17 +275,17 @@ export function MembershipPlansSection() {
               ¿Cómo se paga mensualmente?
             </h4>
             <p className="text-xs text-[#66635d] font-light leading-relaxed">
-              Mediante suscripción de débito automático mensual procesada con Flow.cl. Puedes utilizar tarjeta de débito, crédito o cuenta corriente de cualquier banco chileno de forma segura.
+              Mediante suscripción mensual o link de pago procesado con Flow.cl (Webpay, Redcompra, tarjeta de crédito o débito de cualquier banco chileno).
             </p>
           </div>
 
           <div className="p-5 border border-[#e5e0d5] bg-[#faf8f5] space-y-2">
             <h4 className="text-sm font-medium text-[#141413] flex items-center gap-1.5">
               <HeartHandshake className="w-4 h-4 text-[#d4af37]" />
-              ¿Puedo usarlo de inmediato?
+              ¿Cómo se activan mis limpiezas y descuentos?
             </h4>
             <p className="text-xs text-[#66635d] font-light leading-relaxed">
-              Sí. Apenas activas tu membresía puedes agendar tu evaluación diagnóstica, set radiográfico y primera profilaxis en nuestra sede de Suecia 3580, Ñuñoa. Sin periodos de carencia injustificados.
+              Tu diagnóstico, set radiográfico, 1ª limpieza completa y todos los descuentos clínicos (40% a 55%) se activan desde el Día 1. Tu 2ª limpieza semestral se libera al 6º mes de membresía activa (o desde el primer día si eliges plan anual).
             </p>
           </div>
 
@@ -288,7 +295,7 @@ export function MembershipPlansSection() {
               ¿Reembolsa en Isapres?
             </h4>
             <p className="text-xs text-[#66635d] font-light leading-relaxed">
-              Totalmente. Por cada prestación realizada emitimos boleta electrónica oficial de servicios médicos y formulario timbrado para que solicites el reintegro en tu Isapre o seguro de salud complementario.
+              Totalmente. Por cada prestación clínica realizada emitimos boleta electrónica oficial de servicios médicos y formulario timbrado para que solicites el reintegro en tu Isapre o seguro complementario.
             </p>
           </div>
         </div>

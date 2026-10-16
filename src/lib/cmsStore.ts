@@ -125,11 +125,11 @@ export const DEFAULT_WELCOME_SECTION: CMSWelcomeSection = {
     {
       id: "card-convenio",
       number: "02",
-      tag: "SISTEMA PREVENTIVO",
-      title: "Descubre nuestro convenio dental",
-      description: "Beneficios del convenio, coberturas escalonadas y tarifas preferenciales para toda la familia.",
-      linkText: "Lee sobre nuestro seguro →",
-      linkUrl: "/precios"
+      tag: "MEMBRESÍA PREVENTIVA",
+      title: "Descubre el Club Familiar BeHappy",
+      description: "Planes mensuales y anuales con limpiezas y radiografías $0 copago y hasta 50% en arancel clínico.",
+      linkText: "Ver planes del Club →",
+      linkUrl: "/club"
     },
     {
       id: "card-tratamientos",
@@ -189,14 +189,14 @@ export const DEFAULT_ANNOUNCEMENTS = [
 export const DEFAULT_PROMOTIONS: CMSPromotion[] = [
   {
     id: "promo-seguro",
-    tag: "PLAN PREVENTIVO BEHAPPY",
-    title: "Seguro Dental Familiar Propio",
-    discount: "20% al 60%",
-    description: "Cobertura escalonada en todos los procedimientos odontológicos sin letra chica ni copagos abusivos.",
-    badge: "Membresía Activa",
+    tag: "MEMBRESÍA PREVENTIVA BEHAPPY",
+    title: "Club Dental Familiar Propio",
+    discount: "40% al 55%",
+    description: "Planes de cuidado continuo con 2 limpiezas anuales $0 copago, radiografías incluidas y arancel preferente sin letra chica.",
+    badge: "Club BeHappy",
     image: "/images/promos/seguro-dental.png",
-    linkText: "Lee sobre nuestro seguro",
-    linkHref: "/precios"
+    linkText: "Ver planes del Club BeHappy",
+    linkHref: "/club"
   },
   {
     id: "promo-evaluacion",
@@ -222,18 +222,19 @@ export const DEFAULT_MEMBERSHIP_PLANS: CMSMembershipPlan[] = [
     billingPeriod: "mes",
     description: "Cuidado preventivo continuo para adultos y jóvenes profesionales. Elimina gastos imprevistos y mantén tu salud bucal impecable todo el año.",
     popular: false,
-    badge: "Acceso Inmediato",
+    badge: "Activación Día 1",
     features: [
-      "2 Limpiezas y Destartrajes completos al año ($0 copago)",
+      "2 Limpiezas y Destartrajes al año $0 copago (1ª desde el Día 1 · 2ª al mes 6 o inmediata en plan anual)",
       "Set de Radiografías Bite-wing digitales anuales ($0 copago)",
       "Evaluación y diagnóstico clínico semestral ($0 copago)",
       "1 Atención de Urgencia diurna al año sin costo de consulta",
       "45% arancel preferente en resinas compuestas y tapaduras",
       "40% de descuento en Blanqueamiento dental LED",
-      "Sin permanencia obligatoria: cancela o pausa cuando quieras"
+      "Sin multas de salida: pausa o cancela antes de tu próximo ciclo"
     ],
     ctaText: "Suscribirme al Plan Sonrisa",
-    ctaWhatsappMessage: "Hola Centro Dental BeHappy, me interesa suscribirme al Plan BeHappy Sonrisa ($14.990/mes). ¿Me pueden guiar con la activación?",
+    ctaWhatsappMessage: "Hola Centro Dental BeHappy, me interesa suscribirme al Plan BeHappy Sonrisa ($14.990/mes). ¿Me pueden enviar el link de inscripción?",
+    ctaUrl: "",
     coverageHighlight: "2 limpiezas al año + Radiografías $0 copago"
   },
   {
@@ -249,16 +250,17 @@ export const DEFAULT_MEMBERSHIP_PLANS: CMSMembershipPlan[] = [
     badge: "MÁS ELEGIDO POR FAMILIAS",
     features: [
       "Cobertura para 3 beneficiarios (carga adicional: +$8.990/mes)",
-      "Limpieza y profilaxis semestral para todos los inscritos ($0 copago)",
+      "Limpieza semestral $0 copago para los 3 inscritos (1ª activa desde el mes 1 · 2ª al mes 6)",
       "Set radiográfico y diagnóstico preventivo para toda la familia ($0 copago)",
       "1 Aplicación de Flúor barniz y sellantes para niños al año ($0 copago)",
       "50% de arancel preferente en restauraciones y odontopediatría",
       "Arancel preferencial fijado en controles mensuales de ortodoncia",
       "Prioridad de atención en box Suecia 3580 ante urgencias",
-      "Débito automático mensual vía Flow.cl (Webpay / Débito / Tarjetas)"
+      "Suscripción mensual vía Flow.cl (Tarjetas, PAC o link directo)"
     ],
     ctaText: "Activar Plan Familiar",
     ctaWhatsappMessage: "Hola Centro Dental BeHappy, quiero activar el Plan Familia Protegida ($32.990/mes para 3 personas). ¿Cómo procedemos?",
+    ctaUrl: "",
     coverageHighlight: "3 personas cubiertas · Limpiezas semestrales $0 copago"
   },
   {
@@ -283,6 +285,7 @@ export const DEFAULT_MEMBERSHIP_PLANS: CMSMembershipPlan[] = [
     ],
     ctaText: "Cotizar Convenio Pyme",
     ctaWhatsappMessage: "Hola Centro Dental BeHappy, represento a una empresa/pyme y me interesa cotizar el Plan Convenio Corporativo para nuestro equipo.",
+    ctaUrl: "",
     coverageHighlight: "Factura exenta deducible + Chequeo anual $0 copago"
   }
 ];
@@ -304,9 +307,78 @@ export const DEFAULT_CMS_DATA: CMSData = {
 
 const STORAGE_CMS_KEY = "behappy_cms_data";
 const CMS_CHANGE_EVENT = "behappy_cms_updated";
+let hasHydratedFromSupabase = false;
+
+function normalizeLegacySeguroTerms(data: CMSData): CMSData {
+  // Upgrade any cached "Seguro" references to "Club BeHappy" for CMF regulatory & commercial consistency
+  if (data.welcomeSection?.cards) {
+    data.welcomeSection.cards = data.welcomeSection.cards.map((c) => {
+      if (c.id === "card-convenio" && c.linkText?.toLowerCase().includes("seguro")) {
+        return {
+          ...c,
+          tag: "MEMBRESÍA PREVENTIVA",
+          title: "Descubre el Club Familiar BeHappy",
+          description: "Planes mensuales y anuales con limpiezas y radiografías $0 copago y hasta 50% en arancel clínico.",
+          linkText: "Ver planes del Club →",
+          linkUrl: "/club"
+        };
+      }
+      return c;
+    });
+  }
+  if (data.promotions) {
+    data.promotions = data.promotions.map((p) => {
+      if (p.id === "promo-seguro" && p.title?.toLowerCase().includes("seguro")) {
+        return {
+          ...p,
+          tag: "MEMBRESÍA PREVENTIVA BEHAPPY",
+          title: "Club Dental Familiar Propio",
+          discount: "40% al 55%",
+          description: "Planes de cuidado continuo con 2 limpiezas anuales $0 copago, radiografías incluidas y arancel preferente sin letra chica.",
+          badge: "Club BeHappy",
+          linkText: "Ver planes del Club BeHappy",
+          linkHref: "/club"
+        };
+      }
+      return p;
+    });
+  }
+  return data;
+}
+
+export async function syncCMSFromServer(): Promise<CMSData | null> {
+  if (typeof window === "undefined") return null;
+  try {
+    const res = await fetch("/api/cms", { cache: "no-store" });
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (json?.success && json?.source === "supabase" && json?.data) {
+      const merged: CMSData = normalizeLegacySeguroTerms({
+        ...DEFAULT_CMS_DATA,
+        ...json.data,
+        membershipPlans:
+          json.data.membershipPlans && json.data.membershipPlans.length > 0
+            ? json.data.membershipPlans
+            : DEFAULT_MEMBERSHIP_PLANS
+      });
+      localStorage.setItem(STORAGE_CMS_KEY, JSON.stringify(merged));
+      window.dispatchEvent(new CustomEvent(CMS_CHANGE_EVENT, { detail: merged }));
+      return merged;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 export function getCMSData(): CMSData {
   if (typeof window === "undefined") return DEFAULT_CMS_DATA;
+
+  if (!hasHydratedFromSupabase) {
+    hasHydratedFromSupabase = true;
+    syncCMSFromServer();
+  }
+
   try {
     const raw = localStorage.getItem(STORAGE_CMS_KEY);
     if (!raw) {
@@ -314,7 +386,7 @@ export function getCMSData(): CMSData {
       return DEFAULT_CMS_DATA;
     }
     const parsed = JSON.parse(raw);
-    return {
+    const merged: CMSData = {
       ...DEFAULT_CMS_DATA,
       ...parsed,
       treatments: parsed.treatments && parsed.treatments.length > 0 ? parsed.treatments : DEFAULT_CMS_DATA.treatments,
@@ -334,6 +406,7 @@ export function getCMSData(): CMSData {
         image: p.image || (idx === 0 ? "/images/promos/seguro-dental.png" : "/images/promos/promos-vigentes.png")
       })) : DEFAULT_PROMOTIONS,
     };
+    return normalizeLegacySeguroTerms(merged);
   } catch (err) {
     console.error("Error reading CMS data:", err);
     return DEFAULT_CMS_DATA;
@@ -354,7 +427,7 @@ export function saveCMSData(data: Partial<CMSData>): CMSData {
     // Dispatch custom event for real-time reactive re-renders
     window.dispatchEvent(new CustomEvent(CMS_CHANGE_EVENT, { detail: updated }));
 
-    // Send async sync to API route
+    // Send async sync to API route (persists to Supabase site_cms_payloads)
     fetch("/api/cms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -375,6 +448,11 @@ export function resetCMSData(): CMSData {
   try {
     localStorage.setItem(STORAGE_CMS_KEY, JSON.stringify(DEFAULT_CMS_DATA));
     window.dispatchEvent(new CustomEvent(CMS_CHANGE_EVENT, { detail: DEFAULT_CMS_DATA }));
+    fetch("/api/cms", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(DEFAULT_CMS_DATA)
+    }).catch(() => {});
     return DEFAULT_CMS_DATA;
   } catch (err) {
     console.error("Error resetting CMS data:", err);

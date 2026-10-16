@@ -1229,8 +1229,8 @@ export function SiteCmsEditor() {
                   </div>
                 </div>
 
-                {/* WhatsApp CTA Action Config */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-[#222228]">
+                {/* WhatsApp & Flow.cl CTA Action Config */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-[#222228]">
                   <div>
                     <label className="text-[10px] font-mono text-neutral-400 uppercase block mb-1">
                       Texto del Botón CTA
@@ -1253,6 +1253,19 @@ export function SiteCmsEditor() {
                       value={plan.ctaWhatsappMessage}
                       onChange={(e) => handlePlanChange(pIdx, "ctaWhatsappMessage", e.target.value)}
                       placeholder="Hola Centro Dental BeHappy, me interesa..."
+                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono focus:border-amber-400 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono text-amber-400 uppercase block mb-1">
+                      Link de Cobro Flow.cl (Opcional · Prioridad sobre WhatsApp)
+                    </label>
+                    <input
+                      type="url"
+                      value={plan.ctaUrl || ""}
+                      onChange={(e) => handlePlanChange(pIdx, "ctaUrl", e.target.value)}
+                      placeholder="https://www.flow.cl/btn.php?token=..."
                       className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono focus:border-amber-400 outline-none"
                     />
                   </div>
