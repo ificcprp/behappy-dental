@@ -4,7 +4,15 @@ import React, { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { UserRole, UserProfile, PatientAppointment, ClinicalRecord, OdontogramTooth } from "@/types/auth";
+import {
+  UserRole,
+  UserProfile,
+  PatientAppointment,
+  ClinicalRecord,
+  OdontogramTooth,
+  InformedConsent,
+  DentalBudget
+} from "@/types/auth";
 import { createWhatsAppUrl } from "@/data/clinicInfo";
 import {
   getCurrentSession,
@@ -22,9 +30,14 @@ import {
   addStoredClinicalRecord,
   getStoredOdontogram,
   updateStoredToothStatus,
+  getStoredConsents,
+  addStoredConsent,
+  getStoredBudgets,
+  addStoredBudget,
   CLINICAL_CHANGE_EVENT
 } from "@/lib/clinicalStore";
 import { SiteCmsEditor } from "@/components/portal/SiteCmsEditor";
+import { DEMO_USERS } from "@/data/portalMockData";
 import {
   Calendar,
   CheckCircle2,
@@ -32,6 +45,7 @@ import {
   MessageCircle,
   LogOut,
   ArrowRight,
+  ArrowLeft,
   LayoutDashboard,
   Globe,
   Users as UsersIcon,
@@ -133,20 +147,27 @@ function PortalContent() {
   useEffect(() => {
     const session = getCurrentSession();
     if (!session) {
-      // Unauthenticated access: redirect to login immediately
-      router.replace("/login");
-      return;
-    }
-
-    setCurrentUser(session);
-    
-    // If the user is an admin, allow role simulation for QA/testing if explicitly passed
-    if (session.role === "admin" && initialRoleParam) {
-      setActiveRole(initialRoleParam);
-      setAdminSimulatedRole(initialRoleParam);
+      // Auto-initialize demo session based on query parameter or fallback to paciente
+      const fallbackRole = initialRoleParam || "paciente";
+      const demo = DEMO_USERS[fallbackRole] || DEMO_USERS.paciente;
+      setCurrentSession(demo);
+      setCurrentUser(demo);
+      setActiveRole(fallbackRole);
+      setAdminSimulatedRole(fallbackRole);
     } else {
-      setActiveRole(session.role);
-      setAdminSimulatedRole(null);
+      setCurrentUser(session);
+      if (initialRoleParam) {
+        setActiveRole(initialRoleParam);
+        setAdminSimulatedRole(initialRoleParam);
+        const demo = DEMO_USERS[initialRoleParam];
+        if (demo && session.role !== initialRoleParam) {
+          setCurrentUser(demo);
+          setCurrentSession(demo);
+        }
+      } else {
+        setActiveRole(session.role);
+        setAdminSimulatedRole(null);
+      }
     }
 
     setUserList(getRegisteredUsers());
@@ -171,12 +192,14 @@ function PortalContent() {
     router.replace("/login");
   };
 
-  // Admin Role Simulation Handler (only for Admin)
-  const handleAdminSimulateRole = (role: UserRole) => {
-    if (currentUser?.role !== "admin") return;
-    setActiveRole(role);
-    setAdminSimulatedRole(role);
-    router.replace(`/portal?role=${role}`);
+  // Unified Role Switcher (Always accessible on desktop & mobile)
+  const handleRoleSwitch = (newRole: UserRole) => {
+    setActiveRole(newRole);
+    setAdminSimulatedRole(newRole);
+    const targetUser = DEMO_USERS[newRole] || currentUser || DEMO_USERS.paciente;
+    setCurrentUser(targetUser);
+    setCurrentSession(targetUser);
+    router.replace(`/portal?role=${newRole}`);
   };
 
   // SOAP Save
@@ -346,30 +369,40 @@ function PortalContent() {
           </div>
 
           {/* Right Action Block */}
-          <div className="flex items-center gap-3">
+          {/* Right Action Block: Universal Role Navigator & Identity */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
             
-            {/* ADMIN ONLY: Safe Simulation Switcher (strictly hidden from ordinary patients/doctors) */}
-            {currentUser.role === "admin" && (
-              <div className="hidden lg:flex items-center bg-slate-100 p-0.5 rounded border border-slate-300/80 text-[11px] font-mono">
-                <span className="px-2 text-[10px] uppercase font-bold text-slate-500">Vista:</span>
-                {(["paciente", "doctor", "recepcion", "admin"] as UserRole[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => handleAdminSimulateRole(r)}
-                    className={`px-2.5 py-1 rounded capitalize transition ${
-                      activeRole === r
-                        ? "bg-white text-slate-900 font-bold shadow-xs"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    {r}
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Universal Role Navigator (Always accessible on desktop and mobile) */}
+            <div className="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-md border border-slate-300/80 text-[11px] font-mono">
+              <span className="px-1.5 text-[10px] uppercase font-bold text-slate-500 shrink-0 hidden md:inline">Vista:</span>
+              {(["paciente", "doctor", "recepcion", "admin"] as UserRole[]).map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => handleRoleSwitch(r)}
+                  className={`px-2 py-1 rounded capitalize transition whitespace-nowrap text-[11px] ${
+                    activeRole === r
+                      ? "bg-slate-900 text-white font-bold shadow-xs"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+                  }`}
+                >
+                  {r === "doctor" ? "Doctor" : r === "recepcion" ? "Recepción" : r === "admin" ? "Admin" : "Paciente"}
+                </button>
+              ))}
+            </div>
+
+            {/* Link back to public web */}
+            <Link
+              href="/"
+              className="px-2.5 py-1.5 rounded border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition text-xs font-mono flex items-center gap-1 shadow-2xs shrink-0"
+              title="Volver al sitio web principal"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-slate-500" />
+              <span className="hidden sm:inline">Web</span>
+            </Link>
 
             {/* Authenticated User Identity */}
-            <div className="text-right hidden md:block">
+            <div className="text-right hidden xl:block">
               <span className="text-xs font-semibold text-slate-900 block leading-tight">
                 {currentUser.fullName}
               </span>
@@ -381,29 +414,16 @@ function PortalContent() {
             {/* Logout button */}
             <button
               onClick={handleLogout}
-              className="px-3 py-1.5 rounded border border-slate-200 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 transition text-xs font-mono flex items-center gap-1.5 shadow-2xs"
+              className="px-2.5 py-1.5 rounded border border-slate-200 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 transition text-xs font-mono flex items-center gap-1.5 shadow-2xs shrink-0"
               title="Cerrar sesión de forma segura"
             >
               <LogOut className="w-3.5 h-3.5 text-slate-500" />
-              <span className="hidden sm:inline">Cerrar Sesión</span>
+              <span className="hidden md:inline">Salir</span>
             </button>
           </div>
 
         </div>
       </header>
-
-      {/* Admin QA notice if simulating */}
-      {currentUser.role === "admin" && adminSimulatedRole && adminSimulatedRole !== "admin" && (
-        <div className="bg-amber-50 border-b border-amber-200 text-amber-900 text-xs px-4 py-2 text-center font-mono flex items-center justify-center gap-2">
-          <span>● MODO AUDITORÍA ADMINISTRATIVA: Estás previsualizando la vista de rol <strong>{adminSimulatedRole.toUpperCase()}</strong>.</span>
-          <button
-            onClick={() => handleAdminSimulateRole("admin")}
-            className="underline font-bold hover:text-black ml-2"
-          >
-            Volver a Administrador →
-          </button>
-        </div>
-      )}
 
       {/* ========================================================================= */}
       {/* MAIN CLINICAL CONTENT AREA */}
