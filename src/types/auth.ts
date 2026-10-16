@@ -46,3 +46,42 @@ export interface OdontogramTooth {
   status: "sano" | "caries" | "obturado" | "corona" | "implante" | "extraccion_indicada";
   surfaceNotes?: string;
 }
+
+export interface InformedConsent {
+  id: string;
+  patientId: string;
+  patientName: string;
+  patientRut: string;
+  doctorName: string;
+  procedureType: "cirugia_exodoncia" | "endodoncia" | "implantes" | "ortodoncia" | "estetica";
+  title: string;
+  signedDate: string;
+  signatureDataUrl?: string;
+  status: "firmado" | "pendiente";
+  witnessName?: string;
+}
+
+export interface BudgetItem {
+  id: string;
+  toothNumber?: number;
+  procedureName: string;
+  phase: "fase1_preventiva" | "fase2_curativa" | "fase3_rehabilitadora";
+  basePrice: number;
+  convenioDiscount: number;
+  finalCopay: number;
+  notes?: string;
+}
+
+export interface DentalBudget {
+  id: string;
+  patientId: string;
+  patientName: string;
+  patientRut: string;
+  date: string;
+  items: BudgetItem[];
+  totalBasePrice: number;
+  totalDiscount: number;
+  totalCopay: number;
+  status: "propuesto" | "aceptado" | "pagado_abono" | "completado";
+  flowOrderId?: string;
+}

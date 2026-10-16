@@ -12,6 +12,11 @@ export interface CMSPromotion {
   image: string;
   linkText: string;
   linkHref: string;
+  startDate?: string;
+  endDate?: string;
+  enableCountdown?: boolean;
+  maxRedemptions?: number;
+  disclaimer?: string;
 }
 
 export interface CMSHero {
@@ -23,6 +28,9 @@ export interface CMSHero {
   secondaryCtaText: string;
   secondaryCtaUrl: string;
   bgImage: string;
+  statusBadge?: string;
+  abVariantTitle?: string;
+  enableAbTesting?: boolean;
 }
 
 export interface CMSWelcomeCard {
@@ -80,6 +88,10 @@ export interface CMSMembershipPlan {
   ctaWhatsappMessage: string;
   ctaUrl?: string;
   coverageHighlight: string;
+  flowPlanId?: string;
+  maxFamilyMembers?: number;
+  activeSubscriberSlots?: number;
+  zeroCopayProcedures?: string[];
 }
 
 export interface CMSData {
@@ -95,6 +107,9 @@ export interface CMSData {
   heroHeadline: string;
   heroSubheadline: string;
   lastUpdated: string;
+  versionTag?: string;
+  currentStatus?: "draft" | "published";
+  auditSummary?: string;
 }
 
 export const DEFAULT_HERO: CMSHero = {
@@ -413,13 +428,23 @@ export function getCMSData(): CMSData {
   }
 }
 
-export function saveCMSData(data: Partial<CMSData>): CMSData {
+export interface SaveCMSOptions {
+  status?: "draft" | "published";
+  versionTag?: string;
+  changeSummary?: string;
+  userEmail?: string;
+}
+
+export function saveCMSData(data: Partial<CMSData>, options: SaveCMSOptions = {}): CMSData {
   if (typeof window === "undefined") return DEFAULT_CMS_DATA;
   try {
     const current = getCMSData();
     const updated: CMSData = {
       ...current,
       ...data,
+      currentStatus: options.status || current.currentStatus || "published",
+      versionTag: options.versionTag || current.versionTag,
+      auditSummary: options.changeSummary || current.auditSummary,
       lastUpdated: new Date().toISOString()
     };
     localStorage.setItem(STORAGE_CMS_KEY, JSON.stringify(updated));
@@ -427,11 +452,17 @@ export function saveCMSData(data: Partial<CMSData>): CMSData {
     // Dispatch custom event for real-time reactive re-renders
     window.dispatchEvent(new CustomEvent(CMS_CHANGE_EVENT, { detail: updated }));
 
-    // Send async sync to API route (persists to Supabase site_cms_payloads)
+    // Send async sync to API route with extended action payload
     fetch("/api/cms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updated)
+      body: JSON.stringify({
+        ...updated,
+        __action: options.status === "draft" ? "save_draft" : "publish",
+        __versionTag: options.versionTag || `v-${new Date().toISOString().slice(0, 10)}`,
+        __changeSummary: options.changeSummary || "Actualización desde editor CMS",
+        __userEmail: options.userEmail || "admin@behappydental.cl"
+      })
     }).catch(() => {
       // Offline or network error handled gracefully
     });
@@ -441,6 +472,15 @@ export function saveCMSData(data: Partial<CMSData>): CMSData {
     console.error("Error saving CMS data:", err);
     return DEFAULT_CMS_DATA;
   }
+}
+
+export function publishCMSData(data: Partial<CMSData>, versionTag?: string, changeSummary?: string, userEmail?: string): CMSData {
+  return saveCMSData(data, {
+    status: "published",
+    versionTag: versionTag || `v${new Date().toISOString().slice(0, 16).replace("T", " ")}`,
+    changeSummary: changeSummary || "Publicación oficial en producción",
+    userEmail: userEmail || "admin@behappydental.cl"
+  });
 }
 
 export function resetCMSData(): CMSData {

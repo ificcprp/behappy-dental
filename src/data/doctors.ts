@@ -8,6 +8,12 @@ export interface Doctor {
   image: string;
   tags: string[];
   schedule: string;
+  // Campos Enterprise CMS
+  sisRegistrationNumber?: string;
+  universityDegree?: string;
+  isAvailableOnline?: boolean;
+  assignedBox?: "Box 1" | "Box 2" | "Box 3";
+  allowedTreatmentIds?: string[];
 }
 
 export const DOCTORS: Doctor[] = [

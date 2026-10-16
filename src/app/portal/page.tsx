@@ -67,6 +67,8 @@ import {
 } from "lucide-react";
 import { AnatomicalOdontogram } from "@/components/portal/AnatomicalOdontogram";
 import { ClinicalDocumentModal } from "@/components/portal/ClinicalDocumentModal";
+import { ClinicalBudgetPlan } from "@/components/portal/ClinicalBudgetPlan";
+import { InformedConsentModal } from "@/components/portal/InformedConsentModal";
 
 function PortalContent() {
   const router = useRouter();

@@ -1,9 +1,17 @@
-import { PatientAppointment, ClinicalRecord, OdontogramTooth } from "@/types/auth";
+import {
+  PatientAppointment,
+  ClinicalRecord,
+  OdontogramTooth,
+  InformedConsent,
+  DentalBudget
+} from "@/types/auth";
 import { INITIAL_APPOINTMENTS, INITIAL_CLINICAL_RECORDS, INITIAL_ODONTOGRAM } from "@/data/portalMockData";
 
 const STORAGE_APPOINTMENTS_KEY = "behappy_appointments_data";
 const STORAGE_RECORDS_KEY = "behappy_clinical_records_data";
 const STORAGE_ODONTOGRAM_KEY = "behappy_odontogram_data";
+const STORAGE_CONSENTS_KEY = "behappy_informed_consents_data";
+const STORAGE_BUDGETS_KEY = "behappy_dental_budgets_data";
 export const CLINICAL_CHANGE_EVENT = "behappy_clinical_updated";
 
 /* =========================================================================
@@ -110,6 +118,24 @@ export function addStoredClinicalRecord(
   };
   const updated = [newRecord, ...current];
   saveStoredClinicalRecords(updated);
+
+  // Cloud sync to /api/clinica/records
+  if (typeof window !== "undefined") {
+    fetch("/api/clinica/records", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        patient_id: newRecord.patientId,
+        doctor_name: newRecord.doctorName,
+        diagnosis: newRecord.diagnosis,
+        treatment_performed: newRecord.treatmentPerformed,
+        prescription: newRecord.prescription,
+        next_step: newRecord.nextStep,
+        odontogram_json: getStoredOdontogram(),
+      }),
+    }).catch(() => {});
+  }
+
   return newRecord;
 }
 
@@ -155,4 +181,68 @@ export function updateStoredToothStatus(
   );
   saveStoredOdontogram(updated);
   return updated;
+}
+
+/* =========================================================================
+   4. INFORMED CONSENTS STORE (LEY 20.584)
+   ========================================================================= */
+
+export function getStoredConsents(): InformedConsent[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_CONSENTS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveStoredConsents(consents: InformedConsent[]): InformedConsent[] {
+  if (typeof window === "undefined") return consents;
+  try {
+    localStorage.setItem(STORAGE_CONSENTS_KEY, JSON.stringify(consents));
+    window.dispatchEvent(new CustomEvent(CLINICAL_CHANGE_EVENT, { detail: { consents } }));
+    return consents;
+  } catch {
+    return consents;
+  }
+}
+
+export function addStoredConsent(consent: InformedConsent): InformedConsent {
+  const current = getStoredConsents();
+  const updated = [consent, ...current.filter((c) => c.id !== consent.id)];
+  saveStoredConsents(updated);
+  return consent;
+}
+
+/* =========================================================================
+   5. DENTAL BUDGETS STORE
+   ========================================================================= */
+
+export function getStoredBudgets(): DentalBudget[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_BUDGETS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveStoredBudgets(budgets: DentalBudget[]): DentalBudget[] {
+  if (typeof window === "undefined") return budgets;
+  try {
+    localStorage.setItem(STORAGE_BUDGETS_KEY, JSON.stringify(budgets));
+    window.dispatchEvent(new CustomEvent(CLINICAL_CHANGE_EVENT, { detail: { budgets } }));
+    return budgets;
+  } catch {
+    return budgets;
+  }
+}
+
+export function addStoredBudget(budget: DentalBudget): DentalBudget {
+  const current = getStoredBudgets();
+  const updated = [budget, ...current.filter((b) => b.id !== budget.id)];
+  saveStoredBudgets(updated);
+  return budget;
 }

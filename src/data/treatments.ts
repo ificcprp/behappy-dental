@@ -17,6 +17,16 @@ export interface Treatment {
   image: string;
   recommendedFor: string;
   popular?: boolean;
+  // Campos Enterprise CMS
+  priceBaseCLP?: number;
+  priceClubCLP?: number;
+  fonasaCode?: string;
+  boxDurationMinutes?: number;
+  isActive?: boolean;
+  informedConsentUrl?: string;
+  contraindications?: string[];
+  beforeAfterImages?: { before: string; after: string; caption: string }[];
+  installmentsMax?: number;
 }
 
 export const TREATMENTS: Treatment[] = [

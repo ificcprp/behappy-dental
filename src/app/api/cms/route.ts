@@ -4,13 +4,36 @@ import { supabase } from "@/lib/supabase";
 
 const CMS_TABLE = "site_cms_payloads";
 const CMS_ROW_ID = "current";
+const CMS_VERSIONS_TABLE = "cms_versions";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const isHistoryRequest = searchParams.get("history") === "true";
+
   try {
-    if (
+    const isSupabaseReady =
       process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co"
-    ) {
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co";
+
+    if (isSupabaseReady) {
+      // 1. Si solicitan historial de versiones y auditoría
+      if (isHistoryRequest) {
+        const { data: versions, error: vErr } = await supabase
+          .from(CMS_VERSIONS_TABLE)
+          .select("id, created_at, user_email, version_tag, status, change_summary, is_active_production")
+          .order("created_at", { ascending: false })
+          .limit(25);
+
+        if (!vErr && versions) {
+          return NextResponse.json({
+            success: true,
+            versions,
+          });
+        }
+        return NextResponse.json({ success: true, versions: [] });
+      }
+
+      // 2. Consulta regular del estado actual del CMS
       const { data, error } = await supabase
         .from(CMS_TABLE)
         .select("*")
@@ -42,6 +65,10 @@ export async function GET() {
     console.warn("Supabase GET /api/cms fallback to default:", dbErr);
   }
 
+  if (isHistoryRequest) {
+    return NextResponse.json({ success: true, versions: [] });
+  }
+
   return NextResponse.json({
     success: true,
     source: "default",
@@ -51,15 +78,75 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const payload: CMSData = await req.json();
+    const body = await req.json();
+    const action = body.__action || "publish";
+    const versionTag = body.__versionTag || `v-${new Date().toISOString().slice(0, 10)}`;
+    const changeSummary = body.__changeSummary || "Actualización desde editor CMS";
+    const userEmail = body.__userEmail || "admin@behappydental.cl";
+
+    // Limpiar campos de control antes de persistir payload canónico
+    const {
+      __action,
+      __versionTag,
+      __changeSummary,
+      __userEmail,
+      ...cleanedPayload
+    } = body;
+    const payload: CMSData = cleanedPayload as CMSData;
+
     let savedToSupabase = false;
+    let versionRecorded = false;
 
     try {
-      if (
+      const isSupabaseReady =
         process.env.NEXT_PUBLIC_SUPABASE_URL &&
-        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co"
-      ) {
-        const { error } = await supabase.from(CMS_TABLE).upsert(
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co";
+
+      if (isSupabaseReady) {
+        // Manejo de Rollback
+        if (action === "rollback" && body.__versionId) {
+          const { data: targetVersion, error: rErr } = await supabase
+            .from(CMS_VERSIONS_TABLE)
+            .select("payload")
+            .eq("id", body.__versionId)
+            .single();
+
+          if (!rErr && targetVersion?.payload) {
+            await supabase.from(CMS_TABLE).upsert(
+              {
+                id: CMS_ROW_ID,
+                full_payload: targetVersion.payload,
+                treatments_payload: targetVersion.payload.treatments || [],
+                doctors_payload: targetVersion.payload.doctors || [],
+                contact_payload: targetVersion.payload.clinicInfo || {},
+                announcements_payload: targetVersion.payload.announcements || [],
+                promotions_payload: targetVersion.payload.promotions || [],
+                membership_plans_payload: targetVersion.payload.membershipPlans || [],
+                updated_at: new Date().toISOString(),
+              },
+              { onConflict: "id" }
+            );
+
+            // Registrar el evento de rollback en auditoría
+            await supabase.from(CMS_VERSIONS_TABLE).insert({
+              version_tag: `Rollback a ${body.__versionId.slice(0, 8)}`,
+              status: "published",
+              payload: targetVersion.payload,
+              change_summary: `Restauración de versión histórica ${body.__versionId}`,
+              user_email: userEmail,
+              is_active_production: true,
+            });
+
+            return NextResponse.json({
+              success: true,
+              message: "Rollback ejecutado con éxito",
+              restoredPayload: targetVersion.payload,
+            });
+          }
+        }
+
+        // 1. Guardar en tabla de estado activo site_cms_payloads
+        const { error: upsertErr } = await supabase.from(CMS_TABLE).upsert(
           {
             id: CMS_ROW_ID,
             full_payload: payload,
@@ -74,10 +161,33 @@ export async function POST(req: Request) {
           { onConflict: "id" }
         );
 
-        if (!error) {
+        if (!upsertErr) {
           savedToSupabase = true;
+
+          // 2. Registrar versión en public.cms_versions si es publicación
+          if (action === "publish") {
+            // Desmarcar previas
+            await supabase
+              .from(CMS_VERSIONS_TABLE)
+              .update({ is_active_production: false })
+              .eq("is_active_production", true);
+
+            // Insertar nueva versión activa
+            const { error: verErr } = await supabase.from(CMS_VERSIONS_TABLE).insert({
+              version_tag: versionTag,
+              status: "published",
+              payload,
+              change_summary: changeSummary,
+              user_email: userEmail,
+              is_active_production: true,
+            });
+
+            if (!verErr) {
+              versionRecorded = true;
+            }
+          }
         } else {
-          console.warn("Supabase upsert warning:", error.message);
+          console.warn("Supabase upsert warning:", upsertErr.message);
         }
       }
     } catch (dbErr) {
@@ -87,9 +197,12 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       persistedInCloud: savedToSupabase,
+      versionRecorded,
       message: savedToSupabase
-        ? "Contenido CMS guardado y sincronizado en Supabase"
-        : "Contenido CMS guardado localmente (sincronización cloud pendiente)",
+        ? action === "publish"
+          ? "Contenido publicado y versionado con éxito en Supabase"
+          : "Borrador guardado en la nube"
+        : "Contenido guardado localmente (sincronización cloud pendiente)",
       lastUpdated: new Date().toISOString(),
       updatedItemsCount: {
         treatments: payload.treatments?.length || 0,
