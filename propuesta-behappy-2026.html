@@ -807,8 +807,175 @@ p:last-child { margin-bottom: 0; }
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
+}
+
+/* ── COMPACT 3-PAGE MEMORANDUM STYLES ──── */
+.memo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 6px;
+  margin-bottom: 14px;
+}
+
+.memo-brand {
+  font-family: var(--sans);
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+}
+
+.memo-meta {
+  font-family: var(--sans);
+  font-size: 0.56rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.memo-title-group {
+  margin-bottom: 12px;
+}
+
+.memo-tag {
+  font-family: var(--sans);
+  font-size: 0.54rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.memo-tag::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 1.5px;
+  background: var(--green);
+}
+
+.memo-h1 {
+  font-family: var(--serif);
+  font-size: 2.35rem;
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.memo-h1 em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--green);
+}
+
+.memo-subtitle {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 620px;
+}
+
+.stats-strip-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 8px 0;
+  margin: 10px 0;
+}
+
+.stats-strip-4 .stat-n {
+  font-family: var(--serif);
+  font-size: 1.65rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--ink);
+  display: block;
+}
+
+.stats-strip-4 .stat-l {
+  font-size: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
   display: block;
   margin-top: 2px;
+}
+
+.memo-info-bar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+  font-size: 0.66rem;
+  color: var(--ink2);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--cream2);
+}
+
+.memo-info-bar label {
+  display: block;
+  font-size: 0.48rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 1px;
+}
+
+.module-grid-3x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.module-card-compact {
+  border: 1px solid var(--rule);
+  background: rgba(255, 255, 255, 0.65);
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.module-card-compact .m-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 3px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--cream2);
+}
+
+.module-card-compact .m-h {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.15;
+  margin-bottom: 2px;
+}
+
+.module-card-compact .m-desc {
+  font-size: 0.66rem;
+  color: var(--ink2);
+  line-height: 1.4;
+}
+
+.page {
+  padding: 30px 42px;
 }
 </style>
 </head>
@@ -818,9 +985,9 @@ p:last-child { margin-bottom: 0; }
 <div id="editor-toolbar" class="no-print">
   <div class="toolbar-inner">
     <div class="toolbar-title">
-      <span class="toolbar-badge">MODO WEB</span>
-      <strong>Editor de Propuesta BeHappy Dental 2026</strong>
-      <span style="font-size:0.7rem;color:#a09d95;margin-left:8px;">Edita cualquier texto antes de imprimir</span>
+      <span class="toolbar-badge">MEMORÁNDUM EJECUTIVO</span>
+      <strong>Propuesta BeHappy Dental 2026</strong>
+      <span style="font-size:0.7rem;color:#a09d95;margin-left:8px;">Documento síntesis de 3 páginas A4</span>
     </div>
     <div class="toolbar-btns">
       <button id="toggle-edit-btn" onclick="toggleEditMode()" class="t-btn t-btn-edit">
@@ -833,7 +1000,7 @@ p:last-child { margin-bottom: 0; }
         🔄 Restaurar Original
       </button>
       <button onclick="exportToPdf()" class="t-btn t-btn-primary">
-        🖨️ Descargar como PDF
+        🖨️ Descargar como PDF (3 Páginas)
       </button>
     </div>
   </div>
@@ -842,264 +1009,221 @@ p:last-child { margin-bottom: 0; }
 <div id="proposal-container">
 
 <!-- ════════════════════════════════════════
-     PORTADA
+     PÁGINA 1 DE 3: PORTADA & DIAGNÓSTICO DE CAPACIDAD DE SILLÓN
 ════════════════════════════════════════ -->
-<div class="cover">
-  <div class="cover-top">
-    <span class="cover-top-brand">Centro Dental BeHappy &nbsp;·&nbsp; Ñuñoa</span>
-    <span class="cover-top-meta">Propuesta confidencial &nbsp;·&nbsp; Octubre 2026</span>
+<div class="page" style="position:relative;">
+  <div class="memo-header">
+    <span class="memo-brand">Centro Dental BeHappy &nbsp;·&nbsp; Suecia 3580, Ñuñoa</span>
+    <span class="memo-meta">Propuesta Confidencial &nbsp;·&nbsp; Octubre 2026</span>
   </div>
 
-  <div class="cover-body">
-    <div class="cover-chapter">Servicios digitales &nbsp;§ 2026</div>
-
-    <h1 class="cover-title">
-      Ecosistema clínico<br>
-      <em>entrelazado</em><br>
+  <div class="memo-title-group">
+    <div class="memo-tag">Memorándum Estratégico de Modernización &nbsp;§ 2026</div>
+    <h1 class="memo-h1">
+      Ecosistema clínico <em>entrelazado</em><br>
       y soberanía digital.
     </h1>
-
-    <p class="cover-subtitle">
-      Memorándum estratégico para Centro Dental BeHappy: reemplazo de presencia estática por un ecosistema integral de captación local, triaje por síntoma, simulación de copagos Fonasa/Isapre, odontograma anatómico FDI en box y membresías recurrentes Club BeHappy.
+    <p class="memo-subtitle">
+      Reemplazo de presencia estática por una plataforma médica propia de captación local en Ñuñoa, triaje por síntoma, simulación de copagos Fonasa/Isapre, odontograma FDI en box y membresías recurrentes Club BeHappy.
     </p>
+  </div>
 
-    <div class="cover-stats">
-      <div class="cover-stat">
-        <span class="num">6</span>
-        <span class="lbl">Activos en código</span>
-      </div>
-      <div class="cover-stat">
-        <span class="num">90</span>
-        <span class="lbl">Días ciclo tracción</span>
-      </div>
-      <div class="cover-stat">
-        <span class="num">100%</span>
-        <span class="lbl">Soberanía de activos</span>
-      </div>
+  <div class="stats-strip-4">
+    <div class="stat-item">
+      <span class="stat-n">6</span>
+      <span class="stat-l">Activos en código</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-n">90</span>
+      <span class="stat-l">Días ciclo tracción</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-n" style="color:var(--green);font-weight:600;">$4.030.000</span>
+      <span class="stat-l">Retorno mensual est. (M3)</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-n">100%</span>
+      <span class="stat-l">Soberanía de activos</span>
     </div>
   </div>
 
-  <div class="cover-bottom">
-    <div class="cover-bottom-item">
+  <div class="memo-info-bar">
+    <div>
       <label>Para</label>
-      <p>Centro Dental BeHappy SpA<br>Suecia 3580, Of. 304 · Ñuñoa</p>
+      <strong>Centro Dental BeHappy SpA</strong> · Suecia 3580, Of. 304, Ñuñoa
     </div>
-    <div class="cover-bottom-item">
+    <div>
       <label>Emitido el</label>
-      <p>6 de octubre de 2026</p>
+      6 de octubre de 2026
     </div>
-    <div class="cover-bottom-item">
+    <div>
       <label>Validez</label>
-      <p>20 de octubre de 2026<br>14 días corridos</p>
+      20 de octubre de 2026 (14 días)
     </div>
   </div>
-</div>
 
-<!-- ════════════════════════════════════════
-     § 01 — DIAGNÓSTICO DE MERCADO EN ÑUÑOA & CAPACIDAD DE SILLÓN
-════════════════════════════════════════ -->
-<div class="page page-break" style="position:relative;">
-  <div class="wm">01</div>
-
-  <div class="ph">
-    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
-    <span class="ph-right">§ 01 · Diagnóstico y Capacidad de Sillón</span>
-  </div>
-
+  <!-- § 01 DIAGNÓSTICO -->
   <div class="chapter-label">§ 01 &nbsp;·&nbsp; Diagnóstico de mercado en Ñuñoa &amp; economía de sillón</div>
-  <h2 class="section-h">Capacidad de sillón.<br><em>La matemática real del box clínico en Ñuñoa.</em></h2>
-  <p class="section-lead">Una clínica dental en Suecia 3580 tiene costos fijos estructurales severos: arriendo en piso clínico, asistente dental, autoclave, insumos de marcas certificadas (3M, Dentsply) y recepción. Cada hora de sillón desocupada representa entre $25.000 y $35.000 CLP de pérdida irrecuperable. Los constructores web estáticos sufren una fuga triple que el código propietario resuelve de raíz.</p>
+  <h2 class="section-h" style="font-size:1.75rem;margin-bottom:4px;">Capacidad de sillón.<br><em>La matemática real del box clínico en Ñuñoa.</em></h2>
+  <p class="section-lead" style="font-size:0.75rem;line-height:1.55;margin-bottom:10px;">
+    Una clínica en Suecia 3580 tiene costos fijos estructurales severos: arriendo de box clínico en Providencia/Ñuñoa, asistente dental, autoclave, insumos certificados (3M, Dentsply) y recepción. Cada hora de sillón desocupada representa entre <strong>$25.000 y $35.000 CLP de pérdida irrecuperable</strong>. Los constructores web estáticos sufren una fuga triple que el código propietario resuelve de raíz.
+  </p>
 
-  <div class="callout callout-green">
-    <p><strong>El diagnóstico de la fuga triple de rentabilidad:</strong><br>
-    <strong>1. Deserción pre-consulta:</strong> En Chile, el 74% de las personas posterga el dentista por temor a cobros ocultos (resuelto con el <em>Simulador de Copagos</em>).<br>
-    <strong>2. Inasistencia (no-show):</strong> Pérdida del 25% al 35% de citas por falta de pre-cualificación y confirmación protocolizada (resuelto con el <em>Triaje Clínico</em> y recepción en tiempo real).<br>
-    <strong>3. Fuga post-tratamiento:</strong> Pérdida del paciente tras el alta por falta de un modelo de membresía preventiva familiar (resuelto con el <em>Club BeHappy</em> y cobro recurrente PAC/PAT).</p>
+  <div class="callout callout-green" style="margin:8px 0;padding:8px 12px;font-size:0.72rem;">
+    <strong>El diagnóstico de la fuga triple de rentabilidad:</strong><br>
+    <strong>1. Deserción pre-consulta:</strong> En Chile, el 74% posterga el dentista por temor a cobros ocultos (resuelto con el <em>Simulador de Copago</em>).<br>
+    <strong>2. Inasistencia (no-show):</strong> Pérdida del 30% de citas por falta de pre-cualificación (resuelto con <em>Triaje Clínico</em> y WhatsApp directo).<br>
+    <strong>3. Fuga post-tratamiento:</strong> Pérdida del paciente tras el alta por falta de un modelo preventivo familiar (resuelto con <em>Club BeHappy</em> y PAC/PAT).
   </div>
 
-  <div class="section-rule mt-2">
+  <div class="section-rule mt-1" style="padding-top:10px;margin-top:10px;">
     <p class="sc mb-1">Las 3 palancas operacionales de recuperación de rentabilidad</p>
     <table>
       <thead>
         <tr>
           <th>Palanca</th>
           <th>Diagnóstico actual y acción requerida</th>
-          <th>Impacto</th>
+          <th style="width:110px;">Impacto</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="td-n">Pre-cualificación de intención<br><span class="td-s">Triaje por síntoma</span></td>
-          <td class="td-s">Filtro clínico directo en la home que clasifica entre dolor agudo, estética, alineación con Invisalign o prevención, enrutando al especialista con horario disponible y reduciendo prospectos no calificados.</td>
+          <td class="td-n">Pre-cualificación<br><span class="td-s">Triaje por síntoma</span></td>
+          <td class="td-s">Filtro clínico en la home que clasifica entre dolor agudo, estética, Invisalign o prevención, enrutando al especialista correspondiente y reduciendo consultas no cualificadas.</td>
           <td><span class="tag tag-ok">Alta intención</span></td>
         </tr>
         <tr>
-          <td class="td-n">Transparencia financiera<br><span class="td-s">Simulador Fonasa/Isapre</span></td>
-          <td class="td-s">Calculadora interactiva en /precios que desglosa aranceles y copagos en CLP antes de la consulta, erradicando el temor al cobro oculto y elevando la conversión móvil de pacientes locales.</td>
+          <td class="td-n">Transparencia<br><span class="td-s">Simulador Fonasa/Isapre</span></td>
+          <td class="td-s">Calculadora en /precios que desglosa aranceles y copagos en CLP antes de la cita, eliminando la desconfianza del cobro sorpresa y elevando la conversión móvil de pacientes locales.</td>
           <td><span class="tag tag-ok">Cero fricción</span></td>
         </tr>
         <tr>
-          <td class="td-n">Retención e ingresos predecibles<br><span class="td-s">Club BeHappy (MRR)</span></td>
-          <td class="td-s">Modelo de suscripción familiar mensual ($14.990 – $32.990) con débito automático vía Flow.cl, garantizando que el paciente regrese cada 6 meses y blindando el flujo de caja contra meses estacionales bajos.</td>
+          <td class="td-n">Retención fija (MRR)<br><span class="td-s">Club BeHappy</span></td>
+          <td class="td-s">Suscripción preventiva familiar ($14.990 – $32.990/mes) con débito automático vía Flow.cl, garantizando que el paciente vuelva cada 6 meses y amortiguando meses bajos.</td>
           <td><span class="tag tag-green">Ingreso recurrente</span></td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="metric-strip mt-3">
-    <div class="metric-item">
-      <span class="n">$30.000</span>
-      <span class="l">costo fijo estimado por hora de sillón ocioso en Ñuñoa</span>
+  <div class="metric-strip" style="margin:10px 0 0 0;padding:8px 0;">
+    <div class="metric-item" style="padding:4px 0;">
+      <span class="n" style="font-size:1.6rem;">$30.000</span>
+      <span class="l">costo fijo est. por hora de sillón ocioso</span>
     </div>
-    <div class="metric-item">
-      <span class="n">&lt; 10%</span>
-      <span class="l">tasa de inasistencia esperada con triaje y confirmación activa</span>
+    <div class="metric-item" style="padding:4px 0 4px 14px;">
+      <span class="n" style="font-size:1.6rem;">&lt; 10%</span>
+      <span class="l">tasa de no-show con triaje y confirmación activa</span>
     </div>
-    <div class="metric-item">
-      <span class="n">100%</span>
-      <span class="l">soberanía del dominio, cuentas y base de pacientes</span>
+    <div class="metric-item" style="padding:4px 0 4px 14px;">
+      <span class="n" style="font-size:1.6rem;">100%</span>
+      <span class="l">soberanía de dominio, cuentas y base de pacientes</span>
     </div>
   </div>
 </div>
 
 <!-- ════════════════════════════════════════
-     § 02.1 — ARQUITECTURA CLÍNICA (I): CAPTACIÓN & FIDELIZACIÓN
+     PÁGINA 2 DE 3: SEIS ACTIVOS CLÍNICOS & MODELO ECONÓMICO (ROI)
 ════════════════════════════════════════ -->
 <div class="page page-break" style="position:relative;">
   <div class="wm">02</div>
 
   <div class="ph">
     <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
-    <span class="ph-right">§ 02.1 · Ecosistema Activo: Triaje, Simulador &amp; Club BeHappy</span>
+    <span class="ph-right">§ 02 · Seis Activos Clínicos &amp; Modelo Financiero</span>
   </div>
 
-  <div class="chapter-label">§ 02 &nbsp;·&nbsp; Arquitectura Clínica (I) · Captación y Retención</div>
-  <h2 class="section-h">Seis activos en código.<br><em>Ecosistema entrelazado de captación y retención.</em></h2>
-  <p class="section-lead">A diferencia de un constructor web estático, la nueva plataforma cuenta con seis módulos clínicos y comerciales desarrollados a la medida de BeHappy y listos para operar. No son maquetas conceptuales: son herramientas activas orientadas al paciente, a la pre-cualificación de consultas y a la estabilidad económica del centro.</p>
+  <div class="chapter-label">§ 02 &nbsp;·&nbsp; Arquitectura clínica en código &amp; retorno proyectado</div>
+  <h2 class="section-h" style="font-size:1.75rem;margin-bottom:4px;">Seis activos en código.<br><em>Ecosistema entrelazado de captación y retención.</em></h2>
+  <p class="section-lead" style="font-size:0.75rem;line-height:1.5;margin-bottom:8px;">
+    A diferencia de un constructor web estático, la plataforma cuenta con 6 herramientas clínicas y operativas ya desarrolladas y listas para operar. No son prototipos: es software activo orientado al box, a la pre-cualificación y a la rentabilidad médica.
+  </p>
 
-  <div class="module-grid">
-    <!-- MÓDULO 01 -->
-    <div class="module-card">
-      <div class="module-card-top">
-        <span class="module-badge">Módulo 01 · Pre-cualificación</span>
+  <div class="module-grid-3x2">
+    <!-- ACTIVO 01 -->
+    <div class="module-card-compact">
+      <div class="m-top">
+        <span class="module-badge">01 · Pre-cualificación</span>
         <span class="module-route">Ruta: / (Home)</span>
       </div>
-      <h3 class="module-h">Triaje Clínico Inteligente por Síntoma</h3>
-      <p class="module-desc">Filtro interactivo en la portada que clasifica la necesidad del paciente antes de agendar y enruta al especialista correspondiente, eliminando consultas genéricas sin intención real.</p>
-      <ul class="module-bullets">
-        <li><strong>5 Vías de atención inmediata:</strong> Dolor dental/urgencia, alineación Invisalign, estética y blanqueamiento, implantes oseointegrados y limpieza preventiva.</li>
-        <li><strong>Enrutamiento al profesional idóneo:</strong> Asigna la consulta al Dr. Johnny Lugo (Ortodoncia), Dra. Keila Rodríguez (Estética) o Dr. Juan José Herrera (Cirugía).</li>
-        <li><strong>Sincronización con agenda:</strong> Pre-rellena automáticamente el formulario de reserva con el servicio y especialista recomendado.</li>
-      </ul>
+      <h3 class="m-h">Triaje Clínico por Síntoma</h3>
+      <p class="m-desc">Filtro interactivo que clasifica urgencia/dolor, Invisalign, implantes, estética o prevención, asignando la cita al Dr. Lugo, Dra. Rodríguez o Dr. Herrera.</p>
     </div>
 
-    <!-- MÓDULO 02 -->
-    <div class="module-card">
-      <div class="module-card-top">
-        <span class="module-badge">Módulo 02 · Transparencia</span>
+    <!-- ACTIVO 02 -->
+    <div class="module-card-compact">
+      <div class="m-top">
+        <span class="module-badge">02 · Transparencia</span>
         <span class="module-route">Ruta: /precios</span>
       </div>
-      <h3 class="module-h">Simulador Interactivo de Copago Fonasa/Isapre</h3>
-      <p class="module-desc">Calculadora en tiempo real que derriba el principal freno de compra en odontología (temor al cobro sorpresa) y pre-cualifica la intención financiera del paciente antes del box.</p>
-      <ul class="module-bullets">
-        <li><strong>6 Especialidades odontológicas:</strong> Preventiva, Odontología General, Estética, Ortodoncia, Periodoncia y Endodoncia con aranceles base transparentes.</li>
-        <li><strong>Selector de previsión en vivo:</strong> Conmuta al instante entre <em>Particular</em>, <em>Fonasa / Isapre</em> (50% bonificación estimada) o <em>Convenio BeHappy</em> (70% bonificación).</li>
-        <li><strong>Cálculo financiero transparente:</strong> Visualización de arancel de referencia, bonificación calculada en pesos ($ CLP) y copago final estimado.</li>
-      </ul>
+      <h3 class="m-h">Simulador Copago Fonasa/Isapre</h3>
+      <p class="m-desc">Calculadora en tiempo real para 6 especialidades que conmuta Particular, Fonasa/Isapre o Convenio BeHappy. Desglose en $ CLP que derriba el temor al cobro oculto.</p>
     </div>
-  </div>
 
-  <div class="module-card" style="margin-top:0;">
-    <div class="module-card-top">
-      <span class="module-badge">Módulo 03 · Ingresos Recurrentes (MRR)</span>
-      <span class="module-route">Rutas: /club y /precios</span>
-    </div>
-    <h3 class="module-h">Club BeHappy: Planes de Membresía Preventiva</h3>
-    <p class="module-desc">Motor de retención e ingresos mensuales fijos. Transforma al paciente esporádico en un afiliado familiar recurrente con visitas preventivas programadas cada 6 meses.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px;">
-      <ul class="module-bullets">
-        <li><strong>3 Planes familiares configurados:</strong> <em>Plan BeHappy Sonrisa</em> ($14.990/mes), <em>Plan Familia Protegida</em> ($32.990/mes · hasta 3 integrantes) y <em>Plan Convenio Pyme</em> ($11.900/mes para empresas locales).</li>
-        <li><strong>Switch Mensual vs. Anual:</strong> Incentivo de 2 meses bonificados en suscripción anual y botón con enlace directo a pasarela Flow.cl (PAC/PAT) o WhatsApp.</li>
-      </ul>
-      <ul class="module-bullets">
-        <li><strong>Blindaje de costo de sillón:</strong> 1ª higiene y radiografía activa desde el Día 1; 2ª higiene semestral desbloqueada al mes 6 continuo o inmediata en pago anual, asegurando rentabilidad operativa de la clínica.</li>
-        <li><strong>Transparencia radical:</strong> Tabla comparativa <em>Grandes Cadenas vs. Club BeHappy</em> que elimina la letra chica y fideliza la recompra.</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="callout callout-green" style="margin-top:12px;margin-bottom:0;padding:8px 14px;font-size:0.72rem;">
-    <p><strong>Circuito cerrado de conversión:</strong> El Triaje capta la necesidad clínica exacta, el Simulador elimina la objeción de precio y el Club BeHappy retiene al paciente de por vida bajo suscripción preventiva.</p>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     § 02.2 — ARQUITECTURA CLÍNICA (II): BOX, PACIENTES & SOBERANÍA
-════════════════════════════════════════ -->
-<div class="page page-break" style="position:relative;">
-  <div class="wm">02</div>
-
-  <div class="ph">
-    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
-    <span class="ph-right">§ 02.2 · Ecosistema Activo: Odontograma, Pacientes &amp; CMS</span>
-  </div>
-
-  <div class="chapter-label">§ 02 &nbsp;·&nbsp; Arquitectura Clínica (II) · Diagnóstico en Box &amp; Soberanía</div>
-  <h2 class="section-h">Cierre en box y soberanía.<br><em>Diagnóstico visual, auto-servicio y control administrativo.</em></h2>
-  <p class="section-lead">La plataforma acompaña al paciente dentro del box dental con herramientas visuales de diagnóstico, mientras otorga a la clínica independencia total para operar y cobrar sin intermediarios técnicos.</p>
-
-  <div class="module-grid">
-    <!-- MÓDULO 04 -->
-    <div class="module-card">
-      <div class="module-card-top">
-        <span class="module-badge">Módulo 04 · Cierre en Box</span>
-        <span class="module-route">Ruta: /portal (Rol Doctor)</span>
+    <!-- ACTIVO 03 -->
+    <div class="module-card-compact">
+      <div class="m-top">
+        <span class="module-badge">03 · Ingresos Recurrentes</span>
+        <span class="module-route">Rutas: /club y /precios</span>
       </div>
-      <h3 class="module-h">Odontograma Anatómico FDI Interactivo</h3>
-      <p class="module-desc">Herramienta visual de 32 piezas dentales por cuadrantes anatómicos FDI (18 a 48) que el doctor proyecta en pantalla frente al paciente para explicar diagnósticos y presupuestos.</p>
-      <ul class="module-bullets">
-        <li><strong>Mapeo visual de patologías:</strong> Registro por pieza de caries, obturaciones, coronas, implantes y extracciones indicadas.</li>
-        <li><strong>Aceptación de presupuestos:</strong> Duplica la tasa de cierre en box al permitir que el paciente vea con claridad el estado de su salud bucal.</li>
-        <li><strong>Ficha de atención ágil:</strong> Registro clínico básico para notas de evolución y comprobantes de atención.</li>
-      </ul>
+      <h3 class="m-h">Club BeHappy (Suscripciones)</h3>
+      <p class="m-desc">3 planes familiares ($14.990 – $32.990) con switch mensual/anual y débito Flow.cl PAC/PAT. Blindaje de sillón: 1ª profilaxis día 1, 2ª profilaxis semestral al mes 6 continuo.</p>
     </div>
 
-    <!-- MÓDULO 05 -->
-    <div class="module-card">
-      <div class="module-card-top">
-        <span class="module-badge">Módulo 05 · Auto-Servicio</span>
-        <span class="module-route">Rutas: /registro y /portal (Paciente)</span>
+    <!-- ACTIVO 04 -->
+    <div class="module-card-compact">
+      <div class="m-top">
+        <span class="module-badge">04 · Cierre en Box</span>
+        <span class="module-route">Ruta: /portal (Doctor)</span>
       </div>
-      <h3 class="module-h">Portal del Paciente y Auto-Registro</h3>
-      <p class="module-desc">Entorno privado donde los pacientes que lo deseen crean su cuenta institucional desde la web para consultar citas, medir su ahorro y autogestionar su atención.</p>
-      <ul class="module-bullets">
-        <li><strong>Auto-registro seguro en /registro:</strong> Formulario con Nombre, RUT, Teléfono, Correo, Previsión (Fonasa o Isapre) y Contraseña cifrada.</li>
-        <li><strong>Contador de Ahorro Acumulado:</strong> Métrica en pesos ($ CLP) que muestra el ahorro obtenido en bonificaciones y convenios BeHappy.</li>
-        <li><strong>Agendamiento autónomo:</strong> Historial de citas, profesional tratante y botón directo de WhatsApp Dental prioritario.</li>
-      </ul>
+      <h3 class="m-h">Odontograma Anatómico FDI</h3>
+      <p class="m-desc">Mapeo visual de 32 piezas dentales en pantalla clínica (cuadrantes 1 a 4) con registro de caries, obturaciones y coronas para duplicar la aceptación de presupuestos en box.</p>
+    </div>
+
+    <!-- ACTIVO 05 -->
+    <div class="module-card-compact">
+      <div class="m-top">
+        <span class="module-badge">05 · Auto-Servicio</span>
+        <span class="module-route">Rutas: /registro y /portal</span>
+      </div>
+      <h3 class="m-h">Portal Paciente &amp; Auto-Registro</h3>
+      <p class="m-desc">Cuentas privadas creadas por el paciente con RUT y previsión. Expediente digital con contador de ahorro acumulado en $ CLP y agendamiento directo sin intermediarios.</p>
+    </div>
+
+    <!-- ACTIVO 06 -->
+    <div class="module-card-compact">
+      <div class="m-top">
+        <span class="module-badge">06 · Soberanía Clínica</span>
+        <span class="module-route">Ruta: /login → /portal</span>
+      </div>
+      <h3 class="m-h">Editor CMS en Vivo (4 Pestañas)</h3>
+      <p class="m-desc">Panel de administración en tiempo real: Portada, Promociones, Tratamientos y Membresías sin programador. Sincronización híbrida en Supabase y respaldo local 0% caídas.</p>
     </div>
   </div>
 
-  <div class="module-card" style="margin-top:0;">
-    <div class="module-card-top">
-      <span class="module-badge">Módulo 06 · Soberanía Clínica</span>
-      <span class="module-route">Ruta: /login → /portal (Rol Admin)</span>
+  <!-- CAJA ROI FINANCIERO -->
+  <div class="roi-box" style="margin-top:6px;padding:8px 14px;">
+    <div class="roi-title">
+      <span>Proyección Económica en Régimen (Mes 3 · Pauta Directa $300.000 CLP/mes)</span>
+      <span class="tag tag-ok">Ratio ROI ~13.4x</span>
     </div>
-    <h3 class="module-h">Portal Interno y Editor CMS en Tiempo Real (4 Pestañas)</h3>
-    <p class="module-desc">Panel de control que otorga autonomía total a la dueña o doctora para editar la web en tiempo real sin costos de desarrollo adicionales ni intermediarios técnicos.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px;">
-      <ul class="module-bullets">
-        <li><strong>4 Pestañas de edición en vivo:</strong> 1) <em>Textos y Portada:</em> Titulares, teléfonos y dirección Suecia 3580; 2) <em>Promociones:</em> Banners e imágenes; 3) <em>Tratamientos:</em> Aranceles base; 4) <em>Membresías:</em> Planes Club BeHappy y links de pago.</li>
-      </ul>
-      <ul class="module-bullets">
-        <li><strong>Persistencia Híbrida Blindada:</strong> Sincronización instantánea con Supabase y respaldo en caché local para 0% caídas durante presentaciones o atención.</li>
-        <li><strong>Bandeja de Citas en Vivo:</strong> Recepción gestiona solicitudes en tiempo real y asigna estados (*Pendiente, Confirmada, Atendida*).</li>
-      </ul>
+    <div class="roi-grid" style="margin-top:6px;padding-top:6px;">
+      <div class="roi-item">
+        <span class="num" style="font-size:1.35rem;">$3.110.000</span>
+        <span class="desc">Facturación directa en box (22 citas)</span>
+      </div>
+      <div class="roi-item">
+        <span class="num" style="font-size:1.35rem;">$920.000</span>
+        <span class="desc">Ingreso Recurrente Fijo (40 suscriptores)</span>
+      </div>
+      <div class="roi-item">
+        <span class="num" style="font-size:1.35rem;color:var(--green);font-weight:700;">$4.030.000</span>
+        <span class="desc">Retorno total mensual estimado</span>
+      </div>
     </div>
   </div>
 
-  <div class="section-rule mb-2" style="margin-top:14px;padding-top:12px;">
+  <div class="section-rule" style="margin-top:10px;padding-top:8px;">
     <p class="sc mb-1">Comparativa técnica: Sitio Web Anterior vs. Ecosistema BeHappy 2026</p>
     <table class="vs">
       <thead>
@@ -1130,112 +1254,34 @@ p:last-child { margin-bottom: 0; }
           <td><span class="icon-no">✗</span> No disponible</td>
           <td><span class="icon-ok">✓</span> 32 piezas con mapeo de caries, implantes y presupuesto</td>
         </tr>
-        <tr>
-          <td class="td-n">Editor de contenidos (CMS) y cuentas de pacientes</td>
-          <td><span class="icon-w">~</span> Dependencia externa</td>
-          <td><span class="icon-ok">✓</span> Panel CMS propio en 4 pestañas y auto-registro en /registro</td>
-        </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="callout callout-green" style="font-size:0.71rem;padding:7px 12px;margin-top:8px;margin-bottom:0;">
-    <p><strong>Privacidad y cumplimiento normativo (Ley 19.628):</strong> El portal y la plataforma gestionan datos de contacto, membresía y citas operativas. No almacenan fichas médicas de diagnóstico invasivo ni imágenes radiográficas de diagnóstico clínico en la nube pública, protegiendo a la clínica bajo los más estrictos estándares éticos y legales.</p>
+  <div class="callout callout-green" style="font-size:0.7rem;padding:6px 12px;margin-top:8px;margin-bottom:0;">
+    <strong>Privacidad y cumplimiento normativo (Ley 19.628 y 20.584):</strong> La plataforma gestiona datos de contacto, membresía y citas operativas. No almacena fichas médicas de diagnóstico invasivo ni radiografías diagnósticas en la nube pública, protegiendo a la clínica bajo los más estrictos estándares éticos y legales.
   </div>
 </div>
 
 <!-- ════════════════════════════════════════
-     § 03 — PLAN DE ADQUISICIÓN LOCAL (90 DÍAS)
+     PÁGINA 3 DE 3: PLANES DE SERVICIO, CRONOGRAMA & FORMALIZACIÓN
 ════════════════════════════════════════ -->
 <div class="page page-break" style="position:relative;">
   <div class="wm">03</div>
 
   <div class="ph">
     <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
-    <span class="ph-right">§ 03 · Plan de 90 días</span>
+    <span class="ph-right">§ 03 · Planes de Servicio &amp; Formalización</span>
   </div>
 
-  <div class="chapter-label">§ 03 &nbsp;·&nbsp; Plan de adquisición local (90 días)</div>
-  <h2 class="section-h">Tres periodos.<br><em>Instalar, traccionar y escalar.</em></h2>
-  <p class="section-lead">Un plan estructurado de tres meses para capturar primero la demanda con intención activa en Ñuñoa, validar los canales de contacto y recién después escalar la inversión hacia tratamientos de mayor valor.</p>
+  <div class="chapter-label">§ 03 &nbsp;·&nbsp; Planes, cronograma de 10 días y formalización</div>
+  <h2 class="section-h" style="font-size:1.75rem;margin-bottom:4px;">Matriz de servicio.<br><em>Transparencia, reglas de inversión y puesta en marcha.</em></h2>
+  <p class="section-lead" style="font-size:0.75rem;line-height:1.5;margin-bottom:8px;">
+    Inversión publicitaria pagada directamente por la clínica a Google y Meta sin intermediarios. Cada plan define entregables concretos y nivel de acompañamiento comercial.
+  </p>
 
-  <div class="section-rule mb-2">
-    <p class="sc mb-2">Matriz operativa de 90 días</p>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:95px">Periodo</th>
-          <th>Objetivo principal</th>
-          <th>Acciones clave a ejecutar</th>
-          <th style="width:160px">Servicios foco</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="tag tag-ink">Días 1–30</span><br><span class="td-s">Mes 1</span></td>
-          <td class="td-n">Instalar y validar el sistema base</td>
-          <td class="td-s">Despliegue de web, auditoría Google Business, medición GA4/Pixel, Google Search Ads (búsqueda activa local: <em>dentista ñuñoa</em>, <em>clínica dental ñuñoa</em>, <em>urgencia dental ñuñoa</em>) y protocolo de WhatsApp para recepción.</td>
-          <td class="td-s">Evaluación diagnóstica, limpieza dental y urgencias en Ñuñoa.</td>
-        </tr>
-        <tr>
-          <td><span class="tag tag-ink">Días 31–60</span><br><span class="td-s">Mes 2</span></td>
-          <td class="td-n">Generar confianza y mejorar calidad de consultas</td>
-          <td class="td-s">Campañas activas en Meta Ads (Instagram/Facebook) con material visual de la clínica y equipo, revisión semanal de calidad de prospectos y reporte mensual #1 de solicitudes y reservas.</td>
-          <td class="td-s">Evaluación preventiva y Ortodoncia convencional / brackets.</td>
-        </tr>
-        <tr>
-          <td><span class="tag tag-green">Días 61–90</span><br><span class="td-s">Mes 3</span></td>
-          <td class="td-n">Escalar lo que convierte y optimizar retorno</td>
-          <td class="td-s">Remarketing a visitantes web, prueba de líneas de alto ticket, impulso del Club Familiar BeHappy y convenios Pyme, reporte mensual #2 y definición del siguiente trimestre.</td>
-          <td class="td-s">Ortodoncia invisible (Invisalign), estética dental y Club BeHappy.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="roi-box">
-    <div class="roi-title">
-      <span>Proyección Económica en Régimen (Mes 3 · Pauta Directa $300.000 CLP/mes)</span>
-      <span class="tag tag-ok">Ratio ROI ~13.4x</span>
-    </div>
-    <div class="roi-grid">
-      <div class="roi-item">
-        <span class="num">$3.110.000</span>
-        <span class="desc">Facturación directa en box (22 citas)</span>
-      </div>
-      <div class="roi-item">
-        <span class="num">$920.000</span>
-        <span class="desc">Ingreso Recurrente Fijo (40 suscriptores)</span>
-      </div>
-      <div class="roi-item">
-        <span class="num">$4.030.000</span>
-        <span class="desc">Retorno total mensual estimado</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="callout callout-green" style="margin-top:10px;margin-bottom:0;padding:7px 12px;font-size:0.71rem;">
-    <p><strong>Protocolo de conversión de consultas (SLA de atención):</strong> La pauta y la plataforma generan solicitudes pre-cualificadas; la clínica las transforma en pacientes en sillón mediante respuesta de recepción en &lt; 15 minutos en horario hábil y confirmación telefónica/WhatsApp.</p>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     § 04 — PLANES, INVERSIÓN Y REGLAS
-════════════════════════════════════════ -->
-<div class="page page-break" style="position:relative;">
-  <div class="wm">04</div>
-
-  <div class="ph">
-    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
-    <span class="ph-right">§ 04 · Planes y Condiciones</span>
-  </div>
-
-  <div class="chapter-label">§ 04 &nbsp;·&nbsp; Planes, inversión y condiciones</div>
-  <h2 class="section-h">Matriz de servicio.<br><em>Transparencia y reglas de inversión.</em></h2>
-  <p class="section-lead">Para garantizar claridad y control del gasto, la inversión publicitaria es pagada directamente por la clínica a Google y Meta. Cada plan define entregables concretos y nivel de acompañamiento.</p>
-
-  <div class="section-rule mb-2">
-    <p class="sc mb-2">Comparativa de planes de servicio</p>
+  <div class="section-rule mb-1" style="padding-top:8px;margin-top:4px;">
+    <p class="sc mb-1">Comparativa de planes de servicio</p>
     <table>
       <thead>
         <tr>
@@ -1289,46 +1335,22 @@ p:last-child { margin-bottom: 0; }
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
         </tr>
         <tr>
-          <td class="td-n">Bandeja centralizada de recepción y citas (Supabase)</td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Dominio behappydental.cl y cuentas bajo titularidad clínica</td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Medición GA4, Meta Pixel y ficha Google Business Profile</td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Google Search Ads (Búsqueda)</td>
+          <td class="td-n">Google Search Ads (Búsqueda local Ñuñoa)</td>
           <td style="text-align:center" class="td-s">Configuración inicial</td>
           <td style="text-align:center" class="td-s"><strong>Gestión mensual activa</strong></td>
           <td style="text-align:center" class="td-s">Gestión multiespecialidad</td>
         </tr>
         <tr>
-          <td class="td-n">Meta Ads (Instagram + Facebook)</td>
+          <td class="td-n">Meta Ads (Instagram + Facebook equipo médico)</td>
           <td style="text-align:center"><span class="tag tag-muted">—</span></td>
           <td style="text-align:center" class="td-s"><strong>1 campaña activa/mes</strong></td>
           <td style="text-align:center" class="td-s">Hasta 2–3 campañas/mes</td>
         </tr>
         <tr>
-          <td class="td-n">Reporte y reuniones de optimización</td>
+          <td class="td-n">Reporte mensual de ROI y citas confirmadas</td>
           <td style="text-align:center" class="td-s">Entrega inicial</td>
           <td style="text-align:center" class="td-s"><strong>Mensual (1 reunión/mes)</strong></td>
           <td style="text-align:center" class="td-s">Mensual + revisión trimestral</td>
-        </tr>
-        <tr>
-          <td class="td-n">Contenidos y remarketing dinámico</td>
-          <td style="text-align:center"><span class="tag tag-muted">—</span></td>
-          <td style="text-align:center"><span class="tag tag-muted">—</span></td>
-          <td style="text-align:center" class="td-s">Sí (Calendario acordado)</td>
         </tr>
         <tr>
           <td class="td-n">Mantenimiento y soporte técnico</td>
@@ -1346,111 +1368,27 @@ p:last-child { margin-bottom: 0; }
     </table>
   </div>
 
-  <p class="sc mb-2">Condiciones económicas y separación de costos</p>
-  <table>
-    <thead>
-      <tr>
-        <th>Concepto</th>
-        <th>Quién asume</th>
-        <th>Condiciones y transparencia</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="td-n">Honorarios profesionales</td>
-        <td><span class="tag tag-ink">La clínica</span></td>
-        <td class="td-s">Retribución por desarrollo, configuración técnica, gestión de campañas, reportes y soporte según plan contratado.</td>
-      </tr>
-      <tr>
-        <td class="td-n">Pauta publicitaria (Google / Meta)</td>
-        <td><span class="tag tag-ink">La clínica</span></td>
-        <td class="td-s">Pagada directamente por la clínica a Google Ads y Meta con tarjeta corporativa. Cero intermediación de fondos ni recargos.</td>
-      </tr>
-      <tr>
-        <td class="td-n">Infraestructura y herramientas</td>
-        <td><span class="tag tag-green">La clínica</span></td>
-        <td class="td-s">Dominio .cl pagado directo en NIC Chile (~$10.000 CLP/año). Servidores cloud y base de datos bajo cuentas titularizadas por la clínica (planes según uso).</td>
-      </tr>
-      <tr>
-        <td class="td-n">Acuerdos de canje dental</td>
-        <td><span class="tag tag-warn">Formalizado</span></td>
-        <td class="td-s">Posibilidad de acordar compensación parcial de honorarios mediante tratamientos dentales, con valorización formal y entregables definidos por etapa.</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="callout mt-2" style="font-size:0.71rem;color:var(--muted);padding:8px 12px;">
-    <p><strong>Alcance y exclusiones:</strong> Cada plan define un número acotado de campañas y adaptaciones. Cambios estructurales, producción audiovisual/fotografía profesional, respuesta directa a pacientes o integraciones complejas se cotizan o aprueban por separado con la dirección.</p>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     § 05 — ACTIVACIÓN, ROADMAP Y CIERRE
-════════════════════════════════════════ -->
-<div class="page page-break" style="position:relative;">
-  <div class="wm">05</div>
-
-  <div class="ph">
-    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
-    <span class="ph-right">§ 05 · Activación y Roadmap</span>
-  </div>
-
-  <div class="chapter-label">§ 05 &nbsp;·&nbsp; Activación y roadmap futuro</div>
-  <h2 class="section-h">Puesta en marcha.<br><em>Cronograma y evolución modular.</em></h2>
-  <p class="section-lead">El proceso de activación toma 10 días hábiles tras la firma del acuerdo. La arquitectura elegida permite que BeHappy conserve sus activos y sume herramientas avanzadas en el futuro sin rehacer la plataforma.</p>
-
-  <div class="section-rule mb-2">
-    <p class="sc mb-2">Cronograma de activación (10 días hábiles tras la firma)</p>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:85px">Plazo</th>
-          <th>Acción principal</th>
-          <th style="width:120px">Responsable</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="tag tag-ink">Días 1–2</span></td>
-          <td class="td-n">Firma del acuerdo comercial · Definición del plan · Apertura y revisión de accesos</td>
-          <td class="td-s">Ambas partes</td>
-        </tr>
-        <tr>
-          <td><span class="tag tag-muted">Días 3–4</span></td>
-          <td class="td-n">Despliegue de plataforma en cloud · Conexión de base de prospectos · Apuntamiento de dominio</td>
-          <td class="td-s">Proveedor</td>
-        </tr>
-        <tr>
-          <td><span class="tag tag-muted">Días 5–6</span></td>
-          <td class="td-n">Auditoría Google Business Profile · Configuración de GA4, Meta Pixel y eventos de conversión</td>
-          <td class="td-s">Proveedor</td>
-        </tr>
-        <tr>
-          <td><span class="tag tag-muted">Días 7–8</span></td>
-          <td class="td-n">Configuración de Google Ads · Aprobación de aranceles y protocolos de WhatsApp con recepción</td>
-          <td class="td-s">Proveedor + Clínica</td>
-        </tr>
-        <tr>
-          <td><span class="tag tag-green">Días 9–10</span></td>
-          <td class="td-n" style="color:var(--green);">Lanzamiento de primera campaña activa de búsqueda y entrega de accesos documentados</td>
-          <td class="td-s">Proveedor</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="section-rule mb-2">
-    <p class="sc mb-2">Próximas evoluciones posibles (Fase 2 · Sujetas a cotización y evaluación técnica)</p>
-    <div style="font-size:0.75rem;color:var(--muted);line-height:1.75;border:1px solid var(--rule);padding:12px 16px;background:rgba(255,255,255,0.4);">
-      <p style="color:var(--ink);">Una vez validada la captación y el proceso de recepción, BeHappy podrá priorizar nuevos módulos de escalamiento:</p>
-      <p>• <strong>Automatización API con Flow.cl / Webpay:</strong> Conciliación automática de suscripciones PAC/PAT del Club BeHappy y cobro de abonos online para reducir inasistencias.<br>
-      • <strong>Portal de empresas en convenio:</strong> Panel para seguimiento de colaboradores inscritos en el Plan Convenio Pyme.<br>
-      • <strong>Integraciones operativas:</strong> Conexión con software o agenda clínica existente si el centro lo requiere.</p>
-      <p style="margin-top:6px;font-style:italic;color:var(--ink2);">Nota: Cualquier módulo que incluya integración API de pagos electrónicos, antecedentes clínicos o información de salud se evaluará como un proyecto independiente, con sus requisitos de seguridad, operación y cumplimiento aplicables.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;">
+    <div>
+      <p class="sc mb-1">Separación de costos y transparencia</p>
+      <div style="font-size:0.67rem;line-height:1.5;color:var(--ink2);">
+        <p>• <strong>Honorarios:</strong> Retribución por desarrollo, gestión de pauta y soporte según plan.</p>
+        <p>• <strong>Pauta publicitaria:</strong> Pagada directo por la clínica a Google y Meta. Cero comisión ni recargo.</p>
+        <p>• <strong>Canje dental:</strong> Opción formal de compensar parcialmente honorarios con tratamientos dentales valorizados.</p>
+      </div>
+    </div>
+    <div>
+      <p class="sc mb-1">Cronograma de activación (10 días hábiles)</p>
+      <div style="font-size:0.67rem;line-height:1.5;color:var(--ink2);">
+        <p>• <strong>Días 1–2:</strong> Firma de acuerdo, definición de plan y accesos.</p>
+        <p>• <strong>Días 3–6:</strong> Despliegue cloud, base Supabase, Google Business, GA4 y Pixel.</p>
+        <p>• <strong>Días 7–10:</strong> Configuración Google Ads, protocolo recepción y lanzamiento activo.</p>
+      </div>
     </div>
   </div>
 
-  <div class="sig-row mt-3">
+  <!-- FIRMAS -->
+  <div class="sig-row mt-2" style="margin-top:16px;padding-top:12px;">
     <div class="sig-block">
       <label>Proveedor de servicios digitales</label>
       <div class="sig-line"></div>
@@ -1463,7 +1401,7 @@ p:last-child { margin-bottom: 0; }
     </div>
   </div>
 
-  <div class="doc-foot">
+  <div class="doc-foot" style="margin-top:14px;padding-top:10px;">
     <p>Centro Dental BeHappy &nbsp;·&nbsp; Suecia 3580, Of. 304, Ñuñoa, Región Metropolitana &nbsp;·&nbsp; +56 9 4757 8597 &nbsp;·&nbsp; behappydental.cl</p>
     <p>Documento confidencial &nbsp;·&nbsp; Propuesta válida hasta el 20 de octubre de 2026 &nbsp;·&nbsp; Preparada en octubre de 2026</p>
   </div>
@@ -1496,14 +1434,14 @@ function toggleEditMode() {
 function saveProposalChanges() {
   const container = document.getElementById('proposal-container');
   if (container) {
-    localStorage.setItem('behappy_propuesta_html_v4', container.innerHTML);
+    localStorage.setItem('behappy_propuesta_html_v5', container.innerHTML);
     alert('✓ Cambios guardados con éxito en la memoria de tu navegador.');
   }
 }
 
 function resetProposalChanges() {
   if (confirm('¿Deseas restaurar la propuesta al contenido original de fábrica?')) {
-    localStorage.removeItem('behappy_propuesta_html_v4');
+    localStorage.removeItem('behappy_propuesta_html_v5');
     location.reload();
   }
 }
@@ -1516,7 +1454,7 @@ function exportToPdf() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('behappy_propuesta_html_v4');
+  const saved = localStorage.getItem('behappy_propuesta_html_v5');
   if (saved) {
     const container = document.getElementById('proposal-container');
     if (container) {
