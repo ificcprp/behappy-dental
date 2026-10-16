@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
 import { getCMSData, CMSData } from "@/lib/cmsStore";
 import { getCurrentSession, clearCurrentSession } from "@/lib/authService";
@@ -11,6 +11,7 @@ import { UserProfile } from "@/types/auth";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
 export function Navbar() {
+  const router = useRouter();
   const [clinicInfo, setClinicInfo] = useState(CLINIC_INFO);
   const [sessionUser, setSessionUser] = useState<UserProfile | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,7 +49,7 @@ export function Navbar() {
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
     } else {
-      window.location.href = "/#agendar";
+      router.push("/#agendar");
     }
   };
 
@@ -245,15 +246,21 @@ export function Navbar() {
 
           <div className="pt-2 flex flex-col gap-2">
             {sessionUser ? (
-              <div className="flex items-center justify-between py-2 px-1 border-b border-neutral-800 text-xs font-mono">
-                <span className="text-emerald-400 text-[11px]">● {sessionUser.fullName}</span>
+              <div className={`flex items-center justify-between py-2 px-1 border-b text-xs font-mono ${
+                isDark ? "border-neutral-800" : "border-[#e5e0d5]"
+              }`}>
+                <span className={`text-[11px] font-bold ${
+                  isDark ? "text-emerald-400" : "text-emerald-700"
+                }`}>● {sessionUser.fullName}</span>
                 <button
                   onClick={() => {
                     clearCurrentSession();
                     setSessionUser(null);
                     window.location.href = "/";
                   }}
-                  className="text-neutral-400 hover:text-white uppercase text-[10px]"
+                  className={`uppercase text-[10px] font-mono transition ${
+                    isDark ? "text-neutral-400 hover:text-white" : "text-[#78736a] hover:text-[#141413]"
+                  }`}
                 >
                   Cerrar Sesión
                 </button>

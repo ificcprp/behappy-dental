@@ -38,6 +38,7 @@ import {
 } from "@/lib/clinicalStore";
 import { SiteCmsEditor } from "@/components/portal/SiteCmsEditor";
 import { DEMO_USERS } from "@/data/portalMockData";
+import { toast } from "sonner";
 import {
   Calendar,
   CheckCircle2,
@@ -208,6 +209,13 @@ function PortalContent() {
     setCurrentUser(targetUser);
     setCurrentSession(targetUser);
     router.replace(`/portal?role=${newRole}`);
+    const roleLabelsMap: Record<UserRole, string> = {
+      paciente: "Paciente",
+      doctor: "Doctor Clínico",
+      recepcion: "Recepción & Admisión",
+      admin: "Dirección Médica & CMS"
+    };
+    toast.info(`Accediendo como: ${roleLabelsMap[newRole] || newRole}`);
   };
 
   // SOAP Save
@@ -230,6 +238,7 @@ function PortalContent() {
     setSoapPrescription("");
     setSoapPatient("");
     setSoapSavedToast(true);
+    toast.success("Evolución clínica guardada en la ficha del paciente");
     setTimeout(() => setSoapSavedToast(false), 3000);
   };
 
@@ -252,12 +261,22 @@ function PortalContent() {
     });
 
     setShowWalkinModal(false);
+    toast.success(`Paciente ${walkinName} ingresado a sala de espera`);
     setWalkinName("");
   };
 
   // Change Appointment Status
   const handleStatusChange = (id: string, newStatus: PatientAppointment["status"]) => {
     updateStoredAppointmentStatus(id, newStatus);
+    const statusText: Record<PatientAppointment["status"], string> = {
+      pendiente: "Pendiente",
+      confirmada: "Confirmada",
+      en_espera: "En Sala de Espera",
+      en_box: "En Box Clínico",
+      completada: "Atención Finalizada",
+      cancelada: "Cancelada"
+    };
+    toast.success(`Estado actualizado: ${statusText[newStatus] || newStatus}`);
   };
 
   // Interactive Odontogram Tooth Click
@@ -272,6 +291,7 @@ function PortalContent() {
   const handleAdminRoleChange = (userId: string, targetRole: UserRole) => {
     updateUserRole(userId, targetRole);
     setUserList(getRegisteredUsers());
+    toast.success(`Rol actualizado a: ${targetRole}`);
   };
 
   // Admin Create New User
@@ -289,6 +309,7 @@ function PortalContent() {
     });
     setUserList(getRegisteredUsers());
     setShowNewUserModal(false);
+    toast.success(`Usuario ${newUserData.fullName} registrado correctamente`);
     setNewUserData({
       fullName: "",
       email: "",
@@ -948,8 +969,14 @@ function PortalContent() {
 
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleStatusChange(item.id, "en_box")}
+                        onClick={() => {
+                          const pName = item.patientName || "Paciente en Box";
+                          setSoapPatient(pName);
+                          handleStatusChange(item.id, "en_box");
+                          toast.info(`Paciente ${pName} cargado en Box y Ficha SOAP`);
+                        }}
                         className="px-3 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-[11px] font-mono uppercase text-slate-800 transition bg-white"
+                        title="Pasar paciente a box y precargar su ficha SOAP"
                       >
                         Pasar a Box
                       </button>
@@ -1747,7 +1774,12 @@ function PortalContent() {
                   type="button"
                   disabled={flowPaymentLoading}
                   onClick={async () => {
+                    if (!flowPaymentData.patientEmail || !flowPaymentData.patientEmail.includes("@")) {
+                      toast.error("Por favor ingrese un correo electrónico válido para recibir el comprobante.");
+                      return;
+                    }
                     setFlowPaymentLoading(true);
+                    toast.info("Conectando con pasarela segura Flow.cl (Webpay Plus)...");
                     try {
                       const res = await fetch("/api/pagos/flow/create", {
                         method: "POST",
@@ -1764,11 +1796,15 @@ function PortalContent() {
                       });
                       const data = await res.json();
                       if (data.redirectUrl) {
+                        toast.success("Redirigiendo a Webpay...");
                         window.location.href = data.redirectUrl;
                         return;
+                      } else {
+                        toast.error(data.error || "No fue posible conectar con Flow Webpay.");
                       }
                     } catch (err) {
                       console.error("Error processing portal Flow payment:", err);
+                      toast.error("Error de conexión con la pasarela. Intente nuevamente.");
                     } finally {
                       setFlowPaymentLoading(false);
                     }

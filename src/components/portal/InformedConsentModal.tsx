@@ -111,7 +111,7 @@ export function InformedConsentModal({
 
   const currentTemplate = CONSENT_TEMPLATES[procedure];
 
-  // Canvas drawing handlers
+  // Canvas drawing handlers (mouse & touch)
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -141,6 +141,39 @@ export function InformedConsentModal({
     setIsDrawing(false);
   };
 
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    setIsDrawing(true);
+    const rect = canvas.getBoundingClientRect();
+    ctx.beginPath();
+    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const rect = canvas.getBoundingClientRect();
+    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    ctx.strokeStyle = "#0f172a";
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    ctx.stroke();
+  };
+
+  const handleTouchEnd = () => {
+    setIsDrawing(false);
+  };
+
   const handleClearSignature = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -151,6 +184,15 @@ export function InformedConsentModal({
 
   const handleConfirmSignature = () => {
     setIsSigned(true);
+    let signatureUrl: string | undefined = undefined;
+    if (canvasRef.current) {
+      try {
+        signatureUrl = canvasRef.current.toDataURL("image/png");
+      } catch (err) {
+        console.warn("Error converting signature canvas:", err);
+      }
+    }
+
     if (onConsentSigned) {
       onConsentSigned({
         id: `BH-CI-${Date.now().toString(36).toUpperCase()}`,
@@ -161,6 +203,7 @@ export function InformedConsentModal({
         procedureType: procedure,
         title: currentTemplate.title,
         signedDate: signatureDate,
+        signatureDataUrl: signatureUrl,
         status: "firmado",
       });
     }
@@ -365,6 +408,9 @@ export function InformedConsentModal({
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseUp}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
                     className="w-full h-24 cursor-crosshair touch-none"
                   />
                 </div>
