@@ -19,6 +19,9 @@ export function Navbar() {
   const isDark = false;
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as any).__nextRouter = router;
+    }
     setSessionUser(getCurrentSession());
 
     const cms = getCMSData();
@@ -32,7 +35,7 @@ export function Navbar() {
 
     window.addEventListener("behappy_cms_updated", handleUpdate);
     return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
-  }, [pathname]);
+  }, [pathname, router]);
 
   const navLinks = [
     { name: "Inicio", href: "/" },
@@ -53,6 +56,8 @@ export function Navbar() {
     }
   };
 
+  if (pathname?.startsWith("/portal")) return null;
+
   return (
     <header
       className={`sticky top-0 z-50 transition-colors ${
@@ -65,7 +70,7 @@ export function Navbar() {
         <div className="h-16 flex items-center justify-between">
           
           {/* Brand Mark (Left) */}
-          <Link href="/" className="flex items-center gap-3 group">
+          <a href="/" className="flex items-center gap-3 group">
             <div
               className={`relative w-9 h-9 rounded-full overflow-hidden border p-0.5 shadow-sm group-hover:scale-105 transition-transform duration-200 ${
                 isDark ? "bg-black border-neutral-800" : "bg-white border-[#ded9cd]"
@@ -95,14 +100,14 @@ export function Navbar() {
                 Ñuñoa · Suecia 3580
               </span>
             </div>
-          </Link>
+          </a>
 
           {/* Desktop Navigation (Center) */}
           <nav className="hidden md:flex items-center space-x-7 lg:space-x-8">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
-                <Link
+                <a
                   key={link.name}
                   href={link.href}
                   className={`text-[11px] font-mono tracking-[0.18em] uppercase transition-colors duration-150 py-1 ${
@@ -116,7 +121,7 @@ export function Navbar() {
                   }`}
                 >
                   {link.name}
-                </Link>
+                </a>
               );
             })}
           </nav>
@@ -125,7 +130,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-2.5">
             {sessionUser ? (
               <>
-                <Link
+                <a
                   href={`/portal?role=${sessionUser.role}`}
                   className={`px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase transition border flex items-center gap-1.5 ${
                     isDark
@@ -135,7 +140,7 @@ export function Navbar() {
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   <span>Portal ({sessionUser.role})</span>
-                </Link>
+                </a>
                 <button
                   onClick={() => {
                     clearCurrentSession();
@@ -152,7 +157,7 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link
+                <a
                   href="/login"
                   className={`px-2.5 py-1.5 text-[11px] font-mono tracking-widest uppercase transition ${
                     isDark
@@ -161,8 +166,8 @@ export function Navbar() {
                   }`}
                 >
                   Acceso
-                </Link>
-                <Link
+                </a>
+                <a
                   href="/portal"
                   className={`px-3 py-1.5 text-[11px] font-mono tracking-widest uppercase transition border ${
                     isDark
@@ -171,7 +176,7 @@ export function Navbar() {
                   }`}
                 >
                   Portal Clínico
-                </Link>
+                </a>
               </>
             )}
 
@@ -189,7 +194,7 @@ export function Navbar() {
 
           {/* Mobile Menu Trigger */}
           <div className="flex md:hidden items-center space-x-2">
-            <Link
+            <a
               href={sessionUser ? `/portal?role=${sessionUser.role}` : "/portal"}
               className={`px-2.5 py-1 text-[10px] font-mono tracking-wider uppercase border ${
                 isDark
@@ -198,7 +203,7 @@ export function Navbar() {
               }`}
             >
               {sessionUser ? `Portal (${sessionUser.role})` : "Portal"}
-            </Link>
+            </a>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className={`p-1.5 focus:outline-none ${
@@ -224,7 +229,7 @@ export function Navbar() {
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
-                <Link
+                <a
                   key={link.name}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
@@ -239,7 +244,7 @@ export function Navbar() {
                   }`}
                 >
                   {link.name}
-                </Link>
+                </a>
               );
             })}
           </div>
@@ -267,7 +272,7 @@ export function Navbar() {
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2 pb-1">
-                <Link
+                <a
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className={`py-2 text-center text-xs font-mono tracking-wider uppercase border ${
@@ -275,8 +280,8 @@ export function Navbar() {
                   }`}
                 >
                   Iniciar Sesión
-                </Link>
-                <Link
+                </a>
+                <a
                   href="/registro"
                   onClick={() => setMobileMenuOpen(false)}
                   className={`py-2 text-center text-xs font-mono tracking-wider uppercase border ${
@@ -284,7 +289,7 @@ export function Navbar() {
                   }`}
                 >
                   Crear Cuenta
-                </Link>
+                </a>
               </div>
             )}
 

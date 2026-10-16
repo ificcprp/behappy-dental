@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import { Toaster } from "sonner";
-import { PublicLayoutWrapper } from "@/components/layout/PublicLayoutWrapper";
+import { TopAnnouncementTicker } from "@/components/dental/TopAnnouncementTicker";
+import { Navbar } from "@/components/dental/Navbar";
+import { Footer } from "@/components/dental/Footer";
+import { WhatsAppFloatingButton } from "@/components/dental/WhatsAppFloatingButton";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -73,7 +76,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} min-h-screen bg-[#faf8f5] text-[#141413] font-sans antialiased selection:bg-[#141413] selection:text-[#faf8f5]`}
       >
-        <PublicLayoutWrapper>{children}</PublicLayoutWrapper>
+        <TopAnnouncementTicker />
+        <Navbar />
+        <main className="min-h-screen">{children}</main>
+        <Footer />
+        <WhatsAppFloatingButton />
         <Toaster position="top-right" richColors theme="light" />
       </body>
     </html>

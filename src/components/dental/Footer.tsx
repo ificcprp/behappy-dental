@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
 import { getCMSData, CMSData } from "@/lib/cmsStore";
 
 export function Footer() {
+  const pathname = usePathname();
   const [clinicInfo, setClinicInfo] = useState(CLINIC_INFO);
 
   useEffect(() => {
@@ -22,6 +24,9 @@ export function Footer() {
     window.addEventListener("behappy_cms_updated", handleUpdate);
     return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
   }, []);
+
+  if (pathname?.startsWith("/portal")) return null;
+
   return (
     <footer className="bg-[#0a0a0c] text-[#f4f4f6] text-xs border-t border-[#1f1f26] pt-16 pb-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -31,7 +36,7 @@ export function Footer() {
           
           {/* Col 1: Brand & Identity */}
           <div className="lg:col-span-4 space-y-4">
-            <Link href="/" className="flex items-center gap-3 group">
+            <a href="/" className="flex items-center gap-3 group">
               <div className="relative w-12 h-12 rounded-full overflow-hidden bg-white p-0.5 border border-neutral-700">
                 <Image
                   src="/images/brand/logo.png"
@@ -48,7 +53,7 @@ export function Footer() {
                   Odontología Avanzada · Ñuñoa
                 </span>
               </div>
-            </Link>
+            </a>
 
             <p className="text-xs text-neutral-400 font-light leading-relaxed max-w-sm">
               Más de 13 años brindando atención odontológica integral, estética y preventiva en la comuna de Ñuñoa, con especialistas acreditados en la Superintendencia de Salud.
@@ -62,39 +67,39 @@ export function Footer() {
             </span>
             <ul className="space-y-2 text-xs font-mono text-neutral-300">
               <li>
-                <Link href="/tratamientos" className="hover:text-white transition">
+                <a href="/tratamientos" className="hover:text-white transition">
                   Tratamientos & Especialidades
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/precios" className="hover:text-white transition">
+                <a href="/precios" className="hover:text-white transition">
                   Precios & Convenio BeHappy
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/club" className="hover:text-white transition">
+                <a href="/club" className="hover:text-white transition">
                   Club BeHappy (Planes de Membresía)
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/nosotros" className="hover:text-white transition">
+                <a href="/nosotros" className="hover:text-white transition">
                   Cuerpo Médico (8 Especialistas)
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/galeria" className="hover:text-white transition">
+                <a href="/galeria" className="hover:text-white transition">
                   Galería & Casos Clínicos
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/portal" className="hover:text-white transition">
+                <a href="/portal" className="hover:text-white transition">
                   Portal Clínico (4 Roles)
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/login" className="hover:text-white transition text-neutral-400">
+                <a href="/login" className="hover:text-white transition text-neutral-400">
                   Acceso / Iniciar Sesión ↗
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

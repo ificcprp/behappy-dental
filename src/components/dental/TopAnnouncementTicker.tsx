@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getCMSData, CMSData } from "@/lib/cmsStore";
 
@@ -20,6 +21,7 @@ const DEFAULT_SLIDES = [
 ];
 
 export function TopAnnouncementTicker() {
+  const pathname = usePathname();
   const [slides, setSlides] = useState<{ text: string; link: string | null }[]>(DEFAULT_SLIDES);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -65,6 +67,8 @@ export function TopAnnouncementTicker() {
 
   const current = slides[currentIndex % slides.length] || slides[0] || DEFAULT_SLIDES[0];
 
+  if (pathname?.startsWith("/portal")) return null;
+
   return (
     <div
       className="bg-[#141413] text-[#e8e4db] border-b border-[#292825] relative z-40 w-full overflow-hidden select-none"
@@ -88,12 +92,12 @@ export function TopAnnouncementTicker() {
             className="animate-in fade-in duration-500 font-mono text-[11px] tracking-[0.14em] uppercase text-[#ded9cd] truncate sm:whitespace-normal"
           >
             {current.link ? (
-              <Link
+              <a
                 href={current.link}
                 className="hover:text-white underline decoration-[#6e6a61] underline-offset-4 transition-colors"
               >
                 {current.text}
-              </Link>
+              </a>
             ) : (
               <span>{current.text}</span>
             )}

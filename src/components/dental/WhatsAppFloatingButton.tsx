@@ -1,10 +1,14 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
 import { MessageCircle } from "lucide-react";
 
 export function WhatsAppFloatingButton() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/portal")) return null;
+
   const whatsappLink =
     "https://api.whatsapp.com/send/?phone=56947578597&text&type=phone_number&app_absent=0";
 
