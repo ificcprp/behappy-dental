@@ -12,12 +12,14 @@
 | `/` | Landing page principal con Hero, 20 tratamientos, doctores, convenios, ubicación y reserva | ✅ Producción |
 | `/tratamientos` | Catálogo dedicado con los 20 tratamientos reales en alta resolución y dark mode | ✅ Producción |
 | `/precios` | Calculadora de aranceles y desglose de descuentos con Convenio BeHappy (hasta 40%) | ✅ Producción |
+| `/club` | Membresías y planes familiares Club BeHappy con suscripción online Flow.cl | ✅ Producción |
 | `/nosotros` | Presentación del cuerpo médico con los 8 odontólogos de la clínica | ✅ Producción |
 | `/galeria` | Casos clínicos reales de estética, ortodoncia e implantes | ✅ Producción |
 | `/contacto` | Dirección (Suecia 3580), teléfono, WhatsApp y formulario de contacto | ✅ Producción |
 | `/login` | Acceso seguro con selector por rol y 4 botones de acceso rápido (1-clic) | ✅ Producción |
 | `/registro` | Creación de ficha de paciente con RUT y previsión | ✅ Producción |
 | `/portal` | Dental OS & ERP clínico con **Sidebar de Administración y Editor CMS Web en Vivo** | ✅ Producción |
+| `/pagos/retorno` | Comprobante legal de pago clínico, voucher Flow.cl e instrucciones de cita | ✅ Producción |
 | `/_not-found` | Página 404 estilizada con enlaces de retorno | ✅ Producción |
 
 ---
@@ -28,20 +30,28 @@
 | :--- | :--- | :--- |
 | `/api/cms` | `GET`, `POST` | Obtención y actualización del payload de contenido del sitio web (tratamientos, doctores, contacto, ticker) |
 | `/api/citas` | `GET`, `POST`, `PATCH` | Agendamiento de citas, consulta de agenda por Box y actualización de estado de atención |
+| `/api/pagos/flow/create` | `POST` | Generación de orden de pago en Flow.cl (Abono de reserva, copagos, suscripciones Club) |
+| `/api/pagos/flow/webhook` | `POST` | Callback server-to-server con verificación criptográfica HMAC-SHA256 y actualización en Supabase |
+| `/api/pagos/flow/status` | `GET` | Consulta y validación de estado de pago por token |
 
 ---
 
 ## 3. COMPONENTES PRINCIPALES
 
 ### Portal Clínico & Administración
+- `AnatomicalOdontogram.tsx`: Odontograma FDI 2.0 anatómico en 4 cuadrantes (Q1, Q2, Q4, Q3), plano oclusal y línea media facial.
+- `ClinicalDocumentModal.tsx`: Generador de Ficha Clínica y Receta Médica legal auditable según Ley 20.584 de Chile.
 - `SiteCmsEditor.tsx`: Editor visual para los 20 tratamientos, 8 doctores, datos de contacto, ticker de anuncios y seguros.
 - `PortalContent`: Núcleo de Dental OS con lógica condicional para los 4 roles (Paciente, Doctor, Recepción, Admin).
 
 ### Componentes Públicos del Centro Dental
+- `ClinicalTriageSection.tsx`: Triage inteligente con pre-asignación inmediata de tratamientos y especialistas.
+- `DentalPricingCalculator.tsx`: Simulador interactivo de aranceles con cálculo en vivo de Fonasa, Isapre y Convenio Club.
+- `MembershipPlansSection.tsx`: Planes de membresía Club BeHappy con pasarela integrada Flow.cl y checkout directo.
 - `RealTreatmentsGrid.tsx`: Grilla interactiva reactiva conectada al CMS con selector de categorías y modal de ficha clínica.
 - `TopAnnouncementTicker.tsx`: Cintillo rotativo superior conectado a los anuncios del CMS.
 - `DoctorsSection.tsx`: Directorio del equipo médico suscrito a actualizaciones en vivo.
-- `AppointmentBookingSection.tsx`: Formulario integrado de reserva de horas con validación de horarios y derivación a WhatsApp.
+- `AppointmentBookingSection.tsx`: Formulario integrado de reserva de horas con modalidad presencial o abono online ($10.000 Flow.cl).
 - `Navbar.tsx` & `Footer.tsx`: Navegación principal institucional con logo corporativo y enlaces directos.
 
 ---

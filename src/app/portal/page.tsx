@@ -47,8 +47,12 @@ import {
   Activity,
   Layers,
   ChevronRight,
-  UserCheck
+  UserCheck,
+  CreditCard,
+  Printer
 } from "lucide-react";
+import { AnatomicalOdontogram } from "@/components/portal/AnatomicalOdontogram";
+import { ClinicalDocumentModal } from "@/components/portal/ClinicalDocumentModal";
 
 function PortalContent() {
   const router = useRouter();
@@ -95,6 +99,19 @@ function PortalContent() {
   const [appointments, setAppointments] = useState<PatientAppointment[]>([]);
   const [clinicalRecords, setClinicalRecords] = useState<ClinicalRecord[]>([]);
   const [odontogram, setOdontogram] = useState<OdontogramTooth[]>([]);
+
+  // Legal Document & Flow Payment states
+  const [selectedRecordForDocument, setSelectedRecordForDocument] = useState<ClinicalRecord | null>(null);
+  const [showFlowPaymentModal, setShowFlowPaymentModal] = useState(false);
+  const [flowPaymentData, setFlowPaymentData] = useState<{
+    appointmentId?: string;
+    patientName: string;
+    patientEmail: string;
+    patientPhone: string;
+    amount: number;
+    subject: string;
+  } | null>(null);
+  const [flowPaymentLoading, setFlowPaymentLoading] = useState(false);
 
   // Doctor SOAP note form
   const [soapPatient, setSoapPatient] = useState("");
@@ -575,14 +592,36 @@ function PortalContent() {
                           ) : null}
                         </div>
 
-                        <a
-                          href={createWhatsAppUrl(`Hola Centro Dental BeHappy, deseo coordinar mi cita de ${item.treatmentName} con ${item.doctorName}.`)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-3 py-1.5 border border-slate-300 hover:border-slate-800 rounded text-[10px] font-mono uppercase tracking-wider text-slate-700 transition bg-white"
-                        >
-                          Coordinar por WhatsApp
-                        </a>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const amountToPay = (item.price ?? 35000) - (item.convenioDiscount ?? 0);
+                              setFlowPaymentData({
+                                appointmentId: item.id,
+                                patientName: currentUser.fullName,
+                                patientEmail: currentUser.email,
+                                patientPhone: currentUser.phone || "+56 9 4757 8597",
+                                amount: amountToPay,
+                                subject: `Copago Cita · ${item.treatmentName}`,
+                              });
+                              setShowFlowPaymentModal(true);
+                            }}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-mono uppercase tracking-wider font-semibold transition flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
+                          >
+                            <CreditCard className="w-3 h-3" />
+                            <span>Pagar Online Flow</span>
+                          </button>
+
+                          <a
+                            href={createWhatsAppUrl(`Hola Centro Dental BeHappy, deseo coordinar mi cita de ${item.treatmentName} con ${item.doctorName}.`)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1.5 border border-slate-300 hover:border-slate-800 rounded text-[10px] font-mono uppercase tracking-wider text-slate-700 transition bg-white text-center"
+                          >
+                            WhatsApp
+                          </a>
+                        </div>
                       </div>
                     </div>
                   ))
@@ -609,9 +648,19 @@ function PortalContent() {
                           <span className="text-slate-900 font-bold block text-sm">{rec.doctorName}</span>
                           <span className="text-slate-500">{rec.date} · Folio Clínico #{rec.id}</span>
                         </div>
-                        <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px]">
-                          Atención Acreditada
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px]">
+                            Atención Acreditada
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedRecordForDocument(rec)}
+                            className="px-2.5 py-1 bg-slate-900 hover:bg-black text-white text-[10px] font-mono uppercase tracking-wider rounded transition flex items-center gap-1 shadow-xs cursor-pointer"
+                          >
+                            <Printer className="w-3 h-3" />
+                            <span>Ficha Legal (Ley 20.584)</span>
+                          </button>
+                        </div>
                       </div>
 
                       <div className="space-y-2 text-xs text-slate-700 font-light leading-relaxed">
@@ -641,56 +690,7 @@ function PortalContent() {
             {/* Sub-Tab 3: Odontograma */}
             {patientTab === "odontograma" && (
               <div className="p-6 sm:p-8 bg-white border border-slate-200 rounded-lg space-y-6 shadow-2xs">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                  <div>
-                    <h3 className="text-base font-semibold text-slate-900">Odontograma Digital Anatómico</h3>
-                    <p className="text-xs font-mono text-slate-500">
-                      Nomenclatura FDI estándar (32 piezas dentales) · Código visual de tu condición actual
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-[10px] font-mono">
-                    <span className="px-2 py-0.5 rounded border border-emerald-200 bg-emerald-50 text-emerald-800">● Sano</span>
-                    <span className="px-2 py-0.5 rounded border border-amber-200 bg-amber-50 text-amber-800">● Caries</span>
-                    <span className="px-2 py-0.5 rounded border border-blue-200 bg-blue-50 text-blue-800">● Obturado</span>
-                    <span className="px-2 py-0.5 rounded border border-purple-200 bg-purple-50 text-purple-800">● Corona</span>
-                    <span className="px-2 py-0.5 rounded border border-teal-200 bg-teal-50 text-teal-800">● Implante</span>
-                    <span className="px-2 py-0.5 rounded border border-slate-200 bg-slate-100 text-slate-500">● Extracción</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-11 gap-2.5 pt-2">
-                  {odontogram.map((tooth) => {
-                    const isHealthy = tooth.status === "sano";
-                    const isCaries = tooth.status === "caries";
-                    const isObturado = tooth.status === "obturado";
-                    const isCorona = tooth.status === "corona";
-                    const isImplante = tooth.status === "implante";
-
-                    return (
-                      <div
-                        key={tooth.toothNumber}
-                        className={`p-3 rounded border text-center transition select-none ${
-                          isHealthy
-                            ? "border-slate-200 bg-slate-50/70 text-slate-700"
-                            : isCaries
-                            ? "border-amber-300 bg-amber-50/80 text-amber-900"
-                            : isObturado
-                            ? "border-blue-300 bg-blue-50/80 text-blue-900"
-                            : isCorona
-                            ? "border-purple-300 bg-purple-50/80 text-purple-900"
-                            : isImplante
-                            ? "border-teal-300 bg-teal-50/80 text-teal-900"
-                            : "border-slate-300 bg-slate-100 line-through text-slate-400"
-                        }`}
-                      >
-                        <span className="text-xs font-mono font-bold block text-slate-900">#{tooth.toothNumber}</span>
-                        <span className="text-[9px] font-mono uppercase block tracking-wider mt-1 truncate font-medium">
-                          {tooth.status.replace("_", " ")}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
+                <AnatomicalOdontogram teeth={odontogram} isDoctorMode={false} />
               </div>
             )}
 
@@ -899,59 +899,11 @@ function PortalContent() {
 
             {/* Doctor Odontogram Quick-Chart */}
             <div className="p-6 bg-white border border-slate-200 rounded-lg space-y-4 shadow-2xs">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                <div>
-                  <h3 className="text-base font-semibold text-slate-900">Odontograma Clínico en Sillón</h3>
-                  <p className="text-xs font-mono text-slate-500">
-                    Haz clic sobre cualquier pieza para actualizar su estado de atención en tiempo real
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-2 text-[10px] font-mono">
-                  <span className="px-2 py-0.5 rounded border border-emerald-200 bg-emerald-50 text-emerald-800">● Sano</span>
-                  <span className="px-2 py-0.5 rounded border border-amber-200 bg-amber-50 text-amber-800">● Caries</span>
-                  <span className="px-2 py-0.5 rounded border border-blue-200 bg-blue-50 text-blue-800">● Obturado</span>
-                  <span className="px-2 py-0.5 rounded border border-purple-200 bg-purple-50 text-purple-800">● Corona</span>
-                  <span className="px-2 py-0.5 rounded border border-teal-200 bg-teal-50 text-teal-800">● Implante</span>
-                  <span className="px-2 py-0.5 rounded border border-slate-200 bg-slate-100 text-slate-500">● Extracción</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-11 gap-2 pt-1">
-                {odontogram.map((tooth) => {
-                  const isHealthy = tooth.status === "sano";
-                  const isCaries = tooth.status === "caries";
-                  const isObturado = tooth.status === "obturado";
-                  const isCorona = tooth.status === "corona";
-                  const isImplante = tooth.status === "implante";
-
-                  return (
-                    <button
-                      key={tooth.toothNumber}
-                      type="button"
-                      onClick={() => handleToothClick(tooth)}
-                      title={`Pieza #${tooth.toothNumber}: ${tooth.status} (Clic para rotar estado)`}
-                      className={`p-3 rounded border text-center transition cursor-pointer hover:scale-105 select-none ${
-                        isHealthy
-                          ? "border-slate-200 bg-slate-50/70 hover:border-emerald-500 text-slate-700"
-                          : isCaries
-                          ? "border-amber-300 bg-amber-50/80 hover:border-amber-500 text-amber-900"
-                          : isObturado
-                          ? "border-blue-300 bg-blue-50/80 hover:border-blue-500 text-blue-900"
-                          : isCorona
-                          ? "border-purple-300 bg-purple-50/80 hover:border-purple-500 text-purple-900"
-                          : isImplante
-                          ? "border-teal-300 bg-teal-50/80 hover:border-teal-500 text-teal-900"
-                          : "border-slate-300 bg-slate-100 line-through text-slate-400"
-                      }`}
-                    >
-                      <span className="text-xs font-mono font-bold block text-slate-900">#{tooth.toothNumber}</span>
-                      <span className="text-[9px] font-mono uppercase block tracking-wider mt-1 truncate font-medium">
-                        {tooth.status.replace("_", " ")}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+              <AnatomicalOdontogram
+                teeth={odontogram}
+                isDoctorMode={true}
+                onToothClick={handleToothClick}
+              />
             </div>
 
           </div>
@@ -1022,6 +974,26 @@ function PortalContent() {
                     </div>
 
                     <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const amount = (item.price ?? 35000) - (item.convenioDiscount ?? 0);
+                          setFlowPaymentData({
+                            appointmentId: item.id,
+                            patientName: item.patientName || "Paciente",
+                            patientEmail: "paciente@behappydental.cl",
+                            patientPhone: item.patientPhone || "+56 9 4757 8597",
+                            amount,
+                            subject: `Atención en Sede · ${item.treatmentName}`,
+                          });
+                          setShowFlowPaymentModal(true);
+                        }}
+                        className="px-2.5 py-1.5 rounded bg-slate-900 hover:bg-black text-white text-xs font-mono uppercase transition flex items-center gap-1 shadow-2xs cursor-pointer"
+                      >
+                        <CreditCard className="w-3.5 h-3.5" />
+                        <span>Cobro Flow</span>
+                      </button>
+
                       <a
                         href={createWhatsAppUrl(`¡Hola ${item.patientName}! Le recordamos su cita de ${item.treatmentName} en BeHappy Ñuñoa para hoy a las ${item.time} hrs. ¿Nos confirma su asistencia?`)}
                         target="_blank"
@@ -1517,6 +1489,126 @@ function PortalContent() {
                 </div>
               )}
 
+            </div>
+          </div>
+        )}
+
+        {/* Modal Ficha Clínica Legal (Ley 20.584) */}
+        {selectedRecordForDocument && (
+          <ClinicalDocumentModal
+            record={selectedRecordForDocument}
+            patient={currentUser}
+            onClose={() => setSelectedRecordForDocument(null)}
+          />
+        )}
+
+        {/* Modal de Cobro Flow.cl */}
+        {showFlowPaymentModal && flowPaymentData && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+            <div className="bg-white border border-slate-300 rounded-lg max-w-md w-full p-6 space-y-4 shadow-xl">
+              <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+                <div className="space-y-0.5">
+                  <span className="text-[10px] font-mono tracking-widest text-emerald-700 uppercase font-bold block">
+                    PASARELA TRANSBANK / WEBPAY PLUS
+                  </span>
+                  <h3 className="text-base font-semibold text-slate-900">
+                    Cobro en Línea Flow.cl
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowFlowPaymentModal(false)}
+                  className="p-1 text-slate-400 hover:text-slate-800 rounded"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded text-xs font-mono space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Paciente:</span>
+                  <strong className="text-slate-900">{flowPaymentData.patientName}</strong>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Concepto:</span>
+                  <span className="text-slate-800">{flowPaymentData.subject}</span>
+                </div>
+                <div className="flex justify-between items-baseline pt-2 border-t border-slate-200">
+                  <span className="text-slate-500 uppercase">Monto a Cobrar:</span>
+                  <span className="text-lg font-bold text-slate-900">
+                    ${flowPaymentData.amount.toLocaleString("es-CL")} CLP
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <label className="block text-[11px] font-mono uppercase text-slate-600 font-medium">
+                  Email para envío de boleta y comprobante *
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={flowPaymentData.patientEmail}
+                  onChange={(e) =>
+                    setFlowPaymentData({
+                      ...flowPaymentData,
+                      patientEmail: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowFlowPaymentModal(false)}
+                  className="px-4 py-2 border border-slate-300 rounded text-xs font-mono uppercase text-slate-600 hover:border-slate-800"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  disabled={flowPaymentLoading}
+                  onClick={async () => {
+                    setFlowPaymentLoading(true);
+                    try {
+                      const res = await fetch("/api/pagos/flow/create", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          type: "copago_tratamiento",
+                          amount: flowPaymentData.amount,
+                          subject: flowPaymentData.subject,
+                          email: flowPaymentData.patientEmail,
+                          patientName: flowPaymentData.patientName,
+                          patientPhone: flowPaymentData.patientPhone,
+                          appointmentId: flowPaymentData.appointmentId,
+                        }),
+                      });
+                      const data = await res.json();
+                      if (data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                        return;
+                      }
+                    } catch (err) {
+                      console.error("Error processing portal Flow payment:", err);
+                    } finally {
+                      setFlowPaymentLoading(false);
+                    }
+                  }}
+                  className="px-5 py-2 bg-slate-900 hover:bg-black text-white font-mono text-xs uppercase tracking-wider font-bold rounded flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+                >
+                  {flowPaymentLoading ? (
+                    <span>Conectando...</span>
+                  ) : (
+                    <>
+                      <CreditCard className="w-3.5 h-3.5" />
+                      <span>Ir a Pagar con Webpay</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         )}

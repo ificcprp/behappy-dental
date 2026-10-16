@@ -26,6 +26,7 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
   const [patientPhone, setPatientPhone] = useState("");
   const [patientEmail, setPatientEmail] = useState("");
   const [notes, setNotes] = useState("");
+  const [paymentChoice, setPaymentChoice] = useState<"flow" | "whatsapp">("whatsapp");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedData, setConfirmedData] = useState<{
     whatsappUrl: string;
@@ -51,11 +52,23 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
     const handleTriageSelected = (e: Event) => {
       const detail = (e as CustomEvent<{ treatmentName: string }>).detail;
       if (detail?.treatmentName) {
-        // Find matching treatment in list
-        const match = treatmentsList.find(
-          (t) => t.name.toLowerCase().includes(detail.treatmentName.toLowerCase()) ||
-                 detail.treatmentName.toLowerCase().includes(t.name.toLowerCase())
-        );
+        const target = detail.treatmentName.toLowerCase();
+        const match = treatmentsList.find((t) => {
+          const tName = t.name.toLowerCase();
+          const tId = t.id.toLowerCase();
+          return (
+            tName.includes(target) ||
+            target.includes(tName) ||
+            tId.includes(target) ||
+            (target.includes("limpieza") && tId.includes("limpieza")) ||
+            (target.includes("evaluacion") && (tId.includes("revision") || tId.includes("diagnostico"))) ||
+            (target.includes("resina") && (tId.includes("caries") || tId.includes("estetica"))) ||
+            (target.includes("implante") && tId.includes("implante")) ||
+            (target.includes("invisalign") && tId.includes("invisalign")) ||
+            (target.includes("blanqueamiento") && tId.includes("blanqueamiento")) ||
+            (target.includes("endodoncia") && tId.includes("endodoncia"))
+          );
+        });
         if (match) setSelectedTreatment(match.id);
       }
     };
@@ -131,6 +144,34 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
         patientPhone: payload.patient_phone,
         notes: notes || undefined,
       });
+
+      // If user chose to guarantee their box with online deposit
+      if (paymentChoice === "flow") {
+        toast.info("Conectando con pasarela segura Flow.cl (Webpay Plus)...");
+        try {
+          const flowRes = await fetch("/api/pagos/flow/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "abono_cita",
+              amount: 10000,
+              subject: `Abono de Reserva · ${treatmentDisplayName}`,
+              email: patientEmail || "paciente@behappydental.cl",
+              patientName: patientName,
+              patientPhone: payload.patient_phone,
+              treatmentName: treatmentDisplayName,
+              doctorName: doctorDisplayName,
+            }),
+          });
+          const flowData = await flowRes.json();
+          if (flowData.redirectUrl) {
+            window.location.href = flowData.redirectUrl;
+            return;
+          }
+        } catch (flowErr) {
+          console.warn("Flow redirection fallback:", flowErr);
+        }
+      }
 
       toast.success("¡Solicitud registrada correctamente en la recepción clínica!");
       setConfirmedData({
@@ -445,10 +486,78 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
               </div>
             </div>
 
+            {/* Step 4: Modalidad de Confirmación */}
+            <div className="space-y-4 pt-2">
+              <span className="text-[10px] font-mono tracking-[0.2em] text-[#78736a] uppercase block border-b border-[#f0ede6] pb-2">
+                04 · MODALIDAD DE CONFIRMACIÓN DE BOX
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setPaymentChoice("whatsapp")}
+                  className={`p-4 border text-left rounded-[2px] transition flex flex-col justify-between ${
+                    paymentChoice === "whatsapp"
+                      ? "border-[#141413] bg-white ring-1 ring-[#141413]"
+                      : "border-[#ded9cd] bg-[#faf8f5] hover:border-[#141413]"
+                  }`}
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold font-mono text-[#141413] uppercase">
+                        Confirmación Presencial
+                      </span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#f0ede6] text-[#78736a]">
+                        $0 Ahora
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-[#66635d] font-light leading-relaxed">
+                      Confirmas tu hora directamente por WhatsApp y pagas en la sede de Suecia 3580 el día de tu atención.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-mono text-[#141413] font-semibold mt-3 block">
+                    {paymentChoice === "whatsapp" ? "✓ Seleccionado" : "Seleccionar"}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setPaymentChoice("flow")}
+                  className={`p-4 border text-left rounded-[2px] transition flex flex-col justify-between ${
+                    paymentChoice === "flow"
+                      ? "border-emerald-600 bg-emerald-50/40 ring-1 ring-emerald-600"
+                      : "border-[#ded9cd] bg-[#faf8f5] hover:border-[#141413]"
+                  }`}
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold font-mono text-emerald-800 uppercase flex items-center gap-1.5">
+                        <span>Abono Online Flow.cl</span>
+                        <span className="text-[9px] px-1.5 py-0.2 bg-emerald-600 text-white font-bold rounded">
+                          Recomendado
+                        </span>
+                      </span>
+                      <span className="text-xs font-mono font-bold text-emerald-700">
+                        $10.000 CLP
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-[#66635d] font-light leading-relaxed">
+                      Abonas $10.000 vía Webpay Plus / Tarjetas para garantizar disponibilidad inmediata de tu box. Se descuenta de tu arancel final.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-mono text-emerald-800 font-semibold mt-3 block">
+                    {paymentChoice === "flow" ? "✓ Seleccionado (Webpay / Tarjetas)" : "Seleccionar Abono Online"}
+                  </span>
+                </button>
+              </div>
+            </div>
+
             {/* Submit CTA */}
             <div className="pt-4 border-t border-[#f0ede6] flex flex-col sm:flex-row items-center justify-between gap-4">
               <span className="text-[11px] font-mono text-[#78736a]">
-                Sin cobro inicial de reserva · Confirmación presencial
+                {paymentChoice === "flow"
+                  ? "🔒 Pago seguro procesado por Flow.cl (Transbank / Webpay Plus)"
+                  : "✓ Sin cobro anticipado · Pago en recepción el día de atención"}
               </span>
 
               <button
@@ -457,7 +566,12 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#141413] text-[#faf8f5] hover:bg-black text-xs font-mono tracking-widest uppercase font-bold transition rounded-[2px] disabled:opacity-50 cursor-pointer shadow-sm"
               >
                 {isSubmitting ? (
-                  <span>Registrando...</span>
+                  <span>Procesando...</span>
+                ) : paymentChoice === "flow" ? (
+                  <>
+                    <span>Abonar $10.000 y Confirmar Cita</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
                 ) : (
                   <>
                     <span>Confirmar Cita de Evaluación</span>
