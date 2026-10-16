@@ -674,6 +674,94 @@ body.editing-active [contenteditable="true"] *:focus {
 
 p { margin-bottom: 0.4rem; }
 p:last-child { margin-bottom: 0; }
+
+/* ── MODULE CARDS & PLATFORM ARCHITECTURE ── */
+.module-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+
+.module-card {
+  border: 1px solid var(--rule);
+  background: rgba(255, 255, 255, 0.55);
+  padding: 15px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.module-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--cream2);
+}
+
+.module-badge {
+  font-family: var(--sans);
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: var(--green);
+  background: var(--greenlite);
+  padding: 2px 7px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.module-route {
+  font-family: var(--sans);
+  font-size: 0.54rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.module-h {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+
+.module-desc {
+  font-size: 0.73rem;
+  color: var(--ink2);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.module-bullets {
+  list-style: none;
+  font-size: 0.69rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.module-bullets li {
+  position: relative;
+  padding-left: 12px;
+  margin-bottom: 2px;
+}
+
+.module-bullets li::before {
+  content: '▪';
+  position: absolute;
+  left: 0;
+  font-size: 0.55rem;
+  top: 1px;
+  color: var(--green);
+}
+
+.module-bullets strong {
+  color: var(--ink);
+  font-weight: 600;
+}
 </style>
 </head>
 <body>
@@ -725,13 +813,13 @@ p:last-child { margin-bottom: 0; }
     </h1>
 
     <p class="cover-subtitle">
-      De una presencia digital inicial a una plataforma propia de captación local: sitio web en código personalizado, solicitudes centralizadas, campañas locales de búsqueda y medición para convertir consultas en horas de atención.
+      De una presencia digital estática a una plataforma clínica integral de captación y fidelización: código propio, simulador interactivo de copago Fonasa/Isapre, módulo de membresías Club BeHappy con suscripciones, editor CMS en tiempo real y portal con auto-registro de pacientes.
     </p>
 
     <div class="cover-stats">
       <div class="cover-stat">
-        <span class="num">3</span>
-        <span class="lbl">Niveles de servicio</span>
+        <span class="num">4</span>
+        <span class="lbl">Módulos activos</span>
       </div>
       <div class="cover-stat">
         <span class="num">90</span>
@@ -826,107 +914,157 @@ p:last-child { margin-bottom: 0; }
 </div>
 
 <!-- ════════════════════════════════════════
-     § 02 — FASE 1: QUÉ SE IMPLEMENTA Y ENTREGA
+     § 02.1 — ARQUITECTURA DE LA PLATAFORMA: CONVERSIÓN & FIDELIZACIÓN
 ════════════════════════════════════════ -->
 <div class="page page-break" style="position:relative;">
   <div class="wm">02</div>
 
   <div class="ph">
     <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
-    <span class="ph-right">§ 02 · Plataforma Fase 1</span>
+    <span class="ph-right">§ 02.1 · Plataforma Activa: Club BeHappy &amp; Simulador</span>
   </div>
 
-  <div class="chapter-label">§ 02 &nbsp;·&nbsp; Fase 1 · Plataforma de captación (Primeros 30 días)</div>
-  <h2 class="section-h">Plataforma propia.<br><em>Diseñada para recibir solicitudes.</em></h2>
-  <p class="section-lead">La plataforma se encuentra en fase avanzada de preparación técnica y será desplegada y validada como parte de la Fase 1. Su función es simple: mostrar información confiable, facilitar el contacto inmediato y registrar el origen de cada solicitud para que recepción haga seguimiento.</p>
+  <div class="chapter-label">§ 02 &nbsp;·&nbsp; Plataforma Activa · Módulos de Conversión y Retención</div>
+  <h2 class="section-h">Cuatro módulos operativos.<br><em>Diseñados para captar, retener y gestionar.</em></h2>
+  <p class="section-lead">A diferencia de un constructor web estático, la nueva plataforma cuenta con cuatro módulos de software desarrollados a la medida de BeHappy y listos para operar. No son prototipos conceptuales: son herramientas activas orientadas al paciente y a la sostenibilidad económica del centro.</p>
+
+  <div class="module-grid">
+    <!-- MÓDULO 01 -->
+    <div class="module-card">
+      <div class="module-card-top">
+        <span class="module-badge">Módulo 01 · Ingresos Recurrentes</span>
+        <span class="module-route">Rutas: /club y /precios</span>
+      </div>
+      <h3 class="module-h">Club BeHappy (Membresías Preventivas)</h3>
+      <p class="module-desc">Motor de retención e ingresos predecibles (MRR). Transforma la atención esporádica en una relación de largo plazo para toda la familia, blindando el sillón clínico.</p>
+      <ul class="module-bullets">
+        <li><strong>3 Planes familiares listos:</strong> <em>Plan BeHappy Sonrisa</em> ($14.990/mes), <em>Plan Familia Protegida</em> ($32.990/mes · hasta 3 integrantes) y <em>Plan Convenio Pyme</em> ($11.900/mes para empresas locales).</li>
+        <li><strong>Modalidad Mensual vs. Anual:</strong> Conmutador interactivo con incentivo de 2 meses bonificados en suscripción anual.</li>
+        <li><strong>Integración de cobro o WhatsApp:</strong> Botones enlazables a pasarela de suscripciones Flow.cl (PAC/PAT) o derivación inmediata a WhatsApp con mensaje pre-configurado.</li>
+        <li><strong>Blindaje de costo de sillón:</strong> 1ª higiene y radiografía activa desde el Día 1; 2ª higiene semestral desbloqueada al mes 6 continuo o inmediata con pago anual, asegurando rentabilidad operativa.</li>
+        <li><strong>Transparencia radical:</strong> Tabla comparativa <em>Grandes Cadenas vs. Club BeHappy</em> que erradica la desconfianza y la letra chica.</li>
+      </ul>
+    </div>
+
+    <!-- MÓDULO 02 -->
+    <div class="module-card">
+      <div class="module-card-top">
+        <span class="module-badge">Módulo 02 · Transparencia y Captación</span>
+        <span class="module-route">Ruta: /precios</span>
+      </div>
+      <h3 class="module-h">Simulador Interactivo de Aranceles y Copago</h3>
+      <p class="module-desc">Calculadora en tiempo real que derriba el principal freno de compra en odontología (temor al cobro sorpresa) y pre-cualifica la intención del paciente antes de la cita.</p>
+      <ul class="module-bullets">
+        <li><strong>6 Especialidades odontológicas:</strong> Odontología Preventiva, General, Estética, Ortodoncia, Periodoncia y Endodoncia con aranceles base claros.</li>
+        <li><strong>Selector de previsión en vivo:</strong> El paciente compara al instante entre atención <em>Particular</em>, <em>Fonasa / Isapre</em> (50% bonificación estimada) o <em>Convenio BeHappy</em> (70% bonificación exclusiva).</li>
+        <li><strong>Cálculo financiero transparente:</strong> Visualización inmediata de arancel referencial, bonificación calculada en pesos chilenos ($ CLP) y copago final estimado.</li>
+        <li><strong>Reserva pre-calificada:</strong> El botón de agendamiento directo viaja con el tratamiento y la previsión elegida, agilizando la confirmación en recepción.</li>
+        <li><strong>Pilar contra la competencia:</strong> Destaca a BeHappy como una clínica ética, moderna y sin sorpresas frente a las cadenas de Ñuñoa.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <p><strong>Impacto conjunto en la captación:</strong> El Simulador de Copagos atrae y convence a pacientes indecisos en Google y Meta mostrando costos claros; una vez en la clínica, el Club BeHappy los convierte en afiliados recurrentes con visitas preventivas programadas cada 6 meses.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     § 02.2 — ARQUITECTURA DE LA PLATAFORMA: GESTIÓN INTERNA & PACIENTES
+════════════════════════════════════════ -->
+<div class="page page-break" style="position:relative;">
+  <div class="wm">02</div>
+
+  <div class="ph">
+    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
+    <span class="ph-right">§ 02.2 · Plataforma Activa: Editor CMS &amp; Portal Pacientes</span>
+  </div>
+
+  <div class="chapter-label">§ 02 &nbsp;·&nbsp; Plataforma Activa · Control CMS y Portal del Paciente</div>
+  <h2 class="section-h">Soberanía técnica.<br><em>Control administrativo y auto-servicio de pacientes.</em></h2>
+  <p class="section-lead">La clínica no depende de programadores para cambiar su oferta comercial, y los pacientes cuentan con un entorno digital propio para registrarse y gestionar su relación con la clínica de manera autónoma.</p>
+
+  <div class="module-grid">
+    <!-- MÓDULO 03 -->
+    <div class="module-card">
+      <div class="module-card-top">
+        <span class="module-badge">Módulo 03 · Autonomía Clínica</span>
+        <span class="module-route">Ruta: /login → /portal (Admin)</span>
+      </div>
+      <h3 class="module-h">Portal Interno y Editor CMS en Vivo</h3>
+      <p class="module-desc">Panel de administración centralizado que otorga soberanía total a la dueña o doctora para editar la web en tiempo real sin costos de desarrollo adicionales ni esperas.</p>
+      <ul class="module-bullets">
+        <li><strong>4 Pestañas de edición en vivo:</strong>
+          <br>1. <em>Textos y Portada:</em> Modificación de titulares, slogans, teléfonos y dirección Suecia 3580.
+          <br>2. <em>Promociones:</em> Activación y retiro de campañas con imágenes y textos.
+          <br>3. <em>Tratamientos:</em> Actualización de precios arancelarios y descripciones.
+          <br>4. <em>Membresías:</em> Edición directa de planes Club BeHappy, precios y enlaces de cobro.
+        </li>
+        <li><strong>Persistencia Híbrida Blindada:</strong> Sincronización instantánea con Supabase y respaldo local (localStorage) que garantiza 0% caídas durante presentaciones o atención.</li>
+        <li><strong>Bandeja de Citas en Vivo:</strong> Recepción visualiza solicitudes entrantes de la web en tiempo real y asigna estados (Pendiente, Confirmada, Atendida).</li>
+      </ul>
+    </div>
+
+    <!-- MÓDULO 04 -->
+    <div class="module-card">
+      <div class="module-card-top">
+        <span class="module-badge">Módulo 04 · Portal y Fidelización</span>
+        <span class="module-route">Rutas: /registro y /portal (Paciente)</span>
+      </div>
+      <h3 class="module-h">Portal del Paciente y Auto-Registro de Cuentas</h3>
+      <p class="module-desc">Capacidad para que los pacientes creen su cuenta institucional desde la web y accedan a un entorno privado de consulta, seguimiento y agendamiento sin fricción.</p>
+      <ul class="module-bullets">
+        <li><strong>Auto-registro ágil en /registro:</strong> Formulario seguro con Nombre, RUT, Teléfono, Correo, Previsión (Fonasa o Isapre) y Contraseña cifrada.</li>
+        <li><strong>Expediente Digital de Cobertura:</strong> Reconocimiento de perfil del paciente (Particular o Convenio BeHappy Activo).</li>
+        <li><strong>Contador de Ahorro Acumulado:</strong> Métrica en pesos ($ CLP) que muestra al paciente cuánto ha ahorrado en copagos gracias a la clínica, reforzando la fidelidad de marca.</li>
+        <li><strong>Gestor de Citas y Agendamiento:</strong> Próxima cita programada, profesional tratante y botón para agendar nuevas horas en 1 clic.</li>
+        <li><strong>Canal de WhatsApp Dental Dedicado:</strong> Enlace prioritario y pre-identificado con la recepción de BeHappy.</li>
+      </ul>
+    </div>
+  </div>
 
   <div class="section-rule mb-2">
-    <p class="sc mb-1">Módulos de la Fase 1 a implementar y validar</p>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:130px">Función</th>
-          <th>Qué recibe Centro Dental BeHappy</th>
-          <th style="width:140px">Objetivo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="td-n">Sitio web propio</td>
-          <td class="td-s">Web responsive con catálogo de tratamientos, equipo médico real en Suecia 3580, ubicación y canales de atención.</td>
-          <td class="td-s"><span class="tag tag-ink">Imagen y confianza</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Contacto rápido</td>
-          <td class="td-s">Botones directos de WhatsApp y llamada con mensajes predefinidos por servicio (urgencias, evaluación, ortodoncia).</td>
-          <td class="td-s"><span class="tag tag-ok">Agendamiento ágil</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Solicitudes centralizadas</td>
-          <td class="td-s">Formulario breve y registro en base de datos propia de solicitudes comerciales (nombre, teléfono, interés y campaña).</td>
-          <td class="td-s"><span class="tag tag-ok">Seguimiento recepción</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Medición y analítica</td>
-          <td class="td-s">Configuración de Google Analytics 4, Meta Pixel y etiquetado UTM para medir clics a WhatsApp y formularios.</td>
-          <td class="td-s"><span class="tag tag-ink">Atribución de consultas</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Presencia local</td>
-          <td class="td-s">Auditoría y optimización de la ficha comercial de Google Business Profile (Google Maps en Ñuñoa).</td>
-          <td class="td-s"><span class="tag tag-ok">Búsqueda local</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Club BeHappy (Membresías)</td>
-          <td class="td-s">Vitrina web de planes familiares (<code>/club</code> y <code>/precios</code>), editor de coberturas en CMS y activación inmediata vía WhatsApp o links de suscripción de Flow.cl.</td>
-          <td class="td-s"><span class="tag tag-ok">Fidelización e Ingresos</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Entrega y control</td>
-          <td class="td-s">Código personalizado, repositorio y accesos entregables a la clínica, sujeto a licencias de componentes de terceros y open-source.</td>
-          <td class="td-s"><span class="tag tag-green">Soberanía digital</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="callout callout-green mb-2">
-    <p><strong>Alcance y protección de datos:</strong> La Fase 1 limita la información recolectada a datos estrictamente necesarios para gestionar solicitudes de atención iniciales (nombre, teléfono, servicio consultado y origen), excluyendo diagnósticos, fichas clínicas, radiografías y antecedentes médicos de salud. Se incorporará aviso de privacidad y consentimiento de contacto acorde al alcance de esta fase (Ley 19.628).</p>
-  </div>
-
-  <div class="section-rule">
-    <p class="sc mb-2">Comparativa compacta: Sitio actual vs. Nueva etapa</p>
+    <p class="sc mb-1">Comparativa técnica: Sitio Web Anterior vs. Nueva Plataforma Propietaria</p>
     <table class="vs">
       <thead>
         <tr>
-          <th>Criterio</th>
-          <th class="h-err" style="text-align:center">Sitio actual</th>
-          <th class="h-ok" style="text-align:center">Nueva etapa (Fase 1)</th>
+          <th>Capacidad técnica</th>
+          <th class="h-err" style="text-align:center">Sitio actual (Hostinger)</th>
+          <th class="h-ok" style="text-align:center">Nueva Plataforma (BeHappy 2026)</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="td-n">Control y continuidad</td>
-          <td><span class="icon-no">✗</span> Depende del constructor y configuración actual</td>
-          <td><span class="icon-ok">✓</span> Código personalizado y cuentas bajo titularidad o gestión de la clínica</td>
+          <td class="td-n">Suscripciones Club BeHappy</td>
+          <td><span class="icon-no">✗</span> No disponible</td>
+          <td><span class="icon-ok">✓</span> Módulo completo con switch mensual/anual y cobro</td>
         </tr>
         <tr>
-          <td class="td-n">Conversión de pacientes</td>
-          <td><span class="icon-w">~</span> Contacto general y formulario por correo</td>
-          <td><span class="icon-ok">✓</span> WhatsApp por servicio y formulario de solicitud ágil</td>
+          <td class="td-n">Simulador interactivo de copago</td>
+          <td><span class="icon-no">✗</span> No disponible</td>
+          <td><span class="icon-ok">✓</span> Calculadora en tiempo real por especialidad y previsión</td>
         </tr>
         <tr>
-          <td class="td-n">Seguimiento de consultas</td>
-          <td><span class="icon-no">✗</span> Contactos dispersos en buzón de correo</td>
-          <td><span class="icon-ok">✓</span> Registro centralizado y asignación de estados de atención</td>
+          <td class="td-n">Editor de contenidos (CMS)</td>
+          <td><span class="icon-w">~</span> Dependencia de constructor propietario</td>
+          <td><span class="icon-ok">✓</span> Panel CMS propio en 4 pestañas sin costo extra</td>
         </tr>
         <tr>
-          <td class="td-n">Medición publicitaria</td>
-          <td><span class="icon-no">✗</span> Visibilidad limitada del origen de contactos</td>
-          <td><span class="icon-ok">✓</span> Etiquetado UTM y eventos de conversión para evaluar campañas</td>
+          <td class="td-n">Cuentas y portal para pacientes</td>
+          <td><span class="icon-no">✗</span> No disponible</td>
+          <td><span class="icon-ok">✓</span> Auto-registro en /registro y portal con métrica de ahorro</td>
+        </tr>
+        <tr>
+          <td class="td-n">Trazabilidad y recepción de citas</td>
+          <td><span class="icon-no">✗</span> Correos dispersos sin estado</td>
+          <td><span class="icon-ok">✓</span> Bandeja centralizada con estados y medición publicitaria</td>
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <div class="callout callout-green" style="font-size:0.72rem;padding:8px 14px;margin-top:10px;">
+    <p><strong>Privacidad y cumplimiento normativo (Ley 19.628):</strong> El portal y la plataforma gestionan datos de contacto, membresía y citas operativas. No almacenan fichas médicas de diagnóstico invasivo ni imágenes radiográficas de diagnóstico clínico en la nube pública, protegiendo a la clínica bajo los más estrictos estándares éticos y legales.</p>
   </div>
 </div>
 
@@ -1017,7 +1155,37 @@ p:last-child { margin-bottom: 0; }
       </thead>
       <tbody>
         <tr>
-          <td class="td-n">Nueva plataforma web propia</td>
+          <td class="td-n">Nueva plataforma web propia (código responsive)</td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td class="td-n">Simulador interactivo de copago (/precios)</td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td class="td-n">Club BeHappy: Módulo de suscripciones (/club)</td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí (Base)</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí + Links Flow/WA</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí + Convenios Pyme</span></td>
+        </tr>
+        <tr>
+          <td class="td-n">Portal Interno con Editor CMS en vivo (4 pestañas)</td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td class="td-n">Portal del Paciente con auto-registro (/registro)</td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td class="td-n">Registro y bandeja centralizada de citas</td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
@@ -1029,22 +1197,10 @@ p:last-child { margin-bottom: 0; }
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
         </tr>
         <tr>
-          <td class="td-n">Registro centralizado de solicitudes</td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-        </tr>
-        <tr>
           <td class="td-n">Medición y Google Business Profile</td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Club BeHappy (Módulo de Membresías)</td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí (Web + CMS)</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí + Links Flow/WA</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí + Convenios Pyme</span></td>
         </tr>
         <tr>
           <td class="td-n">Google Search Ads (Búsqueda)</td>
@@ -1236,14 +1392,14 @@ function toggleEditMode() {
 function saveProposalChanges() {
   const container = document.getElementById('proposal-container');
   if (container) {
-    localStorage.setItem('behappy_propuesta_html_v3', container.innerHTML);
+    localStorage.setItem('behappy_propuesta_html_v4', container.innerHTML);
     alert('✓ Cambios guardados con éxito en la memoria de tu navegador.');
   }
 }
 
 function resetProposalChanges() {
   if (confirm('¿Deseas restaurar la propuesta al contenido original de fábrica?')) {
-    localStorage.removeItem('behappy_propuesta_html_v3');
+    localStorage.removeItem('behappy_propuesta_html_v4');
     location.reload();
   }
 }
@@ -1256,7 +1412,7 @@ function exportToPdf() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('behappy_propuesta_html_v3');
+  const saved = localStorage.getItem('behappy_propuesta_html_v4');
   if (saved) {
     const container = document.getElementById('proposal-container');
     if (container) {
