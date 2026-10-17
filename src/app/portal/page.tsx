@@ -422,7 +422,7 @@ function PortalContent() {
       {/* ========================================================================= */}
       {/* MAIN CLINICAL CONTENT AREA */}
       {/* ========================================================================= */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full min-w-0 max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         
         {/* ========================================================================= */}
         {/* 1. ROLE: PACIENTE (Personal Health Ledger) */}
@@ -1281,7 +1281,7 @@ function PortalContent() {
         {/* 4. ROLE: ADMIN (Executive Central & CMS Platform) */}
         {/* ========================================================================= */}
         {activeRole === "admin" && (
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
+          <div className="flex flex-col lg:flex-row gap-8 items-start w-full min-w-0 max-w-full">
             
             {/* Admin Sidebar Navigation */}
             <aside className="w-full lg:w-64 shrink-0 bg-white border border-slate-200 rounded-lg p-5 lg:sticky lg:top-20 space-y-6 shadow-xs">
@@ -1403,7 +1403,7 @@ function PortalContent() {
             </aside>
 
             {/* Admin Main Dynamic Pane */}
-            <div className="flex-1 w-full space-y-6">
+            <div className="flex-1 w-full min-w-0 max-w-full space-y-6">
               
               {/* TAB 1: EXECUTIVE DASHBOARD */}
               {adminTab === "dashboard" && (

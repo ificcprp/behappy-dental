@@ -114,7 +114,8 @@ export function Navbar() {
         {/* Contenedor con altura y aire configurables */}
         <div
           style={{
-            height: `${headerConfig.desktopHeight}px`,
+            minHeight: `${Math.max(headerConfig.desktopHeight, headerConfig.logoSize + 16)}px`,
+            height: `${Math.max(headerConfig.desktopHeight, headerConfig.logoSize + 16)}px`,
           }}
           className={`flex items-center justify-between transition-all ${
             headerConfig.layout === "centered" ? "lg:flex-col lg:justify-center lg:py-2" : ""
@@ -122,13 +123,13 @@ export function Navbar() {
         >
           
           {/* Logo Institucional BeHappy con jerarquía y escala optimizada */}
-          <a href="/" className="flex items-center gap-3.5 group flex-shrink-0">
+          <a href="/" className="flex items-center gap-3.5 group shrink-0 mr-6 lg:mr-10 xl:mr-12">
             <div
               style={{
                 width: `${headerConfig.logoSize}px`,
                 height: `${headerConfig.logoSize}px`,
               }}
-              className={`relative rounded-full overflow-hidden p-0.5 shadow-2xs group-hover:scale-105 transition-transform duration-200 flex-shrink-0 ${
+              className={`relative rounded-full overflow-hidden p-0.5 shadow-2xs group-hover:scale-105 transition-transform duration-200 shrink-0 ${
                 isDark ? "bg-neutral-900 border border-neutral-700" : "bg-white border border-[#ded9cd]"
               }`}
             >
@@ -142,7 +143,7 @@ export function Navbar() {
             </div>
 
             {headerConfig.showBrandText && (
-              <div className="flex flex-col">
+              <div className="flex flex-col whitespace-nowrap shrink-0">
                 <span
                   className={`text-[16px] sm:text-[17px] font-semibold tracking-tight leading-none transition-colors ${
                     isDark ? "text-[#faf8f5] group-hover:text-white" : "text-[#141413] group-hover:text-black"
@@ -169,7 +170,17 @@ export function Navbar() {
               }}
               className={`hidden ${
                 headerConfig.layout === "split" ? "lg:flex" : "md:flex"
-              } items-center`}
+              } items-center min-w-0 ${
+                headerConfig.layout === "split"
+                  ? "ml-auto mr-6 shrink-0"
+                  : headerConfig.layout === "centered"
+                  ? "justify-center flex-1 mx-4"
+                  : headerConfig.navAlignment === "left"
+                  ? "mr-auto justify-start"
+                  : headerConfig.navAlignment === "right"
+                  ? "ml-auto justify-end mr-6"
+                  : "justify-center flex-1 mx-4 lg:mx-8"
+              }`}
             >
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -183,7 +194,7 @@ export function Navbar() {
                       textTransform: headerConfig.textTransform,
                       fontFamily: getLinkFontFamily(),
                     }}
-                    className={`transition-colors duration-150 py-1.5 relative ${
+                    className={`transition-colors duration-150 py-1.5 relative whitespace-nowrap shrink-0 ${
                       isActive
                         ? isDark
                           ? "text-[#faf8f5] font-bold border-b-2 border-[#faf8f5]"
@@ -208,14 +219,14 @@ export function Navbar() {
                     textTransform: headerConfig.textTransform,
                     fontFamily: getLinkFontFamily(),
                   }}
-                  className={`px-2.5 py-1 rounded transition-colors inline-flex items-center gap-1.5 font-bold shadow-2xs ${
+                  className={`px-2.5 py-1 rounded transition-colors inline-flex items-center gap-1.5 font-bold shadow-2xs whitespace-nowrap shrink-0 ${
                     isDark
                       ? "bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 hover:border-amber-400"
                       : "bg-amber-500/10 border border-amber-500/30 text-amber-900 hover:bg-amber-500/20 hover:border-amber-500"
                   }`}
                   title="Explorar la suite interactiva de presentación para inversionistas (4 Roles)"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                   <span>{headerConfig.demoButtonText || "Demo OS (4 Roles)"}</span>
                 </a>
               )}
@@ -223,18 +234,18 @@ export function Navbar() {
           )}
 
           {/* Acciones de la Derecha: Jerarquía clara (Portal Clínico Real + Cita) */}
-          <div className="hidden md:flex items-center space-x-3 flex-shrink-0">
+          <div className="hidden md:flex items-center space-x-3 shrink-0 ml-auto lg:ml-0">
             {sessionUser ? (
               <>
                 <a
                   href={`/portal?role=${sessionUser.role}`}
-                  className={`px-3.5 py-2 text-xs font-mono tracking-wider uppercase rounded-xs flex items-center gap-2 shadow-2xs transition ${
+                  className={`px-3.5 py-2 text-xs font-mono tracking-wider uppercase rounded-xs flex items-center gap-2 shadow-2xs transition whitespace-nowrap shrink-0 ${
                     isDark
                       ? "border border-white/30 bg-white/10 text-white hover:bg-white/20"
                       : "border border-[#141413] bg-[#141413] text-[#faf8f5] hover:bg-black"
                   }`}
                 >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                   <span>Portal ({sessionUser.role})</span>
                 </a>
                 <button
@@ -243,7 +254,7 @@ export function Navbar() {
                     setSessionUser(null);
                     window.location.href = "/";
                   }}
-                  className={`p-2 transition ${isDark ? "text-[#a8a398] hover:text-white" : "text-[#78736a] hover:text-[#141413]"}`}
+                  className={`p-2 transition shrink-0 ${isDark ? "text-[#a8a398] hover:text-white" : "text-[#78736a] hover:text-[#141413]"}`}
                   title="Cerrar sesión"
                 >
                   <LogOut className="w-4 h-4" />
@@ -252,7 +263,7 @@ export function Navbar() {
             ) : (
               <a
                 href="/login"
-                className={`px-4 py-2 text-xs font-mono tracking-wider uppercase rounded-xs transition font-medium ${
+                className={`px-4 py-2 text-xs font-mono tracking-wider uppercase rounded-xs transition font-medium whitespace-nowrap shrink-0 ${
                   isDark
                     ? "border border-[#3e3b35] text-[#faf8f5] hover:border-white hover:bg-white/10"
                     : "border border-[#cfc9be] text-[#141413] hover:border-[#141413] hover:bg-[#ece7de]/60"
@@ -265,7 +276,7 @@ export function Navbar() {
             {/* Botón Principal CTA: Reservar Cita */}
             <button
               onClick={handleScrollToBooking}
-              className={`px-4 py-2 text-xs font-mono tracking-wider uppercase rounded-xs font-medium shadow-2xs transition ${
+              className={`px-4 py-2 text-xs font-mono tracking-wider uppercase rounded-xs font-medium shadow-2xs transition whitespace-nowrap shrink-0 ${
                 isDark
                   ? "bg-[#faf8f5] hover:bg-white text-[#141413]"
                   : "bg-[#141413] hover:bg-black text-[#faf8f5]"

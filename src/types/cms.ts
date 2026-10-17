@@ -146,6 +146,7 @@ export type HeaderColorScheme = "blanco" | "negro" | "sistema";
 
 export interface CMSHeaderConfig {
   layout: "classic" | "centered" | "split";
+  navAlignment?: "center" | "left" | "right";
   mobileMenuType: "fullscreen" | "drawer-right" | "drawer-left";
   burgerOnDesktop: boolean;
   colorScheme: HeaderColorScheme; // "blanco" | "negro" | "sistema"

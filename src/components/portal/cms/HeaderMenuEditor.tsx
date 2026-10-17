@@ -45,7 +45,7 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-8 animate-in fade-in duration-300 w-full min-w-0 max-w-full">
       
       {/* Top Section Intro */}
       <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-xs space-y-2">
@@ -62,8 +62,8 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
       </div>
 
       {/* Simulator / Interactive Header Preview */}
-      <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 space-y-4 text-white">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 sm:p-6 space-y-4 text-white w-full min-w-0 max-w-full overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <Eye className="w-4 h-4 text-sky-400" />
             <span className="text-xs font-mono uppercase tracking-wider text-slate-300 font-bold">
@@ -71,7 +71,7 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {activeColorScheme === "sistema" && (
               <div className="flex items-center gap-1 bg-slate-800 p-1 rounded text-xs font-mono border border-slate-700">
                 <span className="text-[10px] text-slate-400 px-1 font-mono">Simular SO:</span>
@@ -123,9 +123,9 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
           </div>
         </div>
 
-        {/* Live Preview Container (Adaptativo y con viewport realista) */}
+        {/* Live Preview Container (Adaptativo y con viewport realista con scroll interno contenido) */}
         <div
-          className={`rounded-md border shadow-md overflow-x-auto transition-colors duration-200 ${
+          className={`w-full min-w-0 max-w-full rounded-md border shadow-md overflow-x-auto transition-colors duration-200 scrollbar-thin ${
             previewIsDark
               ? "bg-[#0e0e0d] text-[#faf8f5] border-slate-700"
               : "bg-[#faf8f5] text-[#141413] border-slate-300"
@@ -133,19 +133,22 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
         >
           <div
             style={{
-              height: previewMode === "desktop" ? `${headerConfig.desktopHeight}px` : `${headerConfig.mobileHeight}px`,
-              minWidth: previewMode === "desktop" ? "880px" : "100%",
+              height:
+                previewMode === "desktop"
+                  ? `${Math.max(headerConfig.desktopHeight, headerConfig.logoSize + 16)}px`
+                  : `${headerConfig.mobileHeight}px`,
+              minWidth: previewMode === "desktop" ? "920px" : "100%",
             }}
-            className="px-6 flex items-center justify-between transition-all"
+            className="px-6 flex items-center justify-between transition-all w-full"
           >
             {/* Logo area */}
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-3.5 shrink-0 mr-6 lg:mr-8">
               <div
                 style={{
                   width: `${previewMode === "desktop" ? headerConfig.logoSize : Math.min(headerConfig.logoSize, 42)}px`,
                   height: `${previewMode === "desktop" ? headerConfig.logoSize : Math.min(headerConfig.logoSize, 42)}px`,
                 }}
-                className={`relative rounded-full overflow-hidden p-0.5 shadow-2xs flex-shrink-0 transition-colors ${
+                className={`relative rounded-full overflow-hidden p-0.5 shadow-2xs shrink-0 transition-colors ${
                   previewIsDark ? "bg-neutral-900 border border-neutral-700" : "bg-white border border-[#ded9cd]"
                 }`}
               >
@@ -158,7 +161,7 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
               </div>
 
               {headerConfig.showBrandText && (
-                <div className="whitespace-nowrap flex-shrink-0">
+                <div className="whitespace-nowrap shrink-0">
                   <span
                     className={`text-xs font-semibold block leading-tight transition-colors ${
                       previewIsDark ? "text-[#faf8f5]" : "text-[#141413]"
@@ -181,7 +184,17 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             {previewMode === "desktop" && !headerConfig.burgerOnDesktop ? (
               <div
                 style={{ gap: `${headerConfig.linksSpacing}px` }}
-                className="flex items-center flex-shrink-0 px-4"
+                className={`flex items-center min-w-0 ${
+                  headerConfig.layout === "split"
+                    ? "ml-auto mr-6 shrink-0"
+                    : headerConfig.layout === "centered"
+                    ? "justify-center flex-1 mx-4"
+                    : headerConfig.navAlignment === "left"
+                    ? "mr-auto justify-start"
+                    : headerConfig.navAlignment === "right"
+                    ? "ml-auto justify-end mr-6"
+                    : "justify-center flex-1 mx-4"
+                }`}
               >
                 {["Inicio", "Tratamientos", "Precios", "Club BeHappy", "Nosotros", "Galería", "Contacto"].map((name) => (
                   <span
@@ -197,7 +210,7 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
                           ? "system-ui, sans-serif"
                           : "monospace",
                     }}
-                    className={`font-normal whitespace-nowrap transition-colors ${
+                    className={`font-normal whitespace-nowrap shrink-0 transition-colors ${
                       previewIsDark ? "text-[#a8a398]" : "text-[#66635d]"
                     }`}
                   >
@@ -213,28 +226,28 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
                       letterSpacing: headerConfig.letterSpacing,
                       textTransform: headerConfig.textTransform,
                     }}
-                    className={`px-2 py-0.5 rounded font-bold inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0 shadow-2xs transition-colors ${
+                    className={`px-2 py-0.5 rounded font-bold inline-flex items-center gap-1 whitespace-nowrap shrink-0 shadow-2xs transition-colors ${
                       previewIsDark
                         ? "text-amber-300 bg-amber-500/20 border border-amber-500/40"
                         : "text-amber-900 bg-amber-500/10 border border-amber-500/30"
                     }`}
                   >
-                    <Sparkles className="w-3 h-3 text-amber-500" />
+                    <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
                     <span>{headerConfig.demoButtonText || "Demo OS (4 Roles)"}</span>
                   </span>
                 )}
               </div>
             ) : previewMode === "mobile" || headerConfig.burgerOnDesktop ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <span
-                  className={`text-[10px] font-mono px-2 py-0.5 rounded transition-colors ${
+                  className={`text-[10px] font-mono px-2 py-0.5 rounded transition-colors whitespace-nowrap ${
                     previewIsDark ? "text-slate-400 bg-slate-800" : "text-slate-500 bg-slate-200"
                   }`}
                 >
                   Menú Burger Activo
                 </span>
                 <div
-                  className={`w-8 h-8 rounded border flex items-center justify-center transition-colors ${
+                  className={`w-8 h-8 rounded border flex items-center justify-center transition-colors shrink-0 ${
                     previewIsDark ? "border-slate-700 text-white" : "border-slate-300 text-slate-700"
                   }`}
                 >
@@ -244,9 +257,9 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             ) : null}
 
             {/* Right Buttons preview */}
-            <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+            <div className="flex items-center gap-2 shrink-0 whitespace-nowrap ml-auto">
               <span
-                className={`px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase font-medium rounded-xs whitespace-nowrap transition-colors ${
+                className={`px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase font-medium rounded-xs whitespace-nowrap shrink-0 transition-colors ${
                   previewIsDark
                     ? "border border-[#3e3b35] text-[#faf8f5]"
                     : "border border-[#141413] text-[#141413]"
@@ -255,7 +268,7 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
                 {headerConfig.portalButtonText}
               </span>
               <span
-                className={`px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase font-medium rounded-xs whitespace-nowrap shadow-2xs transition-colors ${
+                className={`px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase font-medium rounded-xs whitespace-nowrap shrink-0 shadow-2xs transition-colors ${
                   previewIsDark
                     ? "bg-[#faf8f5] text-[#141413]"
                     : "bg-[#141413] text-white"
@@ -401,6 +414,56 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             ))}
           </div>
 
+          {/* Alineación de Navegación & Jerarquía Espacial */}
+          <div className="space-y-3 pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-mono uppercase tracking-wider text-slate-700 font-bold">
+                Alineación de Navegación & Jerarquía
+              </label>
+              <span className="text-[10px] font-mono text-slate-500 uppercase">
+                {headerConfig.navAlignment || "center"}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                {
+                  id: "center" as const,
+                  title: "Centrado",
+                  desc: "Logo izq · Enlaces centro · Acciones der",
+                },
+                {
+                  id: "left" as const,
+                  title: "Junto al Logo",
+                  desc: "Enlaces pegados a la marca con aire seguro",
+                },
+                {
+                  id: "right" as const,
+                  title: "Junto a Botones",
+                  desc: "Enlaces pegados al Portal Clínico y Cita",
+                },
+              ].map((align) => (
+                <button
+                  key={align.id}
+                  type="button"
+                  onClick={() => update("navAlignment", align.id)}
+                  className={`p-3 text-left border rounded-md transition space-y-1 ${
+                    (headerConfig.navAlignment || "center") === align.id
+                      ? "border-sky-600 bg-sky-50/60 ring-1 ring-sky-600"
+                      : "border-slate-200 hover:border-slate-300 bg-white"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-900">{align.title}</span>
+                    {(headerConfig.navAlignment || "center") === align.id && (
+                      <Check className="w-3.5 h-3.5 text-sky-600" />
+                    )}
+                  </div>
+                  <div className="text-[10px] text-slate-500">{align.desc}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Menú Móvil & Burger */}
           <div className="space-y-4 pt-4 border-t border-slate-100">
             <label className="block text-xs font-mono uppercase tracking-wider text-slate-700 font-bold">
@@ -465,7 +528,7 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             <input
               type="range"
               min="68"
-              max="115"
+              max="140"
               step="2"
               value={headerConfig.desktopHeight}
               onChange={(e) => update("desktopHeight", parseInt(e.target.value, 10))}
@@ -473,8 +536,9 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             />
             <div className="flex justify-between text-[10px] font-mono text-slate-400">
               <span>68px (Ajustada)</span>
-              <span>84px (Recomendada con aire)</span>
-              <span>115px (Monumental)</span>
+              <span>84px (Recomendada)</span>
+              <span>100px (Aire amplio)</span>
+              <span>140px (Monumental)</span>
             </div>
           </div>
 
@@ -489,16 +553,18 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             <input
               type="range"
               min="36"
-              max="72"
+              max="120"
               step="2"
               value={headerConfig.logoSize}
               onChange={(e) => update("logoSize", parseInt(e.target.value, 10))}
               className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#059669]"
             />
             <div className="flex justify-between text-[10px] font-mono text-slate-400">
-              <span>36px (Anterior pequeño)</span>
-              <span>52px (Óptimo actual)</span>
-              <span>72px (Grande)</span>
+              <span>36px (Compacto)</span>
+              <span>52px (Estándar)</span>
+              <span>72px (Anterior máx)</span>
+              <span>96px (Destacado)</span>
+              <span>120px (Monumental)</span>
             </div>
           </div>
 
@@ -562,17 +628,17 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             </div>
             <input
               type="range"
-              min="16"
-              max="48"
+              min="12"
+              max="56"
               step="2"
               value={headerConfig.linksSpacing}
               onChange={(e) => update("linksSpacing", parseInt(e.target.value, 10))}
               className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-800"
             />
             <div className="flex justify-between text-[10px] font-mono text-slate-400">
-              <span>16px (Compacto)</span>
+              <span>12px (Compacto)</span>
               <span>28px (Equilibrado)</span>
-              <span>48px (Muy espacioso)</span>
+              <span>56px (Ultra espacioso)</span>
             </div>
           </div>
 

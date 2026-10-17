@@ -345,6 +345,7 @@ export const DEFAULT_AUTH_PORTAL: CMSAuthPortal = {
 
 export const DEFAULT_HEADER_CONFIG: CMSHeaderConfig = {
   layout: "classic",
+  navAlignment: "center",
   mobileMenuType: "fullscreen",
   burgerOnDesktop: false,
   colorScheme: "blanco",
