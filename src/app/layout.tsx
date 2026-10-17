@@ -71,8 +71,52 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Dentist",
+    name: "Centro Dental BeHappy",
+    image: "https://behappydental.cl/images/brand/logo.png",
+    "@id": "https://behappydental.cl",
+    url: "https://behappydental.cl",
+    telephone: "+56947578597",
+    priceRange: "$$",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Suecia 3580, OF. 304",
+      addressLocality: "Ñuñoa",
+      addressRegion: "Región Metropolitana",
+      addressCountry: "CL",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: -33.4542,
+      longitude: -70.6015,
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "10:00",
+        closes: "20:00",
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Saturday"],
+        opens: "10:00",
+        closes: "18:00",
+      },
+    ],
+    sameAs: ["https://www.instagram.com/dentalbehappynunoa"],
+  };
+
   return (
     <html lang="es-CL">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} min-h-screen bg-[#faf8f5] text-[#141413] font-sans antialiased selection:bg-[#141413] selection:text-[#faf8f5]`}
       >
