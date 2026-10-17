@@ -181,138 +181,138 @@ export function SiteCmsEditor() {
         onReset={handleReset}
       />
 
-      {/* Tabs Navigation Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-11 gap-1.5 bg-[#0e0e12] p-1.5 border border-[#222228]">
+      {/* Tabs Navigation (Adaptive Scrollable Bar) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto bg-[#0e0e12] p-1.5 border border-[#222228] rounded-md scrollbar-none">
         <button
           onClick={() => setActiveTab("header")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "header"
               ? "bg-[#18181f] text-sky-400 border-sky-500/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <Layout className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">0. Menú</span>
+          <Layout className="w-3.5 h-3.5 shrink-0" />
+          <span>0. Menú</span>
         </button>
 
         <button
           onClick={() => setActiveTab("hero")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "hero"
               ? "bg-[#18181f] text-purple-400 border-purple-500/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">1. Hero</span>
+          <Sparkles className="w-3.5 h-3.5 shrink-0" />
+          <span>1. Hero</span>
         </button>
 
         <button
           onClick={() => setActiveTab("pilares")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "pilares"
               ? "bg-[#18181f] text-teal-400 border-teal-500/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <Layers className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">2. Pilares</span>
+          <Layers className="w-3.5 h-3.5 shrink-0" />
+          <span>2. Pilares</span>
         </button>
 
         <button
           onClick={() => setActiveTab("prevencion")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "prevencion"
               ? "bg-[#18181f] text-emerald-400 border-emerald-500/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <HeartHandshake className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">3. Prevención</span>
+          <HeartHandshake className="w-3.5 h-3.5 shrink-0" />
+          <span>3. Prevención</span>
         </button>
 
         <button
           onClick={() => setActiveTab("membresias")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "membresias"
               ? "bg-[#18181f] text-amber-400 border-amber-500/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <CreditCard className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">4. Club</span>
+          <CreditCard className="w-3.5 h-3.5 shrink-0" />
+          <span>4. Club</span>
         </button>
 
         <button
           onClick={() => setActiveTab("tratamientos")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "tratamientos"
               ? "bg-[#18181f] text-cyan-400 border-cyan-500/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <Stethoscope className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">5. Catálogo</span>
+          <Stethoscope className="w-3.5 h-3.5 shrink-0" />
+          <span>5. Catálogo</span>
         </button>
 
         <button
           onClick={() => setActiveTab("doctores")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "doctores"
               ? "bg-[#18181f] text-blue-400 border-blue-500/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <Users className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">6. Staff SIS</span>
+          <Users className="w-3.5 h-3.5 shrink-0" />
+          <span>6. Staff SIS</span>
         </button>
 
         <button
           onClick={() => setActiveTab("promos")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "promos"
               ? "bg-[#18181f] text-pink-400 border-pink-500/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <Percent className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">7. Promos</span>
+          <Percent className="w-3.5 h-3.5 shrink-0" />
+          <span>7. Promos</span>
         </button>
 
         <button
           onClick={() => setActiveTab("contacto")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "contacto"
               ? "bg-[#18181f] text-amber-300 border-amber-400/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <PhoneCall className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">8. Contacto</span>
+          <PhoneCall className="w-3.5 h-3.5 shrink-0" />
+          <span>8. Contacto</span>
         </button>
 
         <button
           onClick={() => setActiveTab("anuncios")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "anuncios"
               ? "bg-[#18181f] text-rose-400 border-rose-500/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <Bell className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">9. Marquesina</span>
+          <Bell className="w-3.5 h-3.5 shrink-0" />
+          <span>9. Marquesina</span>
         </button>
 
         <button
           onClick={() => setActiveTab("auth")}
-          className={`p-2.5 text-xs font-mono tracking-wider uppercase transition flex flex-col items-center justify-center gap-1 border text-center ${
+          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
             activeTab === "auth"
               ? "bg-[#18181f] text-emerald-400 border-emerald-500/70 font-bold"
               : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
           }`}
         >
-          <KeyRound className="w-3.5 h-3.5" />
-          <span className="text-[10px] truncate w-full">10. Acceso</span>
+          <KeyRound className="w-3.5 h-3.5 shrink-0" />
+          <span>10. Acceso</span>
         </button>
       </div>
 

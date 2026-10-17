@@ -84,16 +84,17 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
           </div>
         </div>
 
-        {/* Live Preview Container */}
-        <div className="bg-[#faf8f5] text-[#141413] rounded-md overflow-hidden border border-slate-300 shadow-md">
+        {/* Live Preview Container (Adaptativo y con viewport realista) */}
+        <div className="bg-[#faf8f5] text-[#141413] rounded-md border border-slate-300 shadow-md overflow-x-auto">
           <div
             style={{
               height: previewMode === "desktop" ? `${headerConfig.desktopHeight}px` : `${headerConfig.mobileHeight}px`,
+              minWidth: previewMode === "desktop" ? "880px" : "100%",
             }}
             className="px-6 flex items-center justify-between transition-all"
           >
             {/* Logo area */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-shrink-0">
               <div
                 style={{
                   width: `${previewMode === "desktop" ? headerConfig.logoSize : Math.min(headerConfig.logoSize, 42)}px`,
@@ -110,7 +111,7 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
               </div>
 
               {headerConfig.showBrandText && (
-                <div>
+                <div className="whitespace-nowrap flex-shrink-0">
                   <span className="text-xs font-semibold block leading-tight text-[#141413]">
                     Centro Dental BeHappy
                   </span>
@@ -122,12 +123,12 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             </div>
 
             {/* Desktop Links preview */}
-            {previewMode === "desktop" && !headerConfig.burgerOnDesktop && (
+            {previewMode === "desktop" && !headerConfig.burgerOnDesktop ? (
               <div
                 style={{ gap: `${headerConfig.linksSpacing}px` }}
-                className="hidden lg:flex items-center"
+                className="flex items-center flex-shrink-0 px-4"
               >
-                {["Inicio", "Tratamientos", "Precios", "Club BeHappy", "Nosotros", "Contacto"].map((name) => (
+                {["Inicio", "Tratamientos", "Precios", "Club BeHappy", "Nosotros", "Galería", "Contacto"].map((name) => (
                   <span
                     key={name}
                     style={{
@@ -141,7 +142,7 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
                           ? "system-ui, sans-serif"
                           : "monospace",
                     }}
-                    className="text-[#66635d] font-normal"
+                    className="text-[#66635d] font-normal whitespace-nowrap"
                   >
                     {name}
                   </span>
@@ -155,21 +156,30 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
                       letterSpacing: headerConfig.letterSpacing,
                       textTransform: headerConfig.textTransform,
                     }}
-                    className="text-[#0284c7] font-bold border-b border-[#0284c7]/40 pb-0.5 inline-flex items-center gap-1"
+                    className="text-amber-900 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded font-bold inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0 shadow-2xs"
                   >
-                    <Sparkles className="w-3 h-3 text-amber-500" />
-                    <span>{headerConfig.demoButtonText}</span>
+                    <Sparkles className="w-3 h-3 text-amber-600" />
+                    <span>{headerConfig.demoButtonText || "Demo OS (4 Roles)"}</span>
                   </span>
                 )}
               </div>
-            )}
+            ) : previewMode === "mobile" || headerConfig.burgerOnDesktop ? (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono text-slate-500 bg-slate-200 px-2 py-0.5 rounded">
+                  Menú Burger Activo
+                </span>
+                <div className="w-8 h-8 rounded border border-slate-300 flex items-center justify-center">
+                  <Menu className="w-4 h-4 text-slate-700" />
+                </div>
+              </div>
+            ) : null}
 
             {/* Right Buttons preview */}
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase border border-[#141413] text-[#141413] font-medium rounded-xs">
+            <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+              <span className="px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase border border-[#141413] text-[#141413] font-medium rounded-xs whitespace-nowrap">
                 {headerConfig.portalButtonText}
               </span>
-              <span className="px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase bg-[#141413] text-white font-medium rounded-xs">
+              <span className="px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase bg-[#141413] text-white font-medium rounded-xs whitespace-nowrap shadow-2xs">
                 {headerConfig.bookingButtonText}
               </span>
             </div>

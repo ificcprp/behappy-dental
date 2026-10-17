@@ -27,7 +27,7 @@ export const DEMO_USERS: Record<string, UserProfile> = {
     id: "usr_recepcion_01",
     email: "recepcion@behappydental.cl",
     fullName: "Recepción BeHappy",
-    rut: "Suecia 3580",
+    rut: "19.340.512-4",
     phone: "+56 9 4757 8597",
     role: "recepcion",
     createdAt: "2024-06-10"
@@ -36,7 +36,7 @@ export const DEMO_USERS: Record<string, UserProfile> = {
     id: "usr_admin_01",
     email: "ceobehappy@gmail.com",
     fullName: "Dirección Médica & CEO BeHappy",
-    rut: "Suecia 3580, OF. 304",
+    rut: "14.230.112-8",
     phone: "+56 9 4757 8597",
     role: "admin",
     createdAt: "2023-11-01"

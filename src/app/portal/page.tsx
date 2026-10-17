@@ -154,32 +154,15 @@ function PortalContent() {
   useEffect(() => {
     const session = getCurrentSession();
     if (!session) {
-      // Auto-initialize demo session based on query parameter or fallback to paciente
-      const fallbackRole = initialRoleParam || "paciente";
-      const demo = DEMO_USERS[fallbackRole] || DEMO_USERS.paciente;
-      setCurrentSession(demo);
-      setCurrentUser(demo);
-      setActiveRole(fallbackRole);
-      setAdminSimulatedRole(fallbackRole);
-    } else {
-      setCurrentUser(session);
-      if (initialRoleParam) {
-        setActiveRole(initialRoleParam);
-        setAdminSimulatedRole(initialRoleParam);
-        const demo = DEMO_USERS[initialRoleParam];
-        if (demo && session.role !== initialRoleParam) {
-          setCurrentUser(demo);
-          setCurrentSession(demo);
-        }
-      } else {
-        setActiveRole(session.role);
-        setAdminSimulatedRole(null);
-      }
+      router.replace("/login");
+      return;
     }
 
+    setCurrentUser(session);
+    setActiveRole(session.role);
     setUserList(getRegisteredUsers());
     setSessionLoading(false);
-  }, [initialRoleParam, router]);
+  }, [router]);
 
   // 2. Synchronize clinical store in real-time
   useEffect(() => {
@@ -199,23 +182,6 @@ function PortalContent() {
   const handleLogout = () => {
     clearCurrentSession();
     router.replace("/login");
-  };
-
-  // Unified Role Switcher (Always accessible on desktop & mobile)
-  const handleRoleSwitch = (newRole: UserRole) => {
-    setActiveRole(newRole);
-    setAdminSimulatedRole(newRole);
-    const targetUser = DEMO_USERS[newRole] || currentUser || DEMO_USERS.paciente;
-    setCurrentUser(targetUser);
-    setCurrentSession(targetUser);
-    router.replace(`/portal?role=${newRole}`);
-    const roleLabelsMap: Record<UserRole, string> = {
-      paciente: "Paciente",
-      doctor: "Doctor Clínico",
-      recepcion: "Recepción & Admisión",
-      admin: "Dirección Médica & CMS"
-    };
-    toast.info(`Accediendo como: ${roleLabelsMap[newRole] || newRole}`);
   };
 
   // SOAP Save
@@ -397,27 +363,17 @@ function PortalContent() {
             </span>
           </div>
 
-          {/* Right Action Block */}
-          {/* Right Action Block: Universal Role Navigator & Identity */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+          {/* Right Action Block: Authenticated User & Actions */}
+          <div className="flex items-center gap-3">
             
-            {/* Universal Role Navigator (Always accessible on desktop and mobile) */}
-            <div className="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-md border border-slate-300/80 text-[11px] font-mono">
-              <span className="px-1.5 text-[10px] uppercase font-bold text-slate-500 shrink-0 hidden md:inline">Vista:</span>
-              {(["paciente", "doctor", "recepcion", "admin"] as UserRole[]).map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => handleRoleSwitch(r)}
-                  className={`px-2 py-1 rounded capitalize transition whitespace-nowrap text-[11px] ${
-                    activeRole === r
-                      ? "bg-slate-900 text-white font-bold shadow-xs"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-                  }`}
-                >
-                  {r === "doctor" ? "Doctor" : r === "recepcion" ? "Recepción" : r === "admin" ? "Admin" : "Paciente"}
-                </button>
-              ))}
+            {/* Authenticated User Identity */}
+            <div className="text-right flex flex-col justify-center">
+              <span className="text-xs font-semibold text-slate-900 block leading-tight">
+                {currentUser.fullName}
+              </span>
+              <span className="text-[10px] font-mono text-slate-500 block">
+                {currentUser.email}
+              </span>
             </div>
 
             {/* Link back to public web */}
@@ -430,16 +386,6 @@ function PortalContent() {
               <span className="hidden sm:inline">Web</span>
             </a>
 
-            {/* Authenticated User Identity */}
-            <div className="text-right hidden xl:block">
-              <span className="text-xs font-semibold text-slate-900 block leading-tight">
-                {currentUser.fullName}
-              </span>
-              <span className="text-[10px] font-mono text-slate-500 block">
-                {currentUser.rut || currentUser.email}
-              </span>
-            </div>
-
             {/* Logout button */}
             <button
               onClick={handleLogout}
@@ -447,7 +393,7 @@ function PortalContent() {
               title="Cerrar sesión de forma segura"
             >
               <LogOut className="w-3.5 h-3.5 text-slate-500" />
-              <span className="hidden md:inline">Salir</span>
+              <span className="hidden sm:inline">Salir</span>
             </button>
           </div>
 
@@ -1309,7 +1255,7 @@ function PortalContent() {
               </div>
 
               {/* Navigation Tabs */}
-              <nav className="space-y-1 font-mono text-xs">
+              <nav className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-1 gap-1.5 font-mono text-xs">
                 <button
                   type="button"
                   onClick={() => setAdminTab("dashboard")}
@@ -1392,7 +1338,19 @@ function PortalContent() {
                   rel="noopener noreferrer"
                   className="flex items-center justify-between text-xs text-slate-600 hover:text-slate-900 font-mono py-1"
                 >
-                  <span>20 Tratamientos</span>
+                  <span>Catálogo de Tratamientos</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+                <a
+                  href="/demo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between text-xs text-amber-700 hover:text-amber-900 font-mono py-1"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3 text-amber-600" />
+                    <span>Demo 4 Roles</span>
+                  </span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -1467,7 +1425,7 @@ function PortalContent() {
                       <span className="text-[10px] font-mono text-slate-500 uppercase font-bold block">GESTIÓN DE CONTENIDOS EN TIEMPO REAL</span>
                       <h4 className="text-base font-semibold text-slate-900">Edición Directa del Sitio Web Público</h4>
                       <p className="text-xs text-slate-600 font-light max-w-xl">
-                        Modifica los 20 tratamientos, 8 doctores del equipo, teléfonos de WhatsApp, cintillos y ofertas de convenios sin tocar código.
+                        Modifica el catálogo de tratamientos, equipo de doctores, teléfonos de WhatsApp, navegación de cabecera y convenios en tiempo real.
                       </p>
                     </div>
                     <button

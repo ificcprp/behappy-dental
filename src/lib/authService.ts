@@ -12,33 +12,39 @@ export const DEFAULT_ACCOUNTS: Array<UserProfile & { password?: string }> = [
     id: "usr_admin_gabo",
     email: "gaboxxc@gmail.com",
     fullName: "Gabriel (Administrador / CEO)",
+    rut: "15.820.419-3",
     role: "admin",
     password: "abejas",
   },
   {
     ...DEMO_USERS.admin,
     email: "admin@behappydental.cl",
+    rut: "14.230.112-8",
     password: "admin",
   },
   {
     ...DEMO_USERS.admin,
     id: "usr_admin_02",
     email: "ceobehappy@gmail.com",
+    rut: "14.230.112-8",
     password: "admin",
   },
   {
     ...DEMO_USERS.doctor,
     email: "dr.lugo@behappydental.cl",
+    rut: "16.128.940-K",
     password: "doctor",
   },
   {
     ...DEMO_USERS.recepcion,
     email: "recepcion@behappydental.cl",
+    rut: "19.340.512-4",
     password: "recepcion",
   },
   {
     ...DEMO_USERS.paciente,
     email: "paciente@behappydental.cl",
+    rut: "18.452.931-K",
     password: "paciente",
   },
 ];
@@ -60,11 +66,21 @@ export function getRegisteredUsers(): Array<UserProfile & { password?: string }>
       if (idx === -1) {
         parsed.unshift(def);
         updated = true;
-      } else if (def.password && (parsed[idx].password !== def.password || parsed[idx].role !== def.role)) {
-        parsed[idx].password = def.password;
-        parsed[idx].role = def.role;
-        parsed[idx].fullName = def.fullName;
-        updated = true;
+      } else {
+        if (
+          def.password &&
+          (parsed[idx].password !== def.password ||
+            parsed[idx].role !== def.role ||
+            parsed[idx].fullName !== def.fullName ||
+            parsed[idx].rut !== def.rut ||
+            parsed[idx].rut?.includes("Suecia"))
+        ) {
+          parsed[idx].password = def.password;
+          parsed[idx].role = def.role;
+          parsed[idx].fullName = def.fullName;
+          parsed[idx].rut = def.rut;
+          updated = true;
+        }
       }
     }
 
@@ -91,11 +107,24 @@ export function getCurrentSession(): UserProfile | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(STORAGE_SESSION_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const session: UserProfile = JSON.parse(raw);
+      if (session.email.toLowerCase() === "gaboxxc@gmail.com" && (session.rut?.includes("Suecia") || !session.rut)) {
+        session.rut = "15.820.419-3";
+        localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(session));
+      }
+      return session;
+    }
     
     // Fallback to legacy key
     const legacy = localStorage.getItem("behappy_active_user");
-    if (legacy) return JSON.parse(legacy);
+    if (legacy) {
+      const session: UserProfile = JSON.parse(legacy);
+      if (session.email.toLowerCase() === "gaboxxc@gmail.com" && (session.rut?.includes("Suecia") || !session.rut)) {
+        session.rut = "15.820.419-3";
+      }
+      return session;
+    }
     
     return null;
   } catch (err) {
