@@ -57,7 +57,7 @@ function RetornoPagoContent() {
         commerceOrder: orderParam || "BH-RESERVA-01",
         amount: Number(amountParam || 10000),
         subject: subjectParam || "Abono de Reserva Dental en Box",
-        payer: emailParam || "paciente@behappydental.cl",
+        payer: emailParam || "contacto@behappydental.cl",
         patientName: patientParam || "Paciente BeHappy",
         date: new Date().toLocaleDateString("es-CL", {
           day: "2-digit",

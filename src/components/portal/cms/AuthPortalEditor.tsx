@@ -307,7 +307,7 @@ export function AuthPortalEditor({
                       RUT o Correo Electrónico
                     </label>
                     <div className="w-full px-3 py-2 bg-[#faf8f5] border border-[#cfc9be] text-[#78736a] text-xs font-mono">
-                      18.452.931-K
+                      12.345.678-9 / usuario@correo.cl
                     </div>
                   </div>
                   <div>

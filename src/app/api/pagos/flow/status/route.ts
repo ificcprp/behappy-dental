@@ -18,7 +18,7 @@ export async function GET(request: Request) {
         flowOrder: 981240,
         amount: Number(searchParams.get("amount") || 10000),
         subject: searchParams.get("subject") || "Abono de Reserva Dental",
-        payer: searchParams.get("email") || "paciente@behappydental.cl",
+        payer: searchParams.get("email") || "contacto@behappydental.cl",
         isSimulated: true,
       });
     }

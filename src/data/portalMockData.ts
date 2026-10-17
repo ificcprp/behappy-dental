@@ -6,7 +6,7 @@ export const DEMO_USERS: Record<string, UserProfile> = {
     email: "paciente@behappydental.cl",
     fullName: "Paciente BeHappy",
     rut: "18.452.931-K",
-    phone: "+56 9 4757 8597",
+    phone: "",
     role: "paciente",
     prevision: "Particular / Fonasa / Isapre",
     convenioLevel: "20%",

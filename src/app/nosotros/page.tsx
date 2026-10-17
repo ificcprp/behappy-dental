@@ -6,7 +6,7 @@ import { AppointmentBookingSection } from "@/components/dental/AppointmentBookin
 export const metadata: Metadata = {
   title: "Cuerpo Médico & Filosofía | Centro Dental BeHappy Ñuñoa",
   description:
-    "Conoce al equipo de 8 especialistas de Centro Dental BeHappy en Ñuñoa. Más de 13 años de experiencia clínica en ortodoncia, estética dental, implantes y odontopediatría.",
+    "Conoce al equipo de especialistas de Centro Dental BeHappy en Ñuñoa. Más de 13 años de experiencia clínica en ortodoncia, estética dental, implantes y odontopediatría.",
 };
 
 export default function NosotrosPage() {
@@ -41,7 +41,7 @@ export default function NosotrosPage() {
                 En <strong className="text-[#141413] font-medium">Centro Dental BeHappy</strong> entendemos que la visita al dentista exige confianza irrestricta. Por ello, cimentamos nuestra práctica en tres pilares: <strong className="text-[#141413]">diagnóstico preciso con imagenología digital</strong>, <strong className="text-[#141413]">procedimientos indoloros</strong> y una relación de continuidad médica con cada paciente.
               </p>
               <p>
-                Nuestro directorio médico reúne a 8 especialistas de posgrado con dedicación exclusiva en ortodoncia invisible Invisalign, implantología ósea guiada, estética restauradora con carillas, endodoncia mecanizada y odontopediatría preventiva.
+                Nuestro directorio médico reúne a especialistas de posgrado con dedicación exclusiva en ortodoncia invisible Invisalign, implantología ósea guiada, estética restauradora con carillas, endodoncia mecanizada y odontopediatría preventiva.
               </p>
             </div>
           </div>

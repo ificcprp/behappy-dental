@@ -33,7 +33,7 @@ export function ClinicalTriageSection() {
       title: "Quiero enderezar mis dientes",
       subtitle: "Tratamiento con alineadores transparentes Invisalign sin brackets metálicos.",
       treatmentName: "Invisalign",
-      doctorRecommendation: "Dr. Johnny Lugo (Ortodoncista)",
+      doctorRecommendation: "Especialista en Ortodoncia & Alineadores",
       badge: "Certificación Oficial"
     },
     {
@@ -43,7 +43,7 @@ export function ClinicalTriageSection() {
       title: "Blanquear y armonizar mi sonrisa",
       subtitle: "Aclaramiento dental seguro en sillón o diseño estético con resinas de alta gama.",
       treatmentName: "Blanqueamiento Dental",
-      doctorRecommendation: "Dra. Keila Rodríguez González",
+      doctorRecommendation: "Especialista en Odontología Estética",
       badge: "Estética Avanzada"
     },
     {
@@ -53,7 +53,7 @@ export function ClinicalTriageSection() {
       title: "Recuperar un diente perdido",
       subtitle: "Implantes de titanio que reemplazan la raíz biológica con masticación 100% natural.",
       treatmentName: "Implantes Dentales",
-      doctorRecommendation: "Dr. Juan José Herrera (Cirujano)",
+      doctorRecommendation: "Especialista en Cirugía & Implantes",
       badge: "Osteointegración"
     },
     {

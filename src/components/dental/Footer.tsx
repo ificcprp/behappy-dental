@@ -83,7 +83,7 @@ export function Footer() {
               </li>
               <li>
                 <a href="/nosotros" className="hover:text-white transition">
-                  Cuerpo Médico (8 Especialistas)
+                  Cuerpo Médico Especialista
                 </a>
               </li>
               <li>
@@ -93,7 +93,12 @@ export function Footer() {
               </li>
               <li>
                 <a href="/portal" className="hover:text-white transition">
-                  Portal Clínico (4 Roles)
+                  Portal Clínico
+                </a>
+              </li>
+              <li>
+                <a href="/demo" className="hover:text-amber-300 transition text-amber-400 font-medium">
+                  Demo OS (4 Roles) ↗
                 </a>
               </li>
               <li>

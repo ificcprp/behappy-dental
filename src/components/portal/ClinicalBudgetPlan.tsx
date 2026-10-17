@@ -32,9 +32,9 @@ interface ClinicalBudgetPlanProps {
 export function ClinicalBudgetPlan({
   odontogram,
   patientName,
-  patientRut = "18.452.931-K",
-  patientEmail = "paciente@behappydental.cl",
-  patientPhone = "+56 9 4757 8597",
+  patientRut = "",
+  patientEmail = "",
+  patientPhone = "",
   convenioLevel = "40%",
   onClose,
   onPayWithFlow,

@@ -131,6 +131,9 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
       }
 
       // Persist to local clinical store for instant visibility in Portal (Doctor, Recepción, Admin)
+      const basePrice = treatmentObj?.priceBaseCLP ?? 35000;
+      const discount = treatmentObj?.priceClubCLP ? Math.max(0, basePrice - treatmentObj.priceClubCLP) : 0;
+
       addStoredAppointment({
         date: preferredDate || "Por coordinar",
         time: preferredSlot === "manana" ? "10:00 - 14:00" : "14:00 - 20:00",
@@ -138,10 +141,11 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
         treatmentName: treatmentDisplayName,
         status: "pendiente",
         box: "Box 1",
-        price: 35000,
-        convenioDiscount: 0,
+        price: basePrice,
+        convenioDiscount: discount,
         patientName: patientName,
         patientPhone: payload.patient_phone,
+        patientEmail: payload.patient_email || undefined,
         notes: notes || undefined,
       });
 
@@ -156,7 +160,7 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
               type: "abono_cita",
               amount: 10000,
               subject: `Abono de Reserva · ${treatmentDisplayName}`,
-              email: patientEmail || "paciente@behappydental.cl",
+              email: patientEmail.trim() || "contacto@behappydental.cl",
               patientName: patientName,
               patientPhone: payload.patient_phone,
               treatmentName: treatmentDisplayName,

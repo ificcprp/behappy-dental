@@ -5,7 +5,7 @@ import { AppointmentBookingSection } from "@/components/dental/AppointmentBookin
 export const metadata: Metadata = {
   title: "Tratamientos Dentales | Centro Dental BeHappy Ñuñoa",
   description:
-    "Explora nuestros 20 tratamientos y procesos de cuidado dental en Ñuñoa: Blanqueamiento, Ortodoncia, Implantes, Invisalign, Coronas, Odontopediatría, Endodoncia, Periodontitis y más.",
+    "Explora el catálogo integral de tratamientos y procesos de cuidado dental en Ñuñoa: Blanqueamiento, Ortodoncia, Implantes, Invisalign, Coronas, Odontopediatría, Endodoncia, Periodontitis y más.",
 };
 
 export default function TratamientosPage() {

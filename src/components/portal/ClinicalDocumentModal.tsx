@@ -23,7 +23,7 @@ export function ClinicalDocumentModal({
   };
 
   const patientName = patient?.fullName || record.patientId || "Paciente BeHappy";
-  const patientRut = patient?.rut || "18.452.931-K";
+  const patientRut = patient?.rut || "Sin RUT";
   const patientPrevision = patient?.prevision || "Fonasa / Isapre";
   const folioCode = `BH-MED-${record.id.slice(-6).toUpperCase()}`;
 

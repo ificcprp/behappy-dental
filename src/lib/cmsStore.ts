@@ -178,7 +178,7 @@ export const DEFAULT_WELCOME_SECTION: CMSWelcomeSection = {
       number: "04",
       tag: "EQUIPO ACREDITADO",
       title: "¿Necesita un especialista? Recibimos derivaciones",
-      description: "8 especialistas registrados en la Superintendencia de Salud con derivaciones en diversas áreas.",
+      description: "Especialistas acreditados en la Superintendencia de Salud con dedicación exclusiva en diversas áreas.",
       linkText: "Agenda Aquí →",
       linkUrl: "https://api.whatsapp.com/send/?phone=56947578597&text=Hola%20Centro%20Dental%20BeHappy,%20me%20gustar%C3%ADa%20coordinar%20una%20cita%20con%20un%20especialista.&type=phone_number&app_absent=0"
     }

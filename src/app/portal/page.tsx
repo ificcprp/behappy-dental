@@ -37,7 +37,9 @@ import {
   CLINICAL_CHANGE_EVENT
 } from "@/lib/clinicalStore";
 import { SiteCmsEditor } from "@/components/portal/SiteCmsEditor";
-import { DEMO_USERS } from "@/data/portalMockData";
+import { getCMSData, CMSData } from "@/lib/cmsStore";
+import { DOCTORS } from "@/data/doctors";
+import { TREATMENTS } from "@/data/treatments";
 import { toast } from "sonner";
 import {
   Calendar,
@@ -141,10 +143,26 @@ function PortalContent() {
   const [soapPrescription, setSoapPrescription] = useState("");
   const [soapSavedToast, setSoapSavedToast] = useState(false);
 
+  // CMS dynamic reactive data
+  const [cmsData, setCmsData] = useState<CMSData>(getCMSData());
+  useEffect(() => {
+    setCmsData(getCMSData());
+    const handleCmsUpdate = (e: any) => {
+      if (e.detail) setCmsData(e.detail);
+      else setCmsData(getCMSData());
+    };
+    window.addEventListener("behappy_cms_updated", handleCmsUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleCmsUpdate);
+  }, []);
+
+  const availableDoctors = (cmsData?.doctors && cmsData.doctors.length > 0) ? cmsData.doctors : DOCTORS;
+
   // Reception walk-in modal
   const [showWalkinModal, setShowWalkinModal] = useState(false);
   const [walkinName, setWalkinName] = useState("");
-  const [walkinDoctor, setWalkinDoctor] = useState("Dr. Johnny Lugo");
+  const [walkinPhone, setWalkinPhone] = useState("");
+  const [walkinBox, setWalkinBox] = useState("Box 1");
+  const [walkinDoctor, setWalkinDoctor] = useState(DOCTORS[0]?.name || "Doctor Tratante");
   const [walkinTreatment, setWalkinTreatment] = useState("Consulta de Urgencia Dental");
 
   // Admin user list
@@ -219,16 +237,17 @@ function PortalContent() {
       doctorName: walkinDoctor,
       treatmentName: walkinTreatment,
       status: "en_espera",
-      box: "Box 1",
+      box: walkinBox || "Box 1",
       price: 35000,
-      convenioDiscount: 14000,
+      convenioDiscount: 0,
       patientName: walkinName,
-      patientPhone: "+56 9 4757 8597"
+      patientPhone: walkinPhone || "Sin teléfono"
     });
 
     setShowWalkinModal(false);
     toast.success(`Paciente ${walkinName} ingresado a sala de espera`);
     setWalkinName("");
+    setWalkinPhone("");
   };
 
   // Change Appointment Status
@@ -268,8 +287,8 @@ function PortalContent() {
       fullName: newUserData.fullName,
       email: newUserData.email,
       password: newUserData.password || "BeHappy2026!",
-      rut: newUserData.rut || "11.222.333-4",
-      phone: newUserData.phone || "+56 9 1234 5678",
+      rut: newUserData.rut || "",
+      phone: newUserData.phone || "",
       role: newUserData.role,
       prevision: newUserData.prevision,
     });
@@ -283,7 +302,7 @@ function PortalContent() {
       phone: "",
       role: "paciente",
       prevision: "Fonasa",
-      password: "admin"
+      password: ""
     });
   };
 
@@ -421,7 +440,7 @@ function PortalContent() {
                   {currentUser.fullName}
                 </h2>
                 <p className="text-xs font-mono text-slate-500">
-                  RUT: {currentUser.rut || "18.452.931-K"} · Previsión: {currentUser.prevision || "Fonasa / Isapre"} · Sede: Suecia 3580, OF. 304, Ñuñoa
+                  {currentUser.rut ? `RUT: ${currentUser.rut} · ` : ""}Previsión: {currentUser.prevision || "Particular / Fonasa / Isapre"} · Sede: Suecia 3580, OF. 304, Ñuñoa
                 </p>
               </div>
 
@@ -618,7 +637,7 @@ function PortalContent() {
                                 appointmentId: item.id,
                                 patientName: currentUser.fullName,
                                 patientEmail: currentUser.email,
-                                patientPhone: currentUser.phone || "+56 9 4757 8597",
+                                patientPhone: currentUser.phone || "",
                                 amount: amountToPay,
                                 subject: `Copago Cita · ${item.treatmentName}`,
                               });
@@ -717,15 +736,15 @@ function PortalContent() {
                 <ClinicalBudgetPlan
                   odontogram={odontogram}
                   patientName={currentUser.fullName}
-                  patientRut={currentUser.rut || "18.452.931-K"}
+                  patientRut={currentUser.rut || ""}
                   patientEmail={currentUser.email}
-                  patientPhone={currentUser.phone || "+56 9 4757 8597"}
+                  patientPhone={currentUser.phone || ""}
                   convenioLevel={currentUser.convenioLevel || "40%"}
                   onPayWithFlow={(amount, subject) => {
                     setFlowPaymentData({
                       patientName: currentUser.fullName,
-                      patientEmail: currentUser.email || "paciente@behappydental.cl",
-                      patientPhone: currentUser.phone || "+56 9 4757 8597",
+                      patientEmail: currentUser.email || "",
+                      patientPhone: currentUser.phone || "",
                       amount,
                       subject,
                     });
@@ -1112,7 +1131,7 @@ function PortalContent() {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-slate-900 text-sm">{item.patientName}</span>
-                        <span className="text-xs font-mono text-slate-500">· {item.patientPhone || "+56 9 4757 8597"}</span>
+                        <span className="text-xs font-mono text-slate-500">{item.patientPhone ? `· ${item.patientPhone}` : ""}</span>
                         <span className="px-2 py-0.5 rounded border border-slate-200 bg-slate-100 text-[10px] font-mono uppercase text-slate-700">
                           {item.status.replace("_", " ")}
                         </span>
@@ -1130,8 +1149,8 @@ function PortalContent() {
                           setFlowPaymentData({
                             appointmentId: item.id,
                             patientName: item.patientName || "Paciente",
-                            patientEmail: "paciente@behappydental.cl",
-                            patientPhone: item.patientPhone || "+56 9 4757 8597",
+                            patientEmail: item.patientEmail || userList.find((u) => u.fullName.toLowerCase() === (item.patientName || "").toLowerCase())?.email || "",
+                            patientPhone: item.patientPhone || "",
                             amount,
                             subject: `Atención en Sede · ${item.treatmentName}`,
                           });
@@ -1186,6 +1205,30 @@ function PortalContent() {
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs"
                       />
                     </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1">Teléfono / WhatsApp</label>
+                        <input
+                          type="tel"
+                          value={walkinPhone}
+                          onChange={(e) => setWalkinPhone(e.target.value)}
+                          placeholder="+56 9 8765 4321"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1">Box Clínico</label>
+                        <select
+                          value={walkinBox}
+                          onChange={(e) => setWalkinBox(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono"
+                        >
+                          <option value="Box 1">Box 1 (Principal)</option>
+                          <option value="Box 2">Box 2 (Ortodoncia)</option>
+                          <option value="Box 3">Box 3 (Cirugía / Rayos)</option>
+                        </select>
+                      </div>
+                    </div>
                     <div>
                       <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1">Doctor Asignado *</label>
                       <select
@@ -1193,9 +1236,11 @@ function PortalContent() {
                         onChange={(e) => setWalkinDoctor(e.target.value)}
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono"
                       >
-                        <option value="Dr. Johnny Lugo">Dr. Johnny Lugo (Ortodoncia)</option>
-                        <option value="Dra. Keila Rodríguez González">Dra. Keila Rodríguez González (Estética)</option>
-                        <option value="Dr. Juan José Herrera">Dr. Juan José Herrera (Implantes)</option>
+                        {availableDoctors.map((doc) => (
+                          <option key={doc.id} value={doc.name}>
+                            {doc.name} ({doc.specialty})
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div>
@@ -1205,6 +1250,7 @@ function PortalContent() {
                         required
                         value={walkinTreatment}
                         onChange={(e) => setWalkinTreatment(e.target.value)}
+                        placeholder="Ej: Urgencia dolor dental, Evaluación..."
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs"
                       />
                     </div>
@@ -1790,17 +1836,17 @@ function PortalContent() {
               <ClinicalBudgetPlan
                 odontogram={odontogram}
                 patientName={soapPatient || currentUser?.fullName || "Paciente en Box"}
-                patientRut={currentUser?.rut || "18.452.931-K"}
-                patientEmail={currentUser?.email}
-                patientPhone={currentUser?.phone || "+56 9 4757 8597"}
+                patientRut={currentUser?.rut || ""}
+                patientEmail={currentUser?.email || ""}
+                patientPhone={currentUser?.phone || ""}
                 convenioLevel={currentUser?.convenioLevel || "40%"}
                 onClose={() => setShowBudgetModal(false)}
                 onPayWithFlow={(amount, subject) => {
                   setShowBudgetModal(false);
                   setFlowPaymentData({
                     patientName: soapPatient || currentUser?.fullName || "Paciente en Box",
-                    patientEmail: currentUser?.email || "paciente@behappydental.cl",
-                    patientPhone: currentUser?.phone || "+56 9 4757 8597",
+                    patientEmail: currentUser?.email || "",
+                    patientPhone: currentUser?.phone || "",
                     amount,
                     subject,
                   });
@@ -1815,8 +1861,8 @@ function PortalContent() {
         {showConsentModal && (
           <InformedConsentModal
             patientName={soapPatient || currentUser?.fullName || "Paciente en Box"}
-            patientRut={currentUser?.rut || "18.452.931-K"}
-            doctorName={activeRole === "doctor" ? currentUser?.fullName : "Dr. Johnny Lugo"}
+            patientRut={currentUser?.rut || ""}
+            doctorName={activeRole === "doctor" ? (currentUser?.fullName || availableDoctors[0]?.name || "Doctor Tratante") : (appointments[0]?.doctorName || availableDoctors[0]?.name || "Doctor Tratante")}
             onClose={() => setShowConsentModal(false)}
             onConsentSigned={(consent) => {
               addStoredConsent(consent);

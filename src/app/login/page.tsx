@@ -212,7 +212,7 @@ function LoginContent() {
                       required
                       value={identifier}
                       onChange={handleIdentifierChange}
-                      placeholder="ej: 18.452.931-K o paciente@behappydental.cl"
+                      placeholder="ej: 12.345.678-9 o usuario@correo.cl"
                       className="w-full px-3.5 py-2.5 bg-white border border-[#cfc9be] text-[#141413] text-xs focus:outline-none focus:border-[#141413] transition font-mono"
                     />
                   </div>

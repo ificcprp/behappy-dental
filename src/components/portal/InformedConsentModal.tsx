@@ -67,7 +67,7 @@ const CONSENT_TEMPLATES = {
       "Riesgo de descalcificaciones o manchas si no se mantiene una técnica de cepillado e higiene interproximal impecable.",
     ],
     postOpCare:
-      "Uso de alineadores mínimo 22 horas al día (retirar solo para comer y cepillarse). Asistir a controles mensuales con Dr. Johnny Lugo.",
+      "Uso de alineadores mínimo 22 horas al día (retirar solo para comer y cepillarse). Asistir a controles periódicos según indicación del especialista tratante.",
   },
   estetica: {
     title: "Consentimiento Informado para Aclaramiento Dental & Estética en Box",
@@ -86,8 +86,8 @@ const CONSENT_TEMPLATES = {
 
 export function InformedConsentModal({
   patientName,
-  patientRut = "18.452.931-K",
-  doctorName = "Dr. Johnny Lugo",
+  patientRut = "",
+  doctorName = "Doctor Tratante",
   initialProcedure = "cirugia_exodoncia",
   onClose,
   onConsentSigned,

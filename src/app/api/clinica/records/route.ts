@@ -92,7 +92,7 @@ export async function POST(request: Request) {
       record: {
         id: `rec-${Date.now()}`,
         patientId: patient_id || patient_name || "Paciente",
-        doctorName: doctor_name || "Dr. Johnny Lugo",
+        doctorName: doctor_name || "Especialista Tratante",
         date: new Date().toISOString().split("T")[0],
         diagnosis,
         treatmentPerformed: treatment_performed,

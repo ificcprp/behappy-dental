@@ -27,6 +27,7 @@ export interface PatientAppointment {
   patientName?: string;
   patientRut?: string;
   patientPhone?: string;
+  patientEmail?: string;
   notes?: string;
 }
 
