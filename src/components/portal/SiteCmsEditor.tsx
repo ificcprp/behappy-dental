@@ -12,6 +12,7 @@ import {
   DEFAULT_WELCOME_SECTION,
   DEFAULT_PREVENTION_SECTION,
   DEFAULT_AUTH_PORTAL,
+  DEFAULT_HEADER_CONFIG,
 } from "@/lib/cmsStore";
 import { Treatment } from "@/data/treatments";
 import { Doctor } from "@/data/doctors";
@@ -27,6 +28,7 @@ import {
   Bell,
   Check,
   KeyRound,
+  Layout,
 } from "lucide-react";
 
 // Submódulos modulares Enterprise
@@ -42,6 +44,7 @@ import { CampaignsEditor } from "./cms/CampaignsEditor";
 import { ContactLocationEditor } from "./cms/ContactLocationEditor";
 import { AnnouncementsTickerEditor } from "./cms/AnnouncementsTickerEditor";
 import { AuthPortalEditor } from "./cms/AuthPortalEditor";
+import { HeaderMenuEditor } from "./cms/HeaderMenuEditor";
 
 // Presets de imágenes oficiales de Centro Dental BeHappy
 const CLINIC_PRESET_IMAGES = {
@@ -314,6 +317,18 @@ export function SiteCmsEditor() {
       </div>
 
       {/* Tab Panels */}
+      {activeTab === "header" && (
+        <HeaderMenuEditor
+          headerConfig={cmsData.headerConfig || DEFAULT_HEADER_CONFIG}
+          onChange={(updated) => {
+            const next = { ...cmsData, headerConfig: updated };
+            setCmsData(next);
+            saveCMSData(next);
+            triggerToast("✓ Estilo de cabecera y navegación actualizado");
+          }}
+        />
+      )}
+
       {activeTab === "hero" && (
         <HeroEditor
           hero={cmsData.hero || DEFAULT_HERO}
