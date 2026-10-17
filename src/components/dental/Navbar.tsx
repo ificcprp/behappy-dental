@@ -115,10 +115,10 @@ export function Navbar() {
         <div
           style={{
             minHeight: `${Math.max(headerConfig.desktopHeight, headerConfig.logoSize + 16)}px`,
-            height: `${Math.max(headerConfig.desktopHeight, headerConfig.logoSize + 16)}px`,
+            height: headerConfig.layout === "centered" ? "auto" : `${Math.max(headerConfig.desktopHeight, headerConfig.logoSize + 16)}px`,
           }}
           className={`flex items-center justify-between transition-all ${
-            headerConfig.layout === "centered" ? "lg:flex-col lg:justify-center lg:py-2" : ""
+            headerConfig.layout === "centered" ? "lg:flex-col lg:justify-center lg:py-4 gap-2" : ""
           }`}
         >
           

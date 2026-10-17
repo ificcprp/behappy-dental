@@ -34,36 +34,36 @@ export function CmsGlobalToolbar({
   onReset,
 }: CmsGlobalToolbarProps) {
   return (
-    <div className="border border-[#222228] bg-[#121216] p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div className="border border-slate-200 bg-white rounded-lg p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
       {/* Estado y Versión Activa */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
           <span
             className={`w-2.5 h-2.5 rounded-full ${
               currentStatus === "published"
-                ? "bg-emerald-400 animate-pulse"
-                : "bg-amber-400"
+                ? "bg-emerald-500 animate-pulse"
+                : "bg-amber-500"
             }`}
           />
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+          <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-900">
             {currentStatus === "published" ? "EN PRODUCCIÓN" : "BORRADOR ACTIVO"}
           </span>
         </div>
 
-        <span className="text-neutral-600 hidden sm:inline">|</span>
+        <span className="text-slate-300 hidden sm:inline">|</span>
 
-        <div className="flex items-center gap-1.5 text-[11px] font-mono text-neutral-400 bg-[#18181f] px-2.5 py-1 border border-[#2b2b34]">
-          <FileText className="w-3.5 h-3.5 text-purple-400" />
+        <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-700 bg-slate-50 px-2.5 py-1 border border-slate-200 rounded">
+          <FileText className="w-3.5 h-3.5 text-purple-600" />
           <span>{versionTag}</span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-[11px] font-mono text-neutral-300 bg-[#18181f] px-2.5 py-1 border border-[#2b2b34]">
-          <Palette className="w-3.5 h-3.5 text-purple-400" />
+        <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-700 bg-slate-50 px-2.5 py-1 border border-slate-200 rounded">
+          <Palette className="w-3.5 h-3.5 text-purple-600" />
           <span className="capitalize">Tema: {colorScheme}</span>
         </div>
 
         {lastUpdated && (
-          <div className="flex items-center gap-1 text-[10px] font-mono text-neutral-500">
+          <div className="flex items-center gap-1 text-[10px] font-mono text-slate-500">
             <Clock className="w-3 h-3" />
             <span>
               Último guardado: {new Date(lastUpdated).toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}
@@ -77,37 +77,37 @@ export function CmsGlobalToolbar({
         {/* Historial / Rollback */}
         <button
           onClick={onOpenHistory}
-          className="px-3 py-2 border border-[#2b2b34] hover:border-neutral-500 text-neutral-300 font-mono text-xs uppercase tracking-wider transition flex items-center gap-1.5"
+          className="px-3 py-1.5 border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 font-mono text-xs uppercase tracking-wider rounded transition flex items-center gap-1.5 shadow-2xs"
           title="Ver versiones publicadas y auditoría de cambios"
         >
-          <History className="w-3.5 h-3.5 text-blue-400" />
+          <History className="w-3.5 h-3.5 text-blue-600" />
           <span>Historial / Rollback</span>
         </button>
 
         {/* Guardar Borrador */}
         <button
           onClick={onSaveDraft}
-          className="px-3 py-2 border border-[#2b2b34] hover:border-amber-400 text-neutral-300 hover:text-amber-300 font-mono text-xs uppercase tracking-wider transition flex items-center gap-1.5"
+          className="px-3 py-1.5 border border-slate-200 hover:border-amber-400 bg-white hover:bg-amber-50 text-slate-700 hover:text-amber-800 font-mono text-xs uppercase tracking-wider rounded transition flex items-center gap-1.5 shadow-2xs"
           title="Guardar cambios localmente sin alterar la versión publicada"
         >
-          <Save className="w-3.5 h-3.5 text-amber-400" />
+          <Save className="w-3.5 h-3.5 text-amber-600" />
           <span>Guardar Borrador</span>
         </button>
 
         {/* Publicar en Producción */}
         <button
           onClick={onPublish}
-          className="px-4 py-2 bg-white text-black font-bold font-mono text-xs uppercase tracking-wider hover:bg-neutral-200 transition flex items-center gap-1.5 shadow"
+          className="px-4 py-1.5 bg-slate-900 text-white font-bold font-mono text-xs uppercase tracking-wider hover:bg-black rounded transition flex items-center gap-1.5 shadow-xs"
           title="Publicar versión oficial y sincronizar en Supabase"
         >
-          <CheckCircle className="w-3.5 h-3.5 text-black" />
+          <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
           <span>Publicar Cambios</span>
         </button>
 
         {/* Restablecer Valores Oficiales */}
         <button
           onClick={onReset}
-          className="px-3 py-2 border border-[#2b2b34] hover:border-red-500/70 text-neutral-400 hover:text-red-400 font-mono text-xs uppercase tracking-wider transition flex items-center gap-1.5"
+          className="px-3 py-1.5 border border-slate-200 hover:border-rose-300 bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-700 font-mono text-xs uppercase tracking-wider rounded transition flex items-center gap-1.5 shadow-2xs"
           title="Restablecer contenido predeterminado oficial de BeHappy Dental"
         >
           <RotateCcw className="w-3.5 h-3.5" />
@@ -119,7 +119,7 @@ export function CmsGlobalToolbar({
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="px-3 py-2 border border-[#2b2b34] hover:border-white text-neutral-300 hover:text-white font-mono text-xs uppercase tracking-wider transition flex items-center gap-1.5"
+          className="px-3 py-1.5 border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 font-mono text-xs uppercase tracking-wider rounded transition flex items-center gap-1.5 shadow-2xs"
           title="Abrir web pública en pestaña nueva"
         >
           <ExternalLink className="w-3.5 h-3.5" />

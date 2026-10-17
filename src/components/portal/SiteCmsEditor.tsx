@@ -182,139 +182,38 @@ export function SiteCmsEditor() {
         onReset={handleReset}
       />
 
-      {/* Tabs Navigation (Adaptive Scrollable Bar) */}
-      <div className="flex items-center gap-1.5 overflow-x-auto bg-[#0e0e12] p-1.5 border border-[#222228] rounded-md scrollbar-none">
-        <button
-          onClick={() => setActiveTab("header")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "header"
-              ? "bg-[#18181f] text-sky-400 border-sky-500/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <Layout className="w-3.5 h-3.5 shrink-0" />
-          <span>0. Menú</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("hero")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "hero"
-              ? "bg-[#18181f] text-purple-400 border-purple-500/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <Sparkles className="w-3.5 h-3.5 shrink-0" />
-          <span>1. Hero</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("pilares")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "pilares"
-              ? "bg-[#18181f] text-teal-400 border-teal-500/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <Layers className="w-3.5 h-3.5 shrink-0" />
-          <span>2. Pilares</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("prevencion")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "prevencion"
-              ? "bg-[#18181f] text-emerald-400 border-emerald-500/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <HeartHandshake className="w-3.5 h-3.5 shrink-0" />
-          <span>3. Prevención</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("membresias")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "membresias"
-              ? "bg-[#18181f] text-amber-400 border-amber-500/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <CreditCard className="w-3.5 h-3.5 shrink-0" />
-          <span>4. Club</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("tratamientos")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "tratamientos"
-              ? "bg-[#18181f] text-cyan-400 border-cyan-500/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <Stethoscope className="w-3.5 h-3.5 shrink-0" />
-          <span>5. Catálogo</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("doctores")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "doctores"
-              ? "bg-[#18181f] text-blue-400 border-blue-500/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <Users className="w-3.5 h-3.5 shrink-0" />
-          <span>6. Staff SIS</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("promos")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "promos"
-              ? "bg-[#18181f] text-pink-400 border-pink-500/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <Percent className="w-3.5 h-3.5 shrink-0" />
-          <span>7. Promos</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("contacto")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "contacto"
-              ? "bg-[#18181f] text-amber-300 border-amber-400/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <PhoneCall className="w-3.5 h-3.5 shrink-0" />
-          <span>8. Contacto</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("anuncios")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "anuncios"
-              ? "bg-[#18181f] text-rose-400 border-rose-500/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <Bell className="w-3.5 h-3.5 shrink-0" />
-          <span>9. Marquesina</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("auth")}
-          className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 border rounded-xs shrink-0 whitespace-nowrap ${
-            activeTab === "auth"
-              ? "bg-[#18181f] text-emerald-400 border-emerald-500/70 font-bold"
-              : "border-transparent text-neutral-400 hover:text-white hover:bg-[#141419]"
-          }`}
-        >
-          <KeyRound className="w-3.5 h-3.5 shrink-0" />
-          <span>10. Acceso</span>
-        </button>
+      {/* Tabs Navigation (Adaptive Segmented Bar) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto bg-slate-100 p-1.5 border border-slate-200 rounded-lg scrollbar-none w-full min-w-0">
+        {[
+          { id: "header" as const, label: "0. Menú", icon: Layout, color: "text-sky-600" },
+          { id: "hero" as const, label: "1. Hero", icon: Sparkles, color: "text-purple-600" },
+          { id: "pilares" as const, label: "2. Pilares", icon: Layers, color: "text-teal-600" },
+          { id: "prevencion" as const, label: "3. Prevención", icon: HeartHandshake, color: "text-emerald-600" },
+          { id: "membresias" as const, label: "4. Club", icon: CreditCard, color: "text-amber-600" },
+          { id: "tratamientos" as const, label: "5. Catálogo", icon: Stethoscope, color: "text-cyan-600" },
+          { id: "doctores" as const, label: "6. Staff SIS", icon: Users, color: "text-blue-600" },
+          { id: "promos" as const, label: "7. Promos", icon: Percent, color: "text-pink-600" },
+          { id: "contacto" as const, label: "8. Contacto", icon: PhoneCall, color: "text-amber-700" },
+          { id: "anuncios" as const, label: "9. Marquesina", icon: Bell, color: "text-rose-600" },
+          { id: "auth" as const, label: "10. Acceso", icon: KeyRound, color: "text-emerald-700" },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 rounded-md shrink-0 whitespace-nowrap ${
+                isActive
+                  ? "bg-white text-slate-900 border border-slate-200/80 shadow-xs font-bold"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 border border-transparent"
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? tab.color : "text-slate-400"}`} />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Tab Panels */}

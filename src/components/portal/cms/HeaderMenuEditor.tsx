@@ -123,13 +123,14 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
           </div>
         </div>
 
-        {/* Live Preview Container (Adaptativo y con viewport realista con scroll interno contenido) */}
+        {/* Live Preview Container (Aislado con scroll interno horizontal estricto) */}
         <div
-          className={`w-full min-w-0 max-w-full rounded-md border shadow-md overflow-x-auto transition-colors duration-200 scrollbar-thin ${
+          className={`w-full min-w-0 max-w-full rounded-md border shadow-md overflow-x-auto overflow-y-hidden transition-colors duration-200 scrollbar-thin ${
             previewIsDark
               ? "bg-[#0e0e0d] text-[#faf8f5] border-slate-700"
               : "bg-[#faf8f5] text-[#141413] border-slate-300"
           }`}
+          style={{ maxWidth: "100%" }}
         >
           <div
             style={{
@@ -137,9 +138,10 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
                 previewMode === "desktop"
                   ? `${Math.max(headerConfig.desktopHeight, headerConfig.logoSize + 16)}px`
                   : `${headerConfig.mobileHeight}px`,
-              minWidth: previewMode === "desktop" ? "920px" : "100%",
+              minWidth: previewMode === "desktop" ? "880px" : "100%",
+              width: previewMode === "desktop" ? "max-content" : "100%",
             }}
-            className="px-6 flex items-center justify-between transition-all w-full"
+            className="px-6 flex items-center justify-between transition-all"
           >
             {/* Logo area */}
             <div className="flex items-center gap-3.5 shrink-0 mr-6 lg:mr-8">
@@ -527,18 +529,18 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             </div>
             <input
               type="range"
-              min="68"
-              max="140"
+              min="64"
+              max="180"
               step="2"
               value={headerConfig.desktopHeight}
               onChange={(e) => update("desktopHeight", parseInt(e.target.value, 10))}
               className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0284c7]"
             />
             <div className="flex justify-between text-[10px] font-mono text-slate-400">
-              <span>68px (Ajustada)</span>
+              <span>64px (Ajustada)</span>
               <span>84px (Recomendada)</span>
-              <span>100px (Aire amplio)</span>
-              <span>140px (Monumental)</span>
+              <span>110px (Aire amplio)</span>
+              <span>180px (Monumental)</span>
             </div>
           </div>
 
@@ -553,7 +555,7 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             <input
               type="range"
               min="36"
-              max="120"
+              max="160"
               step="2"
               value={headerConfig.logoSize}
               onChange={(e) => update("logoSize", parseInt(e.target.value, 10))}
@@ -562,9 +564,9 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             <div className="flex justify-between text-[10px] font-mono text-slate-400">
               <span>36px (Compacto)</span>
               <span>52px (Estándar)</span>
-              <span>72px (Anterior máx)</span>
-              <span>96px (Destacado)</span>
-              <span>120px (Monumental)</span>
+              <span>72px (Grande)</span>
+              <span>110px (Destacado)</span>
+              <span>160px (Máximo Premium)</span>
             </div>
           </div>
 
@@ -628,17 +630,18 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             </div>
             <input
               type="range"
-              min="12"
-              max="56"
+              min="8"
+              max="64"
               step="2"
               value={headerConfig.linksSpacing}
               onChange={(e) => update("linksSpacing", parseInt(e.target.value, 10))}
               className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-800"
             />
             <div className="flex justify-between text-[10px] font-mono text-slate-400">
-              <span>12px (Compacto)</span>
-              <span>28px (Equilibrado)</span>
-              <span>56px (Ultra espacioso)</span>
+              <span>8px (Compacto)</span>
+              <span>24px (Equilibrado)</span>
+              <span>40px (Espacioso)</span>
+              <span>64px (Ultra aire)</span>
             </div>
           </div>
 

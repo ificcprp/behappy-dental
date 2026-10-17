@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { Calculator, Check, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowRight } from "lucide-react";
+import { getCMSData, CMSData } from "@/lib/cmsStore";
+import { Treatment } from "@/data/treatments";
 
 interface ProcedurePrice {
   id: string;
@@ -14,7 +16,7 @@ interface ProcedurePrice {
   notes: string;
 }
 
-const PROCEDURES: ProcedurePrice[] = [
+const DEFAULT_PROCEDURES: ProcedurePrice[] = [
   {
     id: "evaluacion",
     name: "Evaluación Diagnóstica + Radiografía Digital",
@@ -87,17 +89,65 @@ const PROCEDURES: ProcedurePrice[] = [
   }
 ];
 
+function mapTreatmentsToProcedures(cmsTreatments?: Treatment[]): ProcedurePrice[] {
+  if (!cmsTreatments || cmsTreatments.length === 0) return DEFAULT_PROCEDURES;
+  return cmsTreatments.map((t) => {
+    const market = t.priceBaseCLP || 45000;
+    const clubPrice = t.priceClubCLP || Math.round(market * 0.7);
+    const discount =
+      market > clubPrice ? Math.round(((market - clubPrice) / market) * 100) : 30;
+
+    return {
+      id: t.id || t.slug,
+      name: t.name,
+      marketPrice: market,
+      convenioDiscountPercent: discount,
+      fonasaEstimateCoverage: t.fonasaCode ? Math.round(market * 0.15) : 0,
+      isapreEstimateCoverage: Math.round(market * 0.35),
+      category: t.category || "Tratamiento General",
+      notes:
+        t.shortDescription ||
+        t.recommendedFor ||
+        "Atención clínica odontológica en Centro Dental BeHappy.",
+    };
+  });
+}
+
 export function DentalPricingCalculator() {
+  const [procedures, setProcedures] = useState<ProcedurePrice[]>(DEFAULT_PROCEDURES);
   const [selectedProcedureId, setSelectedProcedureId] = useState<string>("evaluacion");
   const [prevision, setPrevision] = useState<"particular" | "fonasa" | "isapre">("isapre");
   const [hasConvenio, setHasConvenio] = useState<boolean>(true);
 
-  const procedure = PROCEDURES.find((p) => p.id === selectedProcedureId) || PROCEDURES[0];
+  // Load from CMS on client mount and listen for real-time updates
+  useEffect(() => {
+    const cms = getCMSData();
+    if (cms?.treatments && cms.treatments.length > 0) {
+      setProcedures(mapTreatmentsToProcedures(cms.treatments));
+      setSelectedProcedureId(cms.treatments[0].id || cms.treatments[0].slug);
+    }
+
+    const handleUpdate = (e: Event) => {
+      const custom = (e as CustomEvent<CMSData>).detail;
+      const tList = custom?.treatments || getCMSData().treatments;
+      if (tList && tList.length > 0) {
+        setProcedures(mapTreatmentsToProcedures(tList));
+      }
+    };
+
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, []);
+
+  const procedure =
+    procedures.find((p) => p.id === selectedProcedureId) || procedures[0] || DEFAULT_PROCEDURES[0];
 
   // Calculations
   const market = procedure.marketPrice;
-  const convenioDiscountAmount = hasConvenio ? Math.round(market * (procedure.convenioDiscountPercent / 100)) : 0;
-  
+  const convenioDiscountAmount = hasConvenio
+    ? Math.round(market * (procedure.convenioDiscountPercent / 100))
+    : 0;
+
   let previsionCoverageAmount = 0;
   if (prevision === "fonasa") {
     previsionCoverageAmount = procedure.fonasaEstimateCoverage;
@@ -107,7 +157,7 @@ export function DentalPricingCalculator() {
 
   // Final estimate copay
   const estimatedCopay = Math.max(0, market - convenioDiscountAmount - previsionCoverageAmount);
-  const totalSavings = (market - estimatedCopay);
+  const totalSavings = market - estimatedCopay;
 
   const handleBookWithPrice = () => {
     const bookingEl = document.getElementById("agendar");
@@ -115,7 +165,7 @@ export function DentalPricingCalculator() {
       bookingEl.scrollIntoView({ behavior: "smooth" });
       window.dispatchEvent(
         new CustomEvent("behappy_triage_selected", {
-          detail: { treatmentName: procedure.name }
+          detail: { treatmentName: procedure.name },
         })
       );
     }
@@ -124,7 +174,6 @@ export function DentalPricingCalculator() {
   return (
     <section className="py-20 bg-white text-[#141413] border-b border-[#e5e0d5]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
         {/* Header */}
         <div className="space-y-3 text-center max-w-3xl mx-auto">
           <span className="text-[11px] font-mono tracking-[0.24em] text-[#78736a] uppercase block">
@@ -134,16 +183,15 @@ export function DentalPricingCalculator() {
             Simulador de Arancel & Copago
           </h2>
           <p className="text-sm sm:text-base text-[#66635d] font-light leading-relaxed">
-            Sin presupuestos sorpresa. Calcula el copago estimado de tu prestación según tu sistema de salud y el descuento del Convenio Familiar BeHappy.
+            Sin presupuestos sorpresa. Calcula el copago estimado de tu prestación según tu sistema
+            de salud y el descuento del Convenio Familiar BeHappy.
           </p>
         </div>
 
         {/* Calculator Widget Box */}
         <div className="border border-[#e5e0d5] bg-[#faf8f5] p-6 sm:p-10 rounded-[2px] shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          
           {/* Controls Column (Left) */}
           <div className="lg:col-span-7 space-y-6">
-            
             {/* Step 1: Previsión */}
             <div className="space-y-2">
               <label className="block text-[11px] font-mono tracking-wider uppercase text-[#141413] font-bold">
@@ -153,7 +201,7 @@ export function DentalPricingCalculator() {
                 {[
                   { id: "isapre", label: "Isapre (Reembolso)" },
                   { id: "fonasa", label: "Fonasa (MLE)" },
-                  { id: "particular", label: "Particular" }
+                  { id: "particular", label: "Particular" },
                 ].map((item) => (
                   <button
                     key={item.id}
@@ -181,7 +229,7 @@ export function DentalPricingCalculator() {
                 onChange={(e) => setSelectedProcedureId(e.target.value)}
                 className="w-full px-4 py-3 bg-white border border-[#ded9cd] text-[#141413] text-xs font-mono rounded-[2px] focus:outline-none focus:border-[#141413]"
               >
-                {PROCEDURES.map((p) => (
+                {procedures.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name} · ({p.category})
                   </option>
@@ -221,7 +269,6 @@ export function DentalPricingCalculator() {
               <span>·</span>
               <span>📄 Boleta médica electrónica para seguro complementario</span>
             </div>
-
           </div>
 
           {/* Results Summary Ledger (Right) */}
@@ -287,11 +334,8 @@ export function DentalPricingCalculator() {
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
-
           </div>
-
         </div>
-
       </div>
     </section>
   );

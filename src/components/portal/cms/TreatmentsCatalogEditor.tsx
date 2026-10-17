@@ -13,7 +13,6 @@ import {
   CreditCard,
   Clock,
   ShieldCheck,
-  FileText
 } from "lucide-react";
 
 interface TreatmentsCatalogEditorProps {
@@ -79,23 +78,23 @@ export function TreatmentsCatalogEditor({
   return (
     <div className="space-y-4">
       {/* Search & Filter Header */}
-      <div className="bg-[#121216] p-4 border border-[#222228] flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-white p-4 border border-slate-200 rounded-lg shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1">
           <div className="relative flex-1 max-w-sm">
-            <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder="Buscar por nombre, slug o etiqueta..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs outline-none focus:border-cyan-400 font-mono"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded focus:bg-white focus:border-slate-800 outline-none font-mono"
             />
           </div>
 
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono outline-none"
+            className="px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 text-xs font-mono rounded outline-none"
           >
             {categories.map((c) => (
               <option key={c} value={c}>
@@ -128,7 +127,7 @@ export function TreatmentsCatalogEditor({
             });
             setModalTab("general");
           }}
-          className="px-4 py-2 bg-white text-black font-mono text-xs uppercase font-bold flex items-center justify-center gap-1.5 hover:bg-neutral-200 transition shrink-0"
+          className="px-4 py-2 bg-slate-900 text-white font-mono text-xs uppercase font-bold flex items-center justify-center gap-1.5 rounded hover:bg-slate-800 transition shadow-xs shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Añadir Tratamiento</span>
@@ -136,9 +135,9 @@ export function TreatmentsCatalogEditor({
       </div>
 
       {/* Treatments Table with Tariff Matrix View */}
-      <div className="border border-[#222228] bg-[#121216] overflow-x-auto">
+      <div className="border border-slate-200 bg-white rounded-lg shadow-xs overflow-x-auto">
         <table className="w-full text-left text-xs font-mono">
-          <thead className="border-b border-[#222228] text-neutral-400 uppercase bg-[#0f0f13]">
+          <thead className="border-b border-slate-200 text-slate-600 uppercase bg-slate-50">
             <tr>
               <th className="p-3 w-14">Foto</th>
               <th className="p-3">Nombre & Slug</th>
@@ -148,45 +147,45 @@ export function TreatmentsCatalogEditor({
               <th className="p-3 text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#222228]">
+          <tbody className="divide-y divide-slate-100">
             {filtered.map((t) => (
-              <tr key={t.id} className="hover:bg-[#18181f] transition">
+              <tr key={t.id} className="hover:bg-slate-50/80 transition">
                 <td className="p-3">
-                  <div className="relative w-12 h-10 bg-neutral-900 border border-neutral-800 overflow-hidden">
+                  <div className="relative w-12 h-10 bg-slate-100 border border-slate-200 rounded overflow-hidden">
                     <Image src={t.image} alt={t.name} fill className="object-cover" />
                   </div>
                 </td>
                 <td className="p-3">
-                  <div className="font-bold text-white flex items-center gap-1.5">
+                  <div className="font-bold text-slate-900 flex items-center gap-1.5 font-sans">
                     <span>{t.name}</span>
                     {t.popular && (
-                      <span className="text-[9px] px-1.5 py-0.2 bg-cyan-950 text-cyan-400 border border-cyan-800">
+                      <span className="text-[9px] px-1.5 py-0.2 bg-teal-50 text-teal-700 border border-teal-200 rounded font-mono font-bold">
                         Popular
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] text-neutral-500">/{t.slug}</div>
+                  <div className="text-[10px] text-slate-500 font-mono">/{t.slug}</div>
                 </td>
                 <td className="p-3">
-                  <span className="px-2 py-0.5 border border-neutral-700 text-[10px] text-neutral-300 uppercase">
+                  <span className="px-2 py-0.5 border border-slate-200 bg-slate-50 rounded text-[10px] text-slate-600 uppercase font-mono">
                     {t.tag}
                   </span>
                 </td>
                 <td className="p-3">
-                  <div className="text-white font-medium">
+                  <div className="text-slate-900 font-bold">
                     {t.priceBaseCLP
                       ? `$${t.priceBaseCLP.toLocaleString("es-CL")}`
                       : "A consultar"}
                   </div>
                   {t.priceClubCLP && (
-                    <div className="text-[10px] text-amber-400 font-bold">
+                    <div className="text-[10px] text-amber-600 font-bold">
                       Club: ${t.priceClubCLP.toLocaleString("es-CL")}
                     </div>
                   )}
                 </td>
-                <td className="p-3 text-neutral-300">
+                <td className="p-3 text-slate-600">
                   <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-neutral-500" />
+                    <Clock className="w-3 h-3 text-slate-400" />
                     <span>{t.boxDurationMinutes || 30} min</span>
                   </div>
                 </td>
@@ -197,14 +196,14 @@ export function TreatmentsCatalogEditor({
                         setEditingTreatment({ ...t });
                         setModalTab("general");
                       }}
-                      className="px-3 py-1.5 border border-neutral-700 hover:border-white text-white text-[11px] font-mono uppercase inline-flex items-center gap-1 transition"
+                      className="px-3 py-1.5 border border-slate-200 hover:border-slate-800 bg-white text-slate-800 rounded text-[11px] font-mono uppercase inline-flex items-center gap-1 transition cursor-pointer"
                     >
                       <Edit2 className="w-3 h-3" />
                       <span>Editar</span>
                     </button>
                     <button
                       onClick={() => handleDelete(t.id, t.name)}
-                      className="p-1.5 border border-neutral-800 hover:border-red-500 text-neutral-400 hover:text-red-400 transition"
+                      className="p-1.5 border border-slate-200 hover:border-red-300 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
                       title="Eliminar"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -219,30 +218,30 @@ export function TreatmentsCatalogEditor({
 
       {/* Edit Modal with 3 Sub-tabs */}
       {editingTreatment && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#121216] border border-[#2b2b34] max-w-2xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#222228] pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Stethoscope className="w-4 h-4 text-cyan-400" />
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-lg max-w-2xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Stethoscope className="w-4 h-4 text-sky-600" />
                 <span>Editar Ficha de Tratamiento Clínico</span>
               </h3>
               <button
                 onClick={() => setEditingTreatment(null)}
-                className="text-neutral-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700 p-1 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Tabs */}
-            <div className="flex border-b border-[#222228] gap-4 text-xs font-mono">
+            <div className="flex border-b border-slate-200 gap-4 text-xs font-mono">
               <button
                 type="button"
                 onClick={() => setModalTab("general")}
                 className={`pb-2 border-b-2 uppercase transition ${
                   modalTab === "general"
-                    ? "border-cyan-400 text-cyan-400 font-bold"
-                    : "border-transparent text-neutral-400 hover:text-white"
+                    ? "border-sky-600 text-sky-600 font-bold"
+                    : "border-transparent text-slate-500 hover:text-slate-900"
                 }`}
               >
                 1. General & Visual
@@ -252,8 +251,8 @@ export function TreatmentsCatalogEditor({
                 onClick={() => setModalTab("aranceles")}
                 className={`pb-2 border-b-2 uppercase transition flex items-center gap-1 ${
                   modalTab === "aranceles"
-                    ? "border-amber-400 text-amber-400 font-bold"
-                    : "border-transparent text-neutral-400 hover:text-white"
+                    ? "border-amber-500 text-amber-600 font-bold"
+                    : "border-transparent text-slate-500 hover:text-slate-900"
                 }`}
               >
                 <CreditCard className="w-3.5 h-3.5" />
@@ -264,8 +263,8 @@ export function TreatmentsCatalogEditor({
                 onClick={() => setModalTab("clinica")}
                 className={`pb-2 border-b-2 uppercase transition flex items-center gap-1 ${
                   modalTab === "clinica"
-                    ? "border-emerald-400 text-emerald-400 font-bold"
-                    : "border-transparent text-neutral-400 hover:text-white"
+                    ? "border-emerald-600 text-emerald-600 font-bold"
+                    : "border-transparent text-slate-500 hover:text-slate-900"
                 }`}
               >
                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -278,7 +277,7 @@ export function TreatmentsCatalogEditor({
               {modalTab === "general" && (
                 <div className="space-y-3.5">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                    <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                       Nombre del Tratamiento *
                     </label>
                     <input
@@ -288,13 +287,13 @@ export function TreatmentsCatalogEditor({
                       onChange={(e) =>
                         setEditingTreatment({ ...editingTreatment, name: e.target.value })
                       }
-                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-bold"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 text-xs font-bold rounded focus:bg-white focus:border-slate-800 outline-none"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                      <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                         Slug URL amigable
                       </label>
                       <input
@@ -304,11 +303,11 @@ export function TreatmentsCatalogEditor({
                         onChange={(e) =>
                           setEditingTreatment({ ...editingTreatment, slug: e.target.value })
                         }
-                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 text-xs font-mono rounded focus:bg-white focus:border-slate-800 outline-none"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                      <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                         Categoría
                       </label>
                       <select
@@ -319,7 +318,7 @@ export function TreatmentsCatalogEditor({
                             category: e.target.value as TreatmentCategory,
                           })
                         }
-                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 text-xs font-mono rounded focus:bg-white focus:border-slate-800 outline-none"
                       >
                         <option value="Tratamientos Estéticos">Tratamientos Estéticos</option>
                         <option value="Especialidades">Especialidades</option>
@@ -332,7 +331,7 @@ export function TreatmentsCatalogEditor({
 
                   {/* Preset Photos & Input */}
                   <div className="space-y-1.5">
-                    <label className="block text-[11px] font-mono uppercase text-neutral-400">
+                    <label className="block text-[11px] font-mono uppercase text-slate-600 font-bold">
                       Fotografía Clínica del Tratamiento
                     </label>
                     <div className="flex gap-2.5 items-center">
@@ -342,9 +341,9 @@ export function TreatmentsCatalogEditor({
                         onChange={(e) =>
                           setEditingTreatment({ ...editingTreatment, image: e.target.value })
                         }
-                        className="flex-1 px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+                        className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 text-xs font-mono rounded focus:bg-white focus:border-slate-800 outline-none"
                       />
-                      <div className="relative w-14 h-11 border border-[#2b2b34] bg-neutral-900 overflow-hidden shrink-0">
+                      <div className="relative w-14 h-11 border border-slate-200 bg-slate-100 rounded overflow-hidden shrink-0">
                         <Image
                           src={editingTreatment.image || "/images/treatments_real/blanqueamiento.jpg"}
                           alt={editingTreatment.name}
@@ -354,7 +353,7 @@ export function TreatmentsCatalogEditor({
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-1 pt-1">
-                      <span className="text-[10px] font-mono text-neutral-500 mr-1 self-center">
+                      <span className="text-[10px] font-mono text-slate-400 mr-1 self-center">
                         Presets:
                       </span>
                       {presetImages.slice(0, 6).map((img, i) => (
@@ -364,7 +363,7 @@ export function TreatmentsCatalogEditor({
                           onClick={() =>
                             setEditingTreatment({ ...editingTreatment, image: img.path })
                           }
-                          className="text-[10px] font-mono px-2 py-0.5 border border-neutral-800 bg-neutral-900 hover:border-cyan-400 text-neutral-300"
+                          className="text-[10px] font-mono px-2 py-0.5 border border-slate-200 bg-slate-50 hover:bg-slate-100 rounded text-slate-700"
                         >
                           {img.label}
                         </button>
@@ -373,7 +372,7 @@ export function TreatmentsCatalogEditor({
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                    <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                       Descripción Corta (Visible en tarjeta pública)
                     </label>
                     <textarea
@@ -386,12 +385,12 @@ export function TreatmentsCatalogEditor({
                           shortDescription: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded focus:bg-white focus:border-slate-800 outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                    <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                       Indicación Clínica (&quot;Recomendado para&quot;)
                     </label>
                     <input
@@ -403,7 +402,7 @@ export function TreatmentsCatalogEditor({
                           recommendedFor: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded focus:bg-white focus:border-slate-800 outline-none"
                     />
                   </div>
 
@@ -418,9 +417,9 @@ export function TreatmentsCatalogEditor({
                           popular: e.target.checked,
                         })
                       }
-                      className="rounded border-neutral-700 bg-neutral-900 text-cyan-400"
+                      className="rounded border-slate-300 text-sky-600 focus:ring-sky-500"
                     />
-                    <label htmlFor="popularCheck" className="text-xs text-neutral-300">
+                    <label htmlFor="popularCheck" className="text-xs text-slate-700 font-medium cursor-pointer">
                       Marcar como &quot;Tratamiento Destacado / Alta Demanda&quot;
                     </label>
                   </div>
@@ -429,19 +428,19 @@ export function TreatmentsCatalogEditor({
 
               {/* TAB 2: ARANCELES */}
               {modalTab === "aranceles" && (
-                <div className="space-y-4 bg-[#15151b] p-4 border border-[#222228]">
-                  <div className="border-b border-[#222228] pb-2">
-                    <span className="text-xs font-mono font-bold text-amber-400 uppercase">
+                <div className="space-y-4 bg-slate-50 p-4 border border-slate-200 rounded-md">
+                  <div className="border-b border-slate-200 pb-2">
+                    <span className="text-xs font-mono font-bold text-amber-700 uppercase">
                       Matriz de Aranceles & Transparencia Fonasa / Isapre
                     </span>
-                    <p className="text-[11px] text-neutral-400 mt-0.5">
+                    <p className="text-[11px] text-slate-600 mt-0.5">
                       Define el arancel particular y el copago preferente para socios del Club BeHappy.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                      <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                         Arancel Particular Base (CLP)
                       </label>
                       <input
@@ -454,12 +453,12 @@ export function TreatmentsCatalogEditor({
                           })
                         }
                         placeholder="35000"
-                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+                        className="w-full px-3 py-2 bg-white border border-slate-200 text-slate-900 text-xs font-mono rounded focus:border-slate-800 outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-mono uppercase text-amber-400 mb-1">
+                      <label className="block text-[11px] font-mono uppercase text-amber-700 mb-1 font-bold">
                         Arancel Club BeHappy (CLP)
                       </label>
                       <input
@@ -472,13 +471,13 @@ export function TreatmentsCatalogEditor({
                           })
                         }
                         placeholder="21000"
-                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+                        className="w-full px-3 py-2 bg-white border border-slate-200 text-slate-900 text-xs font-mono rounded focus:border-slate-800 outline-none"
                       />
                     </div>
                   </div>
 
                   {editingTreatment.priceBaseCLP && editingTreatment.priceClubCLP ? (
-                    <div className="p-2.5 bg-amber-950/20 border border-amber-800/40 text-amber-300 text-xs font-mono flex items-center justify-between">
+                    <div className="p-2.5 bg-amber-50 border border-amber-200 text-amber-800 rounded text-xs font-mono flex items-center justify-between">
                       <span>Descuento socios Club:</span>
                       <span className="font-bold">
                         {Math.round(
@@ -493,7 +492,7 @@ export function TreatmentsCatalogEditor({
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                      <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                         Código Fonasa / MLE
                       </label>
                       <input
@@ -506,12 +505,12 @@ export function TreatmentsCatalogEditor({
                           })
                         }
                         placeholder="ej: 02-01-001"
-                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+                        className="w-full px-3 py-2 bg-white border border-slate-200 text-slate-900 text-xs font-mono rounded focus:border-slate-800 outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                      <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                         Cuotas sin interés Transbank
                       </label>
                       <input
@@ -523,7 +522,7 @@ export function TreatmentsCatalogEditor({
                             installmentsMax: parseInt(e.target.value) || 12,
                           })
                         }
-                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+                        className="w-full px-3 py-2 bg-white border border-slate-200 text-slate-900 text-xs font-mono rounded focus:border-slate-800 outline-none"
                       />
                     </div>
                   </div>
@@ -532,19 +531,19 @@ export function TreatmentsCatalogEditor({
 
               {/* TAB 3: BOX & PROTOCOLO */}
               {modalTab === "clinica" && (
-                <div className="space-y-4 bg-[#15151b] p-4 border border-[#222228]">
-                  <div className="border-b border-[#222228] pb-2">
-                    <span className="text-xs font-mono font-bold text-emerald-400 uppercase">
+                <div className="space-y-4 bg-slate-50 p-4 border border-slate-200 rounded-md">
+                  <div className="border-b border-slate-200 pb-2">
+                    <span className="text-xs font-mono font-bold text-emerald-700 uppercase">
                       Parámetros de Box & Seguridad del Paciente
                     </span>
-                    <p className="text-[11px] text-neutral-400 mt-0.5">
+                    <p className="text-[11px] text-slate-600 mt-0.5">
                       Configura el tiempo de sillón para agendamiento y el consentimiento informado.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                      <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                         Tiempo de Sillón / Box
                       </label>
                       <select
@@ -555,7 +554,7 @@ export function TreatmentsCatalogEditor({
                             boxDurationMinutes: parseInt(e.target.value) || 30,
                           })
                         }
-                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+                        className="w-full px-3 py-2 bg-white border border-slate-200 text-slate-900 text-xs font-mono rounded focus:border-slate-800 outline-none"
                       >
                         <option value={30}>30 minutos (Control / Profilaxis)</option>
                         <option value={45}>45 minutos (Restauraciones simples)</option>
@@ -565,7 +564,7 @@ export function TreatmentsCatalogEditor({
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                      <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                         URL Consentimiento Informado (PDF)
                       </label>
                       <input
@@ -578,13 +577,13 @@ export function TreatmentsCatalogEditor({
                           })
                         }
                         placeholder="https://..."
-                        className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs font-mono"
+                        className="w-full px-3 py-2 bg-white border border-slate-200 text-slate-900 text-xs font-mono rounded focus:border-slate-800 outline-none"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                    <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1 font-bold">
                       Descripción Protocolar y Técnica Detallada
                     </label>
                     <textarea
@@ -596,24 +595,24 @@ export function TreatmentsCatalogEditor({
                           fullDescription: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 bg-[#18181f] border border-[#2b2b34] text-white text-xs"
+                      className="w-full px-3 py-2 bg-white border border-slate-200 text-slate-900 text-xs rounded focus:border-slate-800 outline-none"
                     />
                   </div>
                 </div>
               )}
 
               {/* Action Buttons */}
-              <div className="flex justify-end gap-2 pt-3 border-t border-[#222228]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setEditingTreatment(null)}
-                  className="px-4 py-2 border border-neutral-700 text-neutral-300 text-xs font-mono uppercase"
+                  className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-mono uppercase rounded transition cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-white text-black font-bold text-xs font-mono uppercase hover:bg-neutral-200 transition"
+                  className="px-5 py-2 bg-slate-900 text-white font-bold text-xs font-mono uppercase rounded hover:bg-slate-800 transition cursor-pointer"
                 >
                   Guardar Tratamiento
                 </button>
