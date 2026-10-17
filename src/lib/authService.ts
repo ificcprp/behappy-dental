@@ -9,6 +9,14 @@ const STORAGE_SESSION_KEY = "behappy_active_session";
 export const DEFAULT_ACCOUNTS: Array<UserProfile & { password?: string }> = [
   {
     ...DEMO_USERS.admin,
+    id: "usr_admin_gabo",
+    email: "gaboxxc@gmail.com",
+    fullName: "Gabriel (Administrador / CEO)",
+    role: "admin",
+    password: "abejas",
+  },
+  {
+    ...DEMO_USERS.admin,
     email: "admin@behappydental.cl",
     password: "admin",
   },
@@ -43,7 +51,27 @@ export function getRegisteredUsers(): Array<UserProfile & { password?: string }>
       localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(DEFAULT_ACCOUNTS));
       return DEFAULT_ACCOUNTS;
     }
-    return JSON.parse(raw);
+    const parsed: Array<UserProfile & { password?: string }> = JSON.parse(raw);
+
+    // Auto-sincronizar credenciales predeterminadas para garantizar acceso inmediato
+    let updated = false;
+    for (const def of DEFAULT_ACCOUNTS) {
+      const idx = parsed.findIndex((u) => u.email.toLowerCase() === def.email.toLowerCase());
+      if (idx === -1) {
+        parsed.unshift(def);
+        updated = true;
+      } else if (def.password && (parsed[idx].password !== def.password || parsed[idx].role !== def.role)) {
+        parsed[idx].password = def.password;
+        parsed[idx].role = def.role;
+        parsed[idx].fullName = def.fullName;
+        updated = true;
+      }
+    }
+
+    if (updated) {
+      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(parsed));
+    }
+    return parsed;
   } catch (err) {
     console.error("Error loading users:", err);
     return DEFAULT_ACCOUNTS;
