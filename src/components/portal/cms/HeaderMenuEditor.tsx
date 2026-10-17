@@ -17,7 +17,11 @@ import {
   ShieldCheck,
   Calendar,
   Layers,
-  ChevronRight
+  ChevronRight,
+  Sun,
+  Moon,
+  Laptop,
+  Palette,
 } from "lucide-react";
 
 interface HeaderMenuEditorProps {
@@ -27,6 +31,11 @@ interface HeaderMenuEditorProps {
 
 export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorProps) {
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">("desktop");
+  const [testSystemDark, setTestSystemDark] = useState(false);
+
+  const activeColorScheme = headerConfig.colorScheme || "blanco";
+  const previewIsDark =
+    activeColorScheme === "negro" || (activeColorScheme === "sistema" && testSystemDark);
 
   const update = <K extends keyof CMSHeaderConfig>(key: K, value: CMSHeaderConfig[K]) => {
     onChange({
@@ -62,30 +71,66 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
             </span>
           </div>
 
-          <div className="flex items-center gap-1 bg-slate-800 p-1 rounded text-xs font-mono">
-            <button
-              onClick={() => setPreviewMode("desktop")}
-              className={`px-3 py-1 rounded flex items-center gap-1.5 transition ${
-                previewMode === "desktop" ? "bg-slate-700 text-white font-bold" : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Monitor className="w-3.5 h-3.5" />
-              <span>Escritorio ({headerConfig.desktopHeight}px)</span>
-            </button>
-            <button
-              onClick={() => setPreviewMode("mobile")}
-              className={`px-3 py-1 rounded flex items-center gap-1.5 transition ${
-                previewMode === "mobile" ? "bg-slate-700 text-white font-bold" : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-              <span>Móvil ({headerConfig.mobileHeight}px)</span>
-            </button>
+          <div className="flex items-center gap-2">
+            {activeColorScheme === "sistema" && (
+              <div className="flex items-center gap-1 bg-slate-800 p-1 rounded text-xs font-mono border border-slate-700">
+                <span className="text-[10px] text-slate-400 px-1 font-mono">Simular SO:</span>
+                <button
+                  type="button"
+                  onClick={() => setTestSystemDark(false)}
+                  className={`px-2 py-0.5 rounded text-[10px] flex items-center gap-1 transition ${
+                    !testSystemDark ? "bg-amber-400 text-slate-900 font-bold" : "text-slate-400 hover:text-white"
+                  }`}
+                  title="Simular visualización en sistema con modo claro"
+                >
+                  <Sun className="w-3 h-3" />
+                  <span>Claro</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTestSystemDark(true)}
+                  className={`px-2 py-0.5 rounded text-[10px] flex items-center gap-1 transition ${
+                    testSystemDark ? "bg-indigo-500 text-white font-bold" : "text-slate-400 hover:text-white"
+                  }`}
+                  title="Simular visualización en sistema con modo oscuro"
+                >
+                  <Moon className="w-3 h-3" />
+                  <span>Oscuro</span>
+                </button>
+              </div>
+            )}
+
+            <div className="flex items-center gap-1 bg-slate-800 p-1 rounded text-xs font-mono">
+              <button
+                onClick={() => setPreviewMode("desktop")}
+                className={`px-3 py-1 rounded flex items-center gap-1.5 transition ${
+                  previewMode === "desktop" ? "bg-slate-700 text-white font-bold" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <Monitor className="w-3.5 h-3.5" />
+                <span>Escritorio ({headerConfig.desktopHeight}px)</span>
+              </button>
+              <button
+                onClick={() => setPreviewMode("mobile")}
+                className={`px-3 py-1 rounded flex items-center gap-1.5 transition ${
+                  previewMode === "mobile" ? "bg-slate-700 text-white font-bold" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <Smartphone className="w-3.5 h-3.5" />
+                <span>Móvil ({headerConfig.mobileHeight}px)</span>
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Live Preview Container (Adaptativo y con viewport realista) */}
-        <div className="bg-[#faf8f5] text-[#141413] rounded-md border border-slate-300 shadow-md overflow-x-auto">
+        <div
+          className={`rounded-md border shadow-md overflow-x-auto transition-colors duration-200 ${
+            previewIsDark
+              ? "bg-[#0e0e0d] text-[#faf8f5] border-slate-700"
+              : "bg-[#faf8f5] text-[#141413] border-slate-300"
+          }`}
+        >
           <div
             style={{
               height: previewMode === "desktop" ? `${headerConfig.desktopHeight}px` : `${headerConfig.mobileHeight}px`,
@@ -100,7 +145,9 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
                   width: `${previewMode === "desktop" ? headerConfig.logoSize : Math.min(headerConfig.logoSize, 42)}px`,
                   height: `${previewMode === "desktop" ? headerConfig.logoSize : Math.min(headerConfig.logoSize, 42)}px`,
                 }}
-                className="relative rounded-full overflow-hidden bg-white border border-[#ded9cd] p-0.5 shadow-2xs flex-shrink-0"
+                className={`relative rounded-full overflow-hidden p-0.5 shadow-2xs flex-shrink-0 transition-colors ${
+                  previewIsDark ? "bg-neutral-900 border border-neutral-700" : "bg-white border border-[#ded9cd]"
+                }`}
               >
                 <Image
                   src="/images/brand/logo.png"
@@ -112,10 +159,18 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
 
               {headerConfig.showBrandText && (
                 <div className="whitespace-nowrap flex-shrink-0">
-                  <span className="text-xs font-semibold block leading-tight text-[#141413]">
+                  <span
+                    className={`text-xs font-semibold block leading-tight transition-colors ${
+                      previewIsDark ? "text-[#faf8f5]" : "text-[#141413]"
+                    }`}
+                  >
                     Centro Dental BeHappy
                   </span>
-                  <span className="text-[9px] font-mono tracking-wider text-[#78736a] block">
+                  <span
+                    className={`text-[9px] font-mono tracking-wider block transition-colors ${
+                      previewIsDark ? "text-[#a8a398]" : "text-[#78736a]"
+                    }`}
+                  >
                     Ñuñoa · Suecia 3580
                   </span>
                 </div>
@@ -142,7 +197,9 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
                           ? "system-ui, sans-serif"
                           : "monospace",
                     }}
-                    className="text-[#66635d] font-normal whitespace-nowrap"
+                    className={`font-normal whitespace-nowrap transition-colors ${
+                      previewIsDark ? "text-[#a8a398]" : "text-[#66635d]"
+                    }`}
                   >
                     {name}
                   </span>
@@ -156,30 +213,54 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
                       letterSpacing: headerConfig.letterSpacing,
                       textTransform: headerConfig.textTransform,
                     }}
-                    className="text-amber-900 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded font-bold inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0 shadow-2xs"
+                    className={`px-2 py-0.5 rounded font-bold inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0 shadow-2xs transition-colors ${
+                      previewIsDark
+                        ? "text-amber-300 bg-amber-500/20 border border-amber-500/40"
+                        : "text-amber-900 bg-amber-500/10 border border-amber-500/30"
+                    }`}
                   >
-                    <Sparkles className="w-3 h-3 text-amber-600" />
+                    <Sparkles className="w-3 h-3 text-amber-500" />
                     <span>{headerConfig.demoButtonText || "Demo OS (4 Roles)"}</span>
                   </span>
                 )}
               </div>
             ) : previewMode === "mobile" || headerConfig.burgerOnDesktop ? (
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono text-slate-500 bg-slate-200 px-2 py-0.5 rounded">
+                <span
+                  className={`text-[10px] font-mono px-2 py-0.5 rounded transition-colors ${
+                    previewIsDark ? "text-slate-400 bg-slate-800" : "text-slate-500 bg-slate-200"
+                  }`}
+                >
                   Menú Burger Activo
                 </span>
-                <div className="w-8 h-8 rounded border border-slate-300 flex items-center justify-center">
-                  <Menu className="w-4 h-4 text-slate-700" />
+                <div
+                  className={`w-8 h-8 rounded border flex items-center justify-center transition-colors ${
+                    previewIsDark ? "border-slate-700 text-white" : "border-slate-300 text-slate-700"
+                  }`}
+                >
+                  <Menu className="w-4 h-4" />
                 </div>
               </div>
             ) : null}
 
             {/* Right Buttons preview */}
             <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
-              <span className="px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase border border-[#141413] text-[#141413] font-medium rounded-xs whitespace-nowrap">
+              <span
+                className={`px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase font-medium rounded-xs whitespace-nowrap transition-colors ${
+                  previewIsDark
+                    ? "border border-[#3e3b35] text-[#faf8f5]"
+                    : "border border-[#141413] text-[#141413]"
+                }`}
+              >
                 {headerConfig.portalButtonText}
               </span>
-              <span className="px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase bg-[#141413] text-white font-medium rounded-xs whitespace-nowrap shadow-2xs">
+              <span
+                className={`px-3 py-1.5 text-[11px] font-mono tracking-wider uppercase font-medium rounded-xs whitespace-nowrap shadow-2xs transition-colors ${
+                  previewIsDark
+                    ? "bg-[#faf8f5] text-[#141413]"
+                    : "bg-[#141413] text-white"
+                }`}
+              >
                 {headerConfig.bookingButtonText}
               </span>
             </div>
@@ -190,6 +271,91 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
       {/* Control Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
+        {/* BLOQUE DESTACADO: Esquema de Color & Tema (Blanco · Negro · Sistema) */}
+        <div className="lg:col-span-2 bg-white border border-slate-200 p-6 rounded-lg shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <Palette className="w-4 h-4 text-purple-600" />
+              <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider font-mono">
+                Esquema de Color & Tema (Blanco · Negro · Sistema)
+              </h3>
+            </div>
+            <span className="text-[10px] font-mono text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full font-bold uppercase">
+              Activo: {headerConfig.colorScheme || "blanco"}
+            </span>
+          </div>
+
+          <p className="text-xs text-slate-600 font-light leading-relaxed">
+            Personaliza el estilo cromático de la cabecera. Puedes mantener el blanco marfil clínico, optar por un negro carbón de alto contraste o seleccionar el modo adaptativo que responde automáticamente al sistema del usuario.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+            {[
+              {
+                id: "blanco" as const,
+                title: "Blanco",
+                sub: "Modo Claro",
+                badge: "Editorial Marfil",
+                icon: <Sun className="w-4 h-4 text-amber-500" />,
+                desc: "Fondo blanco marfil (#faf8f5) con tipografía oscura, bordes arena y estética médica limpia.",
+                previewBox: "bg-[#faf8f5] border-[#e5e0d5] text-[#141413]",
+              },
+              {
+                id: "negro" as const,
+                title: "Negro",
+                sub: "Modo Oscuro",
+                badge: "Carbón Nocturno",
+                icon: <Moon className="w-4 h-4 text-indigo-400" />,
+                desc: "Fondo negro carbón (#0e0e0d) con tipografía luminosa marfil (#faf8f5) y bordes sutiles.",
+                previewBox: "bg-[#0e0e0d] border-[#262421] text-[#faf8f5]",
+              },
+              {
+                id: "sistema" as const,
+                title: "Sistema",
+                sub: "Adaptativo",
+                badge: "Automático SO",
+                icon: <Laptop className="w-4 h-4 text-sky-400" />,
+                desc: "Detecta automáticamente la preferencia de color del dispositivo del visitante (iOS, Android, macOS, Windows).",
+                previewBox: "bg-linear-to-r from-[#faf8f5] via-slate-200 to-[#0e0e0d] border-slate-300 text-slate-900 font-bold",
+              },
+            ].map((scheme) => (
+              <button
+                key={scheme.id}
+                type="button"
+                onClick={() => update("colorScheme", scheme.id)}
+                className={`p-4 text-left border rounded-md transition space-y-2.5 relative cursor-pointer ${
+                  (headerConfig.colorScheme || "blanco") === scheme.id
+                    ? "border-purple-600 bg-purple-50/40 ring-2 ring-purple-600/30"
+                    : "border-slate-200 hover:border-slate-400 bg-white"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {scheme.icon}
+                    <span className="text-xs font-bold text-slate-900">{scheme.title}</span>
+                  </div>
+                  {(headerConfig.colorScheme || "blanco") === scheme.id ? (
+                    <span className="w-4 h-4 rounded-full bg-purple-600 text-white flex items-center justify-center text-[9px] font-bold">
+                      ✓
+                    </span>
+                  ) : (
+                    <span className="text-[9px] font-mono text-slate-400 uppercase">{scheme.badge}</span>
+                  )}
+                </div>
+
+                <div className={`h-7 rounded border flex items-center justify-between px-2.5 text-[10px] font-mono uppercase tracking-wider ${scheme.previewBox}`}>
+                  <span>{scheme.sub}</span>
+                  <span className="text-[9px] opacity-75">{scheme.badge}</span>
+                </div>
+
+                <p className="text-[11px] text-slate-500 leading-snug">
+                  {scheme.desc}
+                </p>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* BLOQUE 1: Formato de Layout & Disposición */}
         <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-xs space-y-6">
           <div className="flex items-center gap-2 pb-3 border-b border-slate-100">

@@ -17,6 +17,8 @@ export function AuthPortalEditor({
 }: AuthPortalEditorProps) {
   const current = authPortal || DEFAULT_AUTH_PORTAL;
   const [previewTab, setPreviewTab] = useState<"login" | "register">("login");
+  const [previewTheme, setPreviewTheme] = useState<"blanco" | "negro">("blanco");
+  const isDark = previewTheme === "negro";
 
   const handleChange = (field: keyof CMSAuthPortal, value: string) => {
     onUpdateAuthPortal({
@@ -252,36 +254,75 @@ export function AuthPortalEditor({
               <Eye className="w-3.5 h-3.5" />
               Previsualización en Vivo
             </span>
-            <span className="text-[10px] text-neutral-500">Auto-sincronizada</span>
+            <div className="flex items-center gap-1 bg-slate-800 p-0.5 rounded text-[10px]">
+              <button
+                type="button"
+                onClick={() => setPreviewTheme("blanco")}
+                className={`px-2 py-0.5 rounded transition ${!isDark ? "bg-white text-black font-bold" : "text-neutral-400 hover:text-white"}`}
+              >
+                Blanco
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewTheme("negro")}
+                className={`px-2 py-0.5 rounded transition ${isDark ? "bg-slate-700 text-white font-bold" : "text-neutral-400 hover:text-white"}`}
+              >
+                Negro
+              </button>
+            </div>
           </div>
 
-          <div className="bg-[#faf8f5] text-[#141413] p-5 sm:p-6 border border-[#ded9cd] shadow-inner space-y-5 rounded-xs">
+          <div className={`p-5 sm:p-6 border shadow-inner space-y-5 rounded-xs transition-colors duration-200 ${
+            isDark
+              ? "bg-[#0e0e0d] text-[#faf8f5] border-[#262421]"
+              : "bg-[#faf8f5] text-[#141413] border-[#ded9cd]"
+          }`}>
             {/* Header Preview */}
             <div className="text-center space-y-2">
-              <span className="text-[9px] font-mono tracking-[0.2em] text-[#78736a] uppercase block">
+              <span className={`text-[9px] font-mono tracking-[0.2em] uppercase block ${
+                isDark ? "text-[#a8a398]" : "text-[#78736a]"
+              }`}>
                 {current.badge || "SEDE ÑUÑOA · SUECIA 3580"}
               </span>
-              <h2 className="text-xl font-light tracking-tight text-[#141413]">
+              <h2 className={`text-xl font-light tracking-tight ${
+                isDark ? "text-[#faf8f5]" : "text-[#141413]"
+              }`}>
                 {current.title || "Portal Clínico & Pacientes"}{" "}
-                <span className="font-serif italic font-normal text-neutral-800">
+                <span className={`font-serif italic font-normal ${
+                  isDark ? "text-neutral-300" : "text-neutral-800"
+                }`}>
                   {current.titleHighlight || "BeHappy"}
                 </span>
               </h2>
-              <p className="text-[11px] text-[#66635d] font-light leading-relaxed">
+              <p className={`text-[11px] font-light leading-relaxed ${
+                isDark ? "text-[#a8a398]" : "text-[#66635d]"
+              }`}>
                 {current.subtitle || "Acceso seguro a ficha clínica digital, citas, presupuestos y convenios."}
               </p>
             </div>
 
             {/* Card Preview */}
-            <div className="bg-white border border-[#e5e0d5] p-5 space-y-4 shadow-2xs">
+            <div className={`p-5 space-y-4 shadow-2xs border transition-colors duration-200 ${
+              isDark
+                ? "bg-[#181816] border-[#2c2a26]"
+                : "bg-white border-[#e5e0d5]"
+            }`}>
               {/* Segmented Switcher */}
-              <div className="grid grid-cols-2 p-1 bg-[#f4f1ea] border border-[#e2ddd3] gap-1">
+              <div className={`grid grid-cols-2 p-1 border gap-1 ${
+                isDark
+                  ? "bg-[#121210] border-[#2a2824]"
+                  : "bg-[#f4f1ea] border-[#e2ddd3]"
+              }`}>
                 <button
                   type="button"
                   onClick={() => setPreviewTab("login")}
                   className={`py-1.5 text-[11px] font-mono uppercase tracking-wider transition ${
                     previewTab === "login"
-                      ? "bg-white text-[#141413] font-bold shadow-xs border border-[#ded8cb]"
+                      ? isDark
+                        ? "bg-[#242320] text-white font-bold border border-[#3e3b35]"
+                        : "bg-white text-[#141413] font-bold shadow-xs border border-[#ded8cb]"
+                      : isDark
+                      ? "text-[#a8a398] hover:text-white"
                       : "text-[#78736a] hover:text-[#141413]"
                   }`}
                 >
@@ -292,7 +333,11 @@ export function AuthPortalEditor({
                   onClick={() => setPreviewTab("register")}
                   className={`py-1.5 text-[11px] font-mono uppercase tracking-wider transition ${
                     previewTab === "register"
-                      ? "bg-white text-[#141413] font-bold shadow-xs border border-[#ded8cb]"
+                      ? isDark
+                        ? "bg-[#242320] text-white font-bold border border-[#3e3b35]"
+                        : "bg-white text-[#141413] font-bold shadow-xs border border-[#ded8cb]"
+                      : isDark
+                      ? "text-[#a8a398] hover:text-white"
                       : "text-[#78736a] hover:text-[#141413]"
                   }`}
                 >
@@ -303,27 +348,43 @@ export function AuthPortalEditor({
               {previewTab === "login" ? (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-[10px] font-mono tracking-wider uppercase text-[#141413] mb-1 font-medium">
+                    <label className={`block text-[10px] font-mono tracking-wider uppercase mb-1 font-medium ${
+                      isDark ? "text-[#e8e4db]" : "text-[#141413]"
+                    }`}>
                       RUT o Correo Electrónico
                     </label>
-                    <div className="w-full px-3 py-2 bg-[#faf8f5] border border-[#cfc9be] text-[#78736a] text-xs font-mono">
+                    <div className={`w-full px-3 py-2 border text-xs font-mono ${
+                      isDark
+                        ? "bg-[#121210] border-[#383530] text-[#a8a398]"
+                        : "bg-[#faf8f5] border-[#cfc9be] text-[#78736a]"
+                    }`}>
                       12.345.678-9 / usuario@correo.cl
                     </div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="block text-[10px] font-mono tracking-wider uppercase text-[#141413] font-medium">
+                      <label className={`block text-[10px] font-mono tracking-wider uppercase font-medium ${
+                        isDark ? "text-[#e8e4db]" : "text-[#141413]"
+                      }`}>
                         Contraseña
                       </label>
-                      <span className="text-[9px] font-mono text-[#78736a]">
+                      <span className={`text-[9px] font-mono ${isDark ? "text-[#a8a398]" : "text-[#78736a]"}`}>
                         {current.forgotPasswordText || "¿Olvidaste tu clave?"}
                       </span>
                     </div>
-                    <div className="w-full px-3 py-2 bg-[#faf8f5] border border-[#cfc9be] text-[#78736a] text-xs font-mono">
+                    <div className={`w-full px-3 py-2 border text-xs font-mono ${
+                      isDark
+                        ? "bg-[#121210] border-[#383530] text-[#a8a398]"
+                        : "bg-[#faf8f5] border-[#cfc9be] text-[#78736a]"
+                    }`}>
                       ••••••••
                     </div>
                   </div>
-                  <div className="w-full py-2.5 bg-[#141413] text-[#faf8f5] text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2 font-medium">
+                  <div className={`w-full py-2.5 text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2 font-medium cursor-pointer ${
+                    isDark
+                      ? "bg-[#faf8f5] text-[#141413] hover:bg-white"
+                      : "bg-[#141413] text-[#faf8f5] hover:bg-black"
+                  }`}>
                     <span>{current.loginButtonText || "Ingresar al Portal"}</span>
                     <ArrowRight className="w-3 h-3" />
                   </div>
@@ -331,43 +392,67 @@ export function AuthPortalEditor({
               ) : (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-[10px] font-mono tracking-wider uppercase text-[#141413] mb-1 font-medium">
+                    <label className={`block text-[10px] font-mono tracking-wider uppercase mb-1 font-medium ${
+                      isDark ? "text-[#e8e4db]" : "text-[#141413]"
+                    }`}>
                       Nombre Completo
                     </label>
-                    <div className="w-full px-3 py-2 bg-[#faf8f5] border border-[#cfc9be] text-[#78736a] text-xs font-mono">
+                    <div className={`w-full px-3 py-2 border text-xs font-mono ${
+                      isDark
+                        ? "bg-[#121210] border-[#383530] text-[#a8a398]"
+                        : "bg-[#faf8f5] border-[#cfc9be] text-[#78736a]"
+                    }`}>
                       Camila González Pérez
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-[10px] font-mono tracking-wider uppercase text-[#141413] mb-1 font-medium">
+                      <label className={`block text-[10px] font-mono tracking-wider uppercase mb-1 font-medium ${
+                        isDark ? "text-[#e8e4db]" : "text-[#141413]"
+                      }`}>
                         RUT
                       </label>
-                      <div className="w-full px-2.5 py-2 bg-[#faf8f5] border border-[#cfc9be] text-[#78736a] text-xs font-mono">
+                      <div className={`w-full px-2.5 py-2 border text-xs font-mono ${
+                        isDark
+                          ? "bg-[#121210] border-[#383530] text-[#a8a398]"
+                          : "bg-[#faf8f5] border-[#cfc9be] text-[#78736a]"
+                      }`}>
                         18.492.381-4
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-mono tracking-wider uppercase text-[#141413] mb-1 font-medium">
+                      <label className={`block text-[10px] font-mono tracking-wider uppercase mb-1 font-medium ${
+                        isDark ? "text-[#e8e4db]" : "text-[#141413]"
+                      }`}>
                         Teléfono
                       </label>
-                      <div className="w-full px-2.5 py-2 bg-[#faf8f5] border border-[#cfc9be] text-[#78736a] text-xs font-mono">
+                      <div className={`w-full px-2.5 py-2 border text-xs font-mono ${
+                        isDark
+                          ? "bg-[#121210] border-[#383530] text-[#a8a398]"
+                          : "bg-[#faf8f5] border-[#cfc9be] text-[#78736a]"
+                      }`}>
                         +56 9 8765 4321
                       </div>
                     </div>
                   </div>
-                  <div className="w-full py-2.5 bg-[#141413] text-[#faf8f5] text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2 font-medium">
+                  <div className={`w-full py-2.5 text-xs font-mono uppercase tracking-widest flex items-center justify-center gap-2 font-medium cursor-pointer ${
+                    isDark
+                      ? "bg-[#faf8f5] text-[#141413] hover:bg-white"
+                      : "bg-[#141413] text-[#faf8f5] hover:bg-black"
+                  }`}>
                     <span>{current.registerButtonText || "Crear Ficha y Acceder"}</span>
                     <ArrowRight className="w-3 h-3" />
                   </div>
                 </div>
               )}
 
-              <div className="pt-3 border-t border-[#f0ede6] text-center space-y-1.5">
-                <p className="text-[10px] font-mono text-[#78736a]">
+              <div className={`pt-3 border-t text-center space-y-1.5 ${
+                isDark ? "border-[#2c2a26]" : "border-[#f0ede6]"
+              }`}>
+                <p className={`text-[10px] font-mono ${isDark ? "text-[#a8a398]" : "text-[#78736a]"}`}>
                   {current.directBookingText}
                 </p>
-                <p className="text-[9px] font-mono text-[#0284c7]">
+                <p className={`text-[9px] font-mono ${isDark ? "text-sky-400" : "text-[#0284c7]"}`}>
                   {current.demoAccessText}
                 </p>
               </div>
@@ -375,7 +460,9 @@ export function AuthPortalEditor({
 
             {/* Security Pill */}
             <div className="text-center">
-              <span className="text-[9px] font-mono text-[#78736a] tracking-wider uppercase">
+              <span className={`text-[9px] font-mono tracking-wider uppercase ${
+                isDark ? "text-[#a8a398]" : "text-[#78736a]"
+              }`}>
                 {current.securityNotice}
               </span>
             </div>

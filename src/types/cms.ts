@@ -142,10 +142,13 @@ export interface StructuredAnnouncement {
   active: boolean;
 }
 
+export type HeaderColorScheme = "blanco" | "negro" | "sistema";
+
 export interface CMSHeaderConfig {
   layout: "classic" | "centered" | "split";
   mobileMenuType: "fullscreen" | "drawer-right" | "drawer-left";
   burgerOnDesktop: boolean;
+  colorScheme: HeaderColorScheme; // "blanco" | "negro" | "sistema"
   desktopHeight: number; // px
   mobileHeight: number; // px
   logoSize: number; // px

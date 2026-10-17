@@ -122,6 +122,7 @@ export interface CMSData {
   preventionSection: CMSPreventionSection;
   authPortal: CMSAuthPortal;
   headerConfig: CMSHeaderConfig;
+  siteColorScheme?: "blanco" | "negro" | "sistema";
   heroHeadline: string;
   heroSubheadline: string;
   lastUpdated: string;
@@ -346,6 +347,7 @@ export const DEFAULT_HEADER_CONFIG: CMSHeaderConfig = {
   layout: "classic",
   mobileMenuType: "fullscreen",
   burgerOnDesktop: false,
+  colorScheme: "blanco",
   desktopHeight: 84,
   mobileHeight: 72,
   logoSize: 52,
@@ -375,6 +377,7 @@ export const DEFAULT_CMS_DATA: CMSData = {
   preventionSection: DEFAULT_PREVENTION_SECTION,
   authPortal: DEFAULT_AUTH_PORTAL,
   headerConfig: DEFAULT_HEADER_CONFIG,
+  siteColorScheme: "blanco",
   heroHeadline: "Centro Dental BeHappy",
   heroSubheadline: "Centro dental en Ñuñoa con la última tecnología y tratamientos de la más alta calidad.",
   lastUpdated: new Date().toISOString()

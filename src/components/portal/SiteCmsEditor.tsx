@@ -175,6 +175,7 @@ export function SiteCmsEditor() {
         currentStatus={cmsData.currentStatus || "published"}
         versionTag={cmsData.versionTag || "v2.0 Producción"}
         lastUpdated={cmsData.lastUpdated}
+        colorScheme={cmsData.headerConfig?.colorScheme || cmsData.siteColorScheme || "blanco"}
         onSaveDraft={handleSaveDraft}
         onPublish={handlePublish}
         onOpenHistory={() => setIsHistoryModalOpen(true)}

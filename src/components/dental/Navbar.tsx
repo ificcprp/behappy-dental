@@ -17,6 +17,17 @@ export function Navbar() {
   const [headerConfig, setHeaderConfig] = useState<CMSHeaderConfig>(DEFAULT_HEADER_CONFIG);
   const [sessionUser, setSessionUser] = useState<UserProfile | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [systemIsDark, setSystemIsDark] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    setSystemIsDark(mq.matches);
+
+    const handler = (e: MediaQueryListEvent) => setSystemIsDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -78,13 +89,25 @@ export function Navbar() {
     return "var(--font-geist-mono), monospace";
   };
 
+  const effectiveScheme: "blanco" | "negro" =
+    headerConfig.colorScheme === "sistema"
+      ? (systemIsDark ? "negro" : "blanco")
+      : (headerConfig.colorScheme || "blanco");
+  const isDark = effectiveScheme === "negro";
+
   return (
     <header
       className={`${
         headerConfig.isSticky ? "sticky top-0" : "relative"
-      } z-50 transition-colors border-b border-[#e5e0d5] ${
-        headerConfig.enableBlur ? "bg-[#faf8f5]/95 backdrop-blur-md" : "bg-[#faf8f5]"
-      } text-[#141413]`}
+      } z-50 transition-colors duration-200 border-b ${
+        isDark
+          ? headerConfig.enableBlur
+            ? "bg-[#0e0e0d]/95 backdrop-blur-md border-[#262421] text-[#faf8f5]"
+            : "bg-[#0e0e0d] border-[#262421] text-[#faf8f5]"
+          : headerConfig.enableBlur
+          ? "bg-[#faf8f5]/95 backdrop-blur-md border-[#e5e0d5] text-[#141413]"
+          : "bg-[#faf8f5] border-[#e5e0d5] text-[#141413]"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -105,7 +128,9 @@ export function Navbar() {
                 width: `${headerConfig.logoSize}px`,
                 height: `${headerConfig.logoSize}px`,
               }}
-              className="relative rounded-full overflow-hidden bg-white border border-[#ded9cd] p-0.5 shadow-2xs group-hover:scale-105 transition-transform duration-200 flex-shrink-0"
+              className={`relative rounded-full overflow-hidden p-0.5 shadow-2xs group-hover:scale-105 transition-transform duration-200 flex-shrink-0 ${
+                isDark ? "bg-neutral-900 border border-neutral-700" : "bg-white border border-[#ded9cd]"
+              }`}
             >
               <Image
                 src="/images/brand/logo.png"
@@ -118,10 +143,18 @@ export function Navbar() {
 
             {headerConfig.showBrandText && (
               <div className="flex flex-col">
-                <span className="text-[16px] sm:text-[17px] font-semibold tracking-tight text-[#141413] leading-none group-hover:text-black">
+                <span
+                  className={`text-[16px] sm:text-[17px] font-semibold tracking-tight leading-none transition-colors ${
+                    isDark ? "text-[#faf8f5] group-hover:text-white" : "text-[#141413] group-hover:text-black"
+                  }`}
+                >
                   Centro Dental BeHappy
                 </span>
-                <span className="text-[10px] font-mono tracking-[0.22em] uppercase text-[#78736a] mt-1.5 block">
+                <span
+                  className={`text-[10px] font-mono tracking-[0.22em] uppercase mt-1.5 block transition-colors ${
+                    isDark ? "text-[#a8a398]" : "text-[#78736a]"
+                  }`}
+                >
                   Ñuñoa · Suecia 3580
                 </span>
               </div>
@@ -152,7 +185,11 @@ export function Navbar() {
                     }}
                     className={`transition-colors duration-150 py-1.5 relative ${
                       isActive
-                        ? "text-[#141413] font-bold border-b-2 border-[#141413]"
+                        ? isDark
+                          ? "text-[#faf8f5] font-bold border-b-2 border-[#faf8f5]"
+                          : "text-[#141413] font-bold border-b-2 border-[#141413]"
+                        : isDark
+                        ? "text-[#a8a398] hover:text-[#faf8f5] font-normal"
                         : "text-[#66635d] hover:text-[#141413] font-normal"
                     }`}
                   >
@@ -171,10 +208,14 @@ export function Navbar() {
                     textTransform: headerConfig.textTransform,
                     fontFamily: getLinkFontFamily(),
                   }}
-                  className="px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-900 hover:bg-amber-500/20 hover:border-amber-500 transition-colors inline-flex items-center gap-1.5 font-bold shadow-2xs"
+                  className={`px-2.5 py-1 rounded transition-colors inline-flex items-center gap-1.5 font-bold shadow-2xs ${
+                    isDark
+                      ? "bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 hover:border-amber-400"
+                      : "bg-amber-500/10 border border-amber-500/30 text-amber-900 hover:bg-amber-500/20 hover:border-amber-500"
+                  }`}
                   title="Explorar la suite interactiva de presentación para inversionistas (4 Roles)"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
                   <span>{headerConfig.demoButtonText || "Demo OS (4 Roles)"}</span>
                 </a>
               )}
@@ -187,7 +228,11 @@ export function Navbar() {
               <>
                 <a
                   href={`/portal?role=${sessionUser.role}`}
-                  className="px-3.5 py-2 text-xs font-mono tracking-wider uppercase border border-[#141413] bg-[#141413] text-[#faf8f5] hover:bg-black rounded-xs flex items-center gap-2 shadow-2xs transition"
+                  className={`px-3.5 py-2 text-xs font-mono tracking-wider uppercase rounded-xs flex items-center gap-2 shadow-2xs transition ${
+                    isDark
+                      ? "border border-white/30 bg-white/10 text-white hover:bg-white/20"
+                      : "border border-[#141413] bg-[#141413] text-[#faf8f5] hover:bg-black"
+                  }`}
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span>Portal ({sessionUser.role})</span>
@@ -198,7 +243,7 @@ export function Navbar() {
                     setSessionUser(null);
                     window.location.href = "/";
                   }}
-                  className="p-2 text-[#78736a] hover:text-[#141413] transition"
+                  className={`p-2 transition ${isDark ? "text-[#a8a398] hover:text-white" : "text-[#78736a] hover:text-[#141413]"}`}
                   title="Cerrar sesión"
                 >
                   <LogOut className="w-4 h-4" />
@@ -207,7 +252,11 @@ export function Navbar() {
             ) : (
               <a
                 href="/login"
-                className="px-4 py-2 text-xs font-mono tracking-wider uppercase border border-[#cfc9be] text-[#141413] hover:border-[#141413] hover:bg-[#ece7de]/60 rounded-xs transition font-medium"
+                className={`px-4 py-2 text-xs font-mono tracking-wider uppercase rounded-xs transition font-medium ${
+                  isDark
+                    ? "border border-[#3e3b35] text-[#faf8f5] hover:border-white hover:bg-white/10"
+                    : "border border-[#cfc9be] text-[#141413] hover:border-[#141413] hover:bg-[#ece7de]/60"
+                }`}
               >
                 {headerConfig.portalButtonText || "Portal Clínico"}
               </a>
@@ -216,7 +265,11 @@ export function Navbar() {
             {/* Botón Principal CTA: Reservar Cita */}
             <button
               onClick={handleScrollToBooking}
-              className="px-4 py-2 text-xs font-mono tracking-wider uppercase bg-[#141413] hover:bg-black text-[#faf8f5] rounded-xs font-medium shadow-2xs transition"
+              className={`px-4 py-2 text-xs font-mono tracking-wider uppercase rounded-xs font-medium shadow-2xs transition ${
+                isDark
+                  ? "bg-[#faf8f5] hover:bg-white text-[#141413]"
+                  : "bg-[#141413] hover:bg-black text-[#faf8f5]"
+              }`}
             >
               {headerConfig.bookingButtonText || "Reservar Cita"}
             </button>
@@ -226,13 +279,19 @@ export function Navbar() {
           <div className={`flex ${headerConfig.burgerOnDesktop ? "" : "md:hidden"} items-center space-x-2`}>
             <a
               href={sessionUser ? `/portal?role=${sessionUser.role}` : "/login"}
-              className="px-2.5 py-1 text-[10px] font-mono tracking-wider uppercase border border-[#cfc9be] text-[#141413] rounded-xs"
+              className={`px-2.5 py-1 text-[10px] font-mono tracking-wider uppercase rounded-xs ${
+                isDark
+                  ? "border border-[#3e3b35] text-[#faf8f5]"
+                  : "border border-[#cfc9be] text-[#141413]"
+              }`}
             >
               {sessionUser ? `Portal (${sessionUser.role})` : "Portal"}
             </a>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-[#141413] hover:text-black focus:outline-none"
+              className={`p-2 focus:outline-none transition ${
+                isDark ? "text-[#faf8f5] hover:text-white" : "text-[#141413] hover:text-black"
+              }`}
               aria-label="Abrir menú de navegación"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -245,7 +304,11 @@ export function Navbar() {
       {/* Menú Desplegable Móvil / Panel Drawer */}
       {mobileMenuOpen && (
         <div
-          className={`border-t border-[#e5e0d5] bg-[#faf8f5] text-[#141413] ${
+          className={`border-t transition-colors duration-200 ${
+            isDark
+              ? "border-[#262421] bg-[#0e0e0d] text-[#faf8f5]"
+              : "border-[#e5e0d5] bg-[#faf8f5] text-[#141413]"
+          } ${
             headerConfig.mobileMenuType === "drawer-right"
               ? "fixed inset-y-0 right-0 w-80 max-w-[85vw] z-50 shadow-2xl p-6 overflow-y-auto animate-in slide-in-from-right duration-200"
               : headerConfig.mobileMenuType === "drawer-left"
@@ -255,13 +318,17 @@ export function Navbar() {
         >
           {/* Cabecera del drawer si es lateral */}
           {(headerConfig.mobileMenuType === "drawer-right" || headerConfig.mobileMenuType === "drawer-left") && (
-            <div className="flex items-center justify-between pb-4 border-b border-[#e5e0d5] mb-4">
+            <div
+              className={`flex items-center justify-between pb-4 border-b mb-4 ${
+                isDark ? "border-[#262421]" : "border-[#e5e0d5]"
+              }`}
+            >
               <span className="text-xs font-bold uppercase tracking-wider font-mono">
                 Menú BeHappy
               </span>
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-1 text-[#78736a] hover:text-[#141413]"
+                className={`p-1 ${isDark ? "text-[#a8a398] hover:text-white" : "text-[#78736a] hover:text-[#141413]"}`}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -277,8 +344,10 @@ export function Navbar() {
                   key={link.name}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`block py-3 text-xs font-mono tracking-widest uppercase border-b border-[#f0ede6] transition ${
-                    isActive ? "text-[#141413] font-bold" : "text-[#66635d] hover:text-[#141413]"
+                  className={`block py-3 text-xs font-mono tracking-widest uppercase transition border-b ${
+                    isDark
+                      ? `border-[#262421] ${isActive ? "text-white font-bold" : "text-[#a8a398] hover:text-white"}`
+                      : `border-[#f0ede6] ${isActive ? "text-[#141413] font-bold" : "text-[#66635d] hover:text-[#141413]"}`
                   }`}
                 >
                   {link.name}
@@ -291,13 +360,17 @@ export function Navbar() {
               <a
                 href="/demo"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-3 text-xs font-mono tracking-widest uppercase text-amber-900 font-bold border-b border-amber-200/60 bg-amber-50/50 px-2 rounded-xs my-2 flex items-center justify-between"
+                className={`block py-3 text-xs font-mono tracking-widest uppercase font-bold px-2 rounded-xs my-2 flex items-center justify-between border-b ${
+                  isDark
+                    ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                    : "bg-amber-50/50 text-amber-900 border-amber-200/60"
+                }`}
               >
                 <span className="flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                   <span>{headerConfig.demoButtonText || "Demo OS (4 Roles)"}</span>
                 </span>
-                <ArrowRight className="w-3.5 h-3.5 text-amber-600" />
+                <ArrowRight className="w-3.5 h-3.5 text-amber-500" />
               </a>
             )}
           </div>
@@ -305,15 +378,21 @@ export function Navbar() {
           {/* Botones de acción móvil */}
           <div className="pt-3 space-y-2.5">
             {sessionUser ? (
-              <div className="flex items-center justify-between py-2 px-1 border-b border-[#e5e0d5] text-xs font-mono">
-                <span className="text-[11px] font-bold text-emerald-700">● {sessionUser.fullName}</span>
+              <div
+                className={`flex items-center justify-between py-2 px-1 border-b text-xs font-mono ${
+                  isDark ? "border-[#262421]" : "border-[#e5e0d5]"
+                }`}
+              >
+                <span className="text-[11px] font-bold text-emerald-400">● {sessionUser.fullName}</span>
                 <button
                   onClick={() => {
                     clearCurrentSession();
                     setSessionUser(null);
                     window.location.href = "/";
                   }}
-                  className="uppercase text-[10px] font-mono text-[#78736a] hover:text-[#141413]"
+                  className={`uppercase text-[10px] font-mono ${
+                    isDark ? "text-[#a8a398] hover:text-white" : "text-[#78736a] hover:text-[#141413]"
+                  }`}
                 >
                   Cerrar Sesión
                 </button>
@@ -322,7 +401,11 @@ export function Navbar() {
               <a
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block w-full py-3 text-center text-xs font-mono tracking-wider uppercase border border-[#cfc9be] text-[#141413] rounded-xs font-medium"
+                className={`block w-full py-3 text-center text-xs font-mono tracking-wider uppercase rounded-xs font-medium ${
+                  isDark
+                    ? "border border-[#3e3b35] text-[#faf8f5] hover:bg-white/10"
+                    : "border border-[#cfc9be] text-[#141413]"
+                }`}
               >
                 {headerConfig.portalButtonText || "Portal Clínico (Modo Real)"}
               </a>
@@ -333,7 +416,11 @@ export function Navbar() {
                 setMobileMenuOpen(false);
                 handleScrollToBooking();
               }}
-              className="w-full py-3 text-xs font-mono tracking-wider uppercase bg-[#141413] text-[#faf8f5] rounded-xs font-medium shadow-xs"
+              className={`w-full py-3 text-xs font-mono tracking-wider uppercase rounded-xs font-medium shadow-xs ${
+                isDark
+                  ? "bg-[#faf8f5] text-[#141413] hover:bg-white"
+                  : "bg-[#141413] text-[#faf8f5]"
+              }`}
             >
               {headerConfig.bookingButtonText || "Reservar Cita Online"}
             </button>
@@ -342,7 +429,11 @@ export function Navbar() {
               href={createWhatsAppUrl("Hola Centro Dental BeHappy, me gustaría coordinar una hora de atención en Suecia 3580.")}
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full py-2.5 text-center text-xs font-mono tracking-wider uppercase border border-[#cfc9be] text-[#141413] rounded-xs"
+              className={`block w-full py-2.5 text-center text-xs font-mono tracking-wider uppercase rounded-xs ${
+                isDark
+                  ? "border border-[#3e3b35] text-[#a8a398] hover:text-white"
+                  : "border border-[#cfc9be] text-[#141413]"
+              }`}
             >
               Contactar por WhatsApp
             </a>

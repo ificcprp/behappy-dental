@@ -8,13 +8,15 @@ import {
   History,
   CheckCircle,
   FileText,
-  Clock
+  Clock,
+  Palette
 } from "lucide-react";
 
 interface CmsGlobalToolbarProps {
   currentStatus?: "draft" | "published";
   versionTag?: string;
   lastUpdated?: string;
+  colorScheme?: "blanco" | "negro" | "sistema";
   onSaveDraft: () => void;
   onPublish: () => void;
   onOpenHistory: () => void;
@@ -25,6 +27,7 @@ export function CmsGlobalToolbar({
   currentStatus = "published",
   versionTag = "v2.0 Producción",
   lastUpdated,
+  colorScheme = "blanco",
   onSaveDraft,
   onPublish,
   onOpenHistory,
@@ -52,6 +55,11 @@ export function CmsGlobalToolbar({
         <div className="flex items-center gap-1.5 text-[11px] font-mono text-neutral-400 bg-[#18181f] px-2.5 py-1 border border-[#2b2b34]">
           <FileText className="w-3.5 h-3.5 text-purple-400" />
           <span>{versionTag}</span>
+        </div>
+
+        <div className="flex items-center gap-1.5 text-[11px] font-mono text-neutral-300 bg-[#18181f] px-2.5 py-1 border border-[#2b2b34]">
+          <Palette className="w-3.5 h-3.5 text-purple-400" />
+          <span className="capitalize">Tema: {colorScheme}</span>
         </div>
 
         {lastUpdated && (
