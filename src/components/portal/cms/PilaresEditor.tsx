@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { ImageUploadButton } from "./ImageUploadButton";
 import {
   CMSWelcomeSection,
   DEFAULT_WELCOME_SECTION,
@@ -241,6 +242,13 @@ export function PilaresEditor({
                     className="object-cover"
                   />
                 </div>
+              </div>
+              <div className="pt-1.5">
+                <ImageUploadButton
+                  compact
+                  label="Subir foto a la nube"
+                  onUploaded={(url) => handleNewPatientChange("image", url)}
+                />
               </div>
             </div>
 

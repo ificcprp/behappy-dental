@@ -3,7 +3,6 @@ import { MembershipPlansSection } from "@/components/dental/MembershipPlansSecti
 import { DentalPricingCalculator } from "@/components/dental/DentalPricingCalculator";
 import { AppointmentBookingSection } from "@/components/dental/AppointmentBookingSection";
 import { ShieldCheck, ArrowUpRight, CheckCircle2, Heart } from "lucide-react";
-import { createWhatsAppUrl } from "@/data/clinicInfo";
 
 export const metadata: Metadata = {
   title: "Club BeHappy | Planes de Membresía y Suscripción Dental Familiar Ñuñoa",

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { ImageUploadButton } from "./ImageUploadButton";
 import { CMSPromotion } from "@/lib/cmsStore";
 import { Plus, Trash2, Percent } from "lucide-react";
 
@@ -180,6 +181,13 @@ export function CampaignsEditor({
                         className="object-cover"
                       />
                     </div>
+                  </div>
+                  <div className="pt-1.5">
+                    <ImageUploadButton
+                      compact
+                      label="Subir imagen"
+                      onUploaded={(url) => handlePromoChange(idx, "image", url)}
+                    />
                   </div>
                 </div>
 

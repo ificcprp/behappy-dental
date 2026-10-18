@@ -5,7 +5,11 @@ import { TopAnnouncementTicker } from "@/components/dental/TopAnnouncementTicker
 import { Navbar } from "@/components/dental/Navbar";
 import { Footer } from "@/components/dental/Footer";
 import { WhatsAppFloatingButton } from "@/components/dental/WhatsAppFloatingButton";
+import { getPublishedCMS, parseTimeRange } from "@/lib/cmsServer";
+import { DEFAULT_HERO } from "@/lib/cmsStore";
 import "./globals.css";
+
+export const revalidate = 300;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,62 +33,108 @@ export const viewport: Viewport = {
   themeColor: "#faf8f5",
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://behappydental.cl"),
-  title: "Centro Dental BeHappy Ñuñoa | Odontología Avanzada y Citas Online",
-  description:
-    "Centro Dental BeHappy en Ñuñoa (Suecia 3580). Especialistas en Ortodoncia Invisalign, Implantes Dentales, Diseño de Sonrisa, Odontopediatría y Prevención con más de 13 años de experiencia.",
-  keywords: [
-    "centro dental en ñuñoa",
-    "dentista ñuñoa",
-    "invisalign santiago",
-    "implantes dentales ñuñoa",
-    "blanqueamiento dental",
-    "odontologia estetica santiago",
-    "Centro Dental BeHappy"
-  ],
-  authors: [{ name: "Centro Dental BeHappy" }],
-  openGraph: {
-    title: "Centro Dental BeHappy Ñuñoa | Sonrisas Felices",
-    description: "Tratamientos odontológicos avanzados con tecnología de punta en Ñuñoa. Agenda tu hora online.",
-    url: "https://behappydental.cl",
-    siteName: "Centro Dental BeHappy",
-    images: [
-      {
-        url: "/images/brand/logo.png",
-        width: 800,
-        height: 800,
-        alt: "Centro Dental BeHappy Ñuñoa"
-      }
-    ],
-    locale: "es_CL",
-    type: "website",
-  },
-  icons: {
-    icon: "/images/brand/logo.png",
-    apple: "/images/brand/logo.png"
-  }
-};
+const DEFAULT_TITLE = "Centro Dental BeHappy Ñuñoa | Odontología Avanzada y Citas Online";
+const DEFAULT_DESCRIPTION =
+  "Centro Dental BeHappy en Ñuñoa (Suecia 3580). Especialistas en Ortodoncia Invisalign, Implantes Dentales, Diseño de Sonrisa, Odontopediatría y Prevención con más de 13 años de experiencia.";
 
-export default function RootLayout({
+export async function generateMetadata(): Promise<Metadata> {
+  const cms = await getPublishedCMS();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://behappydental.cl";
+  const customHeroTitle = cms.hero?.title && cms.hero.title !== DEFAULT_HERO.title;
+  const title = customHeroTitle ? `${cms.hero.title} | Centro Dental BeHappy Ñuñoa` : DEFAULT_TITLE;
+  const description = cms.hero?.subtitle || DEFAULT_DESCRIPTION;
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title,
+    description,
+    keywords: [
+      "centro dental en ñuñoa",
+      "dentista ñuñoa",
+      "invisalign santiago",
+      "implantes dentales ñuñoa",
+      "blanqueamiento dental",
+      "odontologia estetica santiago",
+      "Centro Dental BeHappy"
+    ],
+    authors: [{ name: cms.clinicInfo.name || "Centro Dental BeHappy" }],
+    openGraph: {
+      title: cms.hero?.title || "Centro Dental BeHappy Ñuñoa | Sonrisas Felices",
+      description,
+      url: siteUrl,
+      siteName: cms.clinicInfo.name || "Centro Dental BeHappy",
+      images: [
+        {
+          url: cms.hero?.bgImage || "/images/brand/logo.png",
+          width: 800,
+          height: 800,
+          alt: cms.clinicInfo.name || "Centro Dental BeHappy Ñuñoa"
+        }
+      ],
+      locale: "es_CL",
+      type: "website",
+    },
+    icons: {
+      icon: "/images/brand/logo.png",
+      apple: "/images/brand/logo.png"
+    }
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cms = await getPublishedCMS();
+  const { clinicInfo } = cms;
+
+  const weekdayHours = parseTimeRange(clinicInfo.hours?.weekdays, { opens: "10:00", closes: "20:00" });
+  const saturdayHours = parseTimeRange(clinicInfo.hours?.saturday, { opens: "10:00", closes: "18:00" });
+  const sundayHours = parseTimeRange(clinicInfo.hours?.sunday, null);
+
+  const openingHoursSpecification: Array<Record<string, unknown>> = [];
+  if (weekdayHours) {
+    openingHoursSpecification.push({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: weekdayHours.opens,
+      closes: weekdayHours.closes,
+    });
+  }
+  if (saturdayHours) {
+    openingHoursSpecification.push({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Saturday"],
+      opens: saturdayHours.opens,
+      closes: saturdayHours.closes,
+    });
+  }
+  if (sundayHours) {
+    openingHoursSpecification.push({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Sunday"],
+      opens: sundayHours.opens,
+      closes: sundayHours.closes,
+    });
+  }
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Dentist",
-    name: "Centro Dental BeHappy",
+    name: clinicInfo.name || "Centro Dental BeHappy",
     image: "https://behappydental.cl/images/brand/logo.png",
     "@id": "https://behappydental.cl",
     url: "https://behappydental.cl",
-    telephone: "+56947578597",
+    telephone: clinicInfo.contact?.phoneClean
+      ? `+${clinicInfo.contact.phoneClean.replace(/^\+/, "")}`
+      : "+56947578597",
     priceRange: "$$",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Suecia 3580, OF. 304",
-      addressLocality: "Ñuñoa",
-      addressRegion: "Región Metropolitana",
+      streetAddress: clinicInfo.address?.street || "Suecia 3580, OF. 304",
+      addressLocality: clinicInfo.address?.commune || "Ñuñoa",
+      addressRegion: clinicInfo.address?.region || "Región Metropolitana",
       addressCountry: "CL",
     },
     geo: {
@@ -92,21 +142,8 @@ export default function RootLayout({
       latitude: -33.4542,
       longitude: -70.6015,
     },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "10:00",
-        closes: "20:00",
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Saturday"],
-        opens: "10:00",
-        closes: "18:00",
-      },
-    ],
-    sameAs: ["https://www.instagram.com/dentalbehappynunoa"],
+    openingHoursSpecification,
+    sameAs: [clinicInfo.contact?.instagram || "https://www.instagram.com/dentalbehappynunoa"],
   };
 
   return (

@@ -16,7 +16,7 @@ import {
   Layers,
   X
 } from "lucide-react";
-import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
+import { WhatsAppLink } from "@/components/dental/WhatsAppLink";
 
 interface ClinicalBudgetPlanProps {
   odontogram: OdontogramTooth[];
@@ -358,15 +358,13 @@ export function ClinicalBudgetPlan({
               </button>
             ) : null}
 
-            <a
-              href={createWhatsAppUrl(whatsappMessage)}
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppLink
+              message={whatsappMessage}
               className="px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-900 font-bold uppercase tracking-wider rounded transition flex items-center gap-1.5 text-xs shadow-sm"
             >
               <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
               <span>Aceptar por WhatsApp</span>
-            </a>
+            </WhatsAppLink>
           </div>
         </div>
       </div>

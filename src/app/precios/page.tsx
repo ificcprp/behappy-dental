@@ -3,7 +3,7 @@ import { MembershipPlansSection } from "@/components/dental/MembershipPlansSecti
 import { DentalPricingCalculator } from "@/components/dental/DentalPricingCalculator";
 import { AppointmentBookingSection } from "@/components/dental/AppointmentBookingSection";
 import { ArrowUpRight, Shield, CreditCard, Receipt } from "lucide-react";
-import { createWhatsAppUrl } from "@/data/clinicInfo";
+import { WhatsAppLink } from "@/components/dental/WhatsAppLink";
 
 export const metadata: Metadata = {
   title: "Precios, Club BeHappy y Aranceles | Centro Dental BeHappy Ñuñoa",
@@ -71,14 +71,12 @@ export default function PreciosPage() {
               </div>
 
               <div className="pt-4">
-                <a
-                  href={createWhatsAppUrl("Hola Centro Dental BeHappy, me gustaría consultar por las opciones de financiamiento en cuotas.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <WhatsAppLink
+                  message="Hola Centro Dental BeHappy, me gustaría consultar por las opciones de financiamiento en cuotas."
                   className="inline-flex items-center gap-1 text-xs font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4"
                 >
                   Consultar cuotas por WhatsApp <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
+                </WhatsAppLink>
               </div>
             </div>
 
@@ -137,14 +135,12 @@ export default function PreciosPage() {
               </div>
 
               <div className="pt-4">
-                <a
-                  href={createWhatsAppUrl("Hola Centro Dental BeHappy, necesito consultar por informes de reembolso Isapre.")}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <WhatsAppLink
+                  message="Hola Centro Dental BeHappy, necesito consultar por informes de reembolso Isapre."
                   className="inline-flex items-center gap-1 text-xs font-mono tracking-wider uppercase text-[#141413] font-semibold underline underline-offset-4"
                 >
                   Solicitar informe previsional <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
+                </WhatsAppLink>
               </div>
             </div>
 

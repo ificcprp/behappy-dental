@@ -2,10 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { getCMSData, CMSData, CMSMembershipPlan, DEFAULT_MEMBERSHIP_PLANS } from "@/lib/cmsStore";
-import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
+import { CLINIC_INFO } from "@/data/clinicInfo";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { useWhatsAppNumber } from "./WhatsAppLink";
 import { Check, ShieldCheck, Zap, Star, ArrowUpRight, HelpCircle, AlertCircle, HeartHandshake, X, CreditCard, Award, Clock } from "lucide-react";
 
 export function MembershipPlansSection() {
+  const waNumber = useWhatsAppNumber();
   const [plans, setPlans] = useState<CMSMembershipPlan[]>(DEFAULT_MEMBERSHIP_PLANS);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
   const [checkoutPlan, setCheckoutPlan] = useState<CMSMembershipPlan | null>(null);
@@ -206,9 +209,10 @@ export function MembershipPlansSection() {
                     href={
                       plan.ctaUrl && plan.ctaUrl.trim() !== ""
                         ? plan.ctaUrl.trim()
-                        : createWhatsAppUrl(
+                        : buildWhatsAppUrl(
                             plan.ctaWhatsappMessage ||
-                              `Hola Centro Dental BeHappy, deseo activar el ${plan.name}.`
+                              `Hola Centro Dental BeHappy, deseo activar el ${plan.name}.`,
+                            waNumber
                           )
                     }
                     target="_blank"

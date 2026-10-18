@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { DEFAULT_ACCOUNTS, setCurrentSession } from "@/lib/authService";
+import { DEFAULT_ACCOUNTS, setCurrentSession, requestServerSession } from "@/lib/authService";
 import { UserRole } from "@/types/auth";
 import { AuthNavbarHeader } from "@/components/auth/AuthNavbarHeader";
 import {
@@ -20,10 +20,12 @@ import {
 export default function DemoPage() {
   const router = useRouter();
 
-  const handleLaunchRole = (role: UserRole) => {
+  const handleLaunchRole = async (role: UserRole) => {
     const account = DEFAULT_ACCOUNTS.find((a) => a.role === role);
     if (account) {
       setCurrentSession(account);
+      // Demo sessions get a read-only portal token (no write access to real data)
+      await requestServerSession(account.email, { demo: true });
       router.push(`/portal?role=${role}`);
     }
   };

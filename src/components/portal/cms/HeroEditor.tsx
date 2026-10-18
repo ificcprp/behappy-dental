@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { CMSHero, DEFAULT_HERO } from "@/lib/cmsStore";
 import { Sparkles, Image as ImageIcon } from "lucide-react";
+import { ImageUploadButton } from "./ImageUploadButton";
 
 interface HeroEditorProps {
   hero: CMSHero;
@@ -172,6 +173,14 @@ export function HeroEditor({ hero, onUpdateHero, presetImages }: HeroEditorProps
                 {img.label}
               </button>
             ))}
+          </div>
+
+          <div className="pt-1">
+            <ImageUploadButton
+              compact
+              label="Subir imagen a la nube"
+              onUploaded={(url) => handleChange("bgImage", url)}
+            />
           </div>
         </div>
       </div>

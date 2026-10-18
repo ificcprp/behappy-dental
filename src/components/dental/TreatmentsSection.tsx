@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { TREATMENTS, CATEGORIES, Treatment } from "@/data/treatments";
 import { getCMSData, CMSData } from "@/lib/cmsStore";
-import { createWhatsAppUrl } from "@/data/clinicInfo";
+import { WhatsAppLink } from "./WhatsAppLink";
 import { MessageCircle, ArrowUpRight } from "lucide-react";
 
 export function TreatmentsSection() {
@@ -146,15 +146,13 @@ export function TreatmentsSection() {
                     Agendar Consulta
                   </button>
 
-                  <a
-                    href={createWhatsAppUrl(`Hola Centro Dental BeHappy, me interesa consultar detalles sobre el tratamiento de ${treatment.name}.`)}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <WhatsAppLink
+                    message={`Hola Centro Dental BeHappy, me interesa consultar detalles sobre el tratamiento de ${treatment.name}.`}
                     className="p-2 border border-[#e5e0d5] hover:border-[#141413] hover:bg-[#faf8f5] text-[#141413] transition"
                     title="Consultar por WhatsApp"
                   >
                     <MessageCircle className="w-4 h-4" />
-                  </a>
+                  </WhatsAppLink>
                 </div>
               </div>
             </div>

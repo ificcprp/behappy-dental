@@ -1,14 +1,24 @@
 import { NextResponse } from "next/server";
 import { DEFAULT_CMS_DATA, CMSData } from "@/lib/cmsStore";
 import { supabase } from "@/lib/supabase";
+import { getSessionFromRequest, isAdminSession } from "@/lib/cmsAuth";
 
 const CMS_TABLE = "site_cms_payloads";
 const CMS_ROW_ID = "current";
+const CMS_DRAFT_ROW_ID = "draft";
 const CMS_VERSIONS_TABLE = "cms_versions";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const isHistoryRequest = searchParams.get("history") === "true";
+  const isDraftRequest = searchParams.get("draft") === "true";
+
+  if ((isHistoryRequest || isDraftRequest) && !isAdminSession(req)) {
+    return NextResponse.json(
+      { success: false, error: "No autorizado. Se requiere sesión administrativa." },
+      { status: 401 }
+    );
+  }
 
   try {
     const isSupabaseReady =
@@ -16,7 +26,25 @@ export async function GET(req: Request) {
       process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co";
 
     if (isSupabaseReady) {
-      // 1. Si solicitan historial de versiones y auditoría
+      // 1. Si solicitan el borrador activo para el editor del portal
+      if (isDraftRequest) {
+        const { data: draftRow, error: dErr } = await supabase
+          .from(CMS_TABLE)
+          .select("*")
+          .eq("id", CMS_DRAFT_ROW_ID)
+          .maybeSingle();
+
+        if (!dErr && draftRow?.full_payload) {
+          return NextResponse.json({
+            success: true,
+            source: "supabase-draft",
+            data: draftRow.full_payload,
+          });
+        }
+        return NextResponse.json({ success: true, source: "none", data: null });
+      }
+
+      // 2. Si solicitan historial de versiones y auditoría
       if (isHistoryRequest) {
         const { data: versions, error: vErr } = await supabase
           .from(CMS_VERSIONS_TABLE)
@@ -33,7 +61,7 @@ export async function GET(req: Request) {
         return NextResponse.json({ success: true, versions: [] });
       }
 
-      // 2. Consulta regular del estado actual del CMS
+      // 3. Consulta regular del estado actual del CMS (solo lectura pública del contenido publicado)
       const { data, error } = await supabase
         .from(CMS_TABLE)
         .select("*")
@@ -77,12 +105,20 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const session = getSessionFromRequest(req);
+  if (!isAdminSession(req) || !session) {
+    return NextResponse.json(
+      { success: false, error: "No autorizado. Inicia sesión como administrador para editar el CMS." },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await req.json();
     const action = body.__action || "publish";
     const versionTag = body.__versionTag || `v-${new Date().toISOString().slice(0, 10)}`;
     const changeSummary = body.__changeSummary || "Actualización desde editor CMS";
-    const userEmail = body.__userEmail || "admin@behappydental.cl";
+    const userEmail = session.email || body.__userEmail || "admin@behappydental.cl";
 
     // Limpiar campos de control antes de persistir payload canónico
     const {
@@ -103,6 +139,37 @@ export async function POST(req: Request) {
         process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co";
 
       if (isSupabaseReady) {
+        // Guardado de Borrador: NO toca la fila de producción ("current") ni el historial de versiones
+        if (action === "save_draft") {
+          const { error: draftErr } = await supabase.from(CMS_TABLE).upsert(
+            {
+              id: CMS_DRAFT_ROW_ID,
+              full_payload: payload,
+              treatments_payload: payload.treatments || [],
+              doctors_payload: payload.doctors || [],
+              contact_payload: payload.clinicInfo || {},
+              announcements_payload: payload.announcements || [],
+              promotions_payload: payload.promotions || [],
+              membership_plans_payload: payload.membershipPlans || [],
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "id" }
+          );
+
+          const draftSaved = !draftErr;
+          if (draftErr) console.warn("Supabase draft upsert warning:", draftErr.message);
+
+          return NextResponse.json({
+            success: true,
+            persistedInCloud: draftSaved,
+            versionRecorded: false,
+            message: draftSaved
+              ? "Borrador guardado en la nube (no visible al público hasta publicar)"
+              : "Borrador guardado localmente (sincronización cloud pendiente)",
+            lastUpdated: new Date().toISOString(),
+          });
+        }
+
         // Manejo de Rollback
         if (action === "rollback" && body.__versionId) {
           const { data: targetVersion, error: rErr } = await supabase
@@ -126,6 +193,9 @@ export async function POST(req: Request) {
               },
               { onConflict: "id" }
             );
+
+            // El rollback reemplaza producción: el borrador anterior queda obsoleto
+            await supabase.from(CMS_TABLE).delete().eq("id", CMS_DRAFT_ROW_ID);
 
             // Registrar el evento de rollback en auditoría
             await supabase.from(CMS_VERSIONS_TABLE).insert({
@@ -163,6 +233,9 @@ export async function POST(req: Request) {
 
         if (!upsertErr) {
           savedToSupabase = true;
+
+          // La publicación reemplaza el borrador: se limpia para evitar restauraciones accidentales
+          await supabase.from(CMS_TABLE).delete().eq("id", CMS_DRAFT_ROW_ID);
 
           // 2. Registrar versión en public.cms_versions si es publicación
           if (action === "publish") {
@@ -202,7 +275,9 @@ export async function POST(req: Request) {
         ? action === "publish"
           ? "Contenido publicado y versionado con éxito en Supabase"
           : "Borrador guardado en la nube"
-        : "Contenido guardado localmente (sincronización cloud pendiente)",
+        : action === "save_draft"
+          ? "Borrador guardado localmente (sincronización cloud pendiente)"
+          : "Contenido guardado localmente (sincronización cloud pendiente)",
       lastUpdated: new Date().toISOString(),
       updatedItemsCount: {
         treatments: payload.treatments?.length || 0,

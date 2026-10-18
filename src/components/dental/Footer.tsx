@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
+import { CLINIC_INFO } from "@/data/clinicInfo";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { getCMSData, CMSData } from "@/lib/cmsStore";
 
 export function Footer() {
@@ -26,6 +27,16 @@ export function Footer() {
   }, []);
 
   if (pathname?.startsWith("/portal") || pathname === "/login" || pathname === "/registro" || pathname === "/demo") return null;
+
+  const phoneClean =
+    (clinicInfo.contact.phoneClean || clinicInfo.contact.phone || "").replace(/[^0-9]/g, "");
+  const whatsappHref = buildWhatsAppUrl("", clinicInfo.contact.whatsappNumber);
+  const mapsHref =
+    clinicInfo.address.googleMapsDirectUrl ||
+    `https://maps.google.com/?q=${encodeURIComponent(
+      `${clinicInfo.address.street} ${clinicInfo.address.commune} ${clinicInfo.address.city}`
+    )}`;
+  const instagramHref = clinicInfo.contact.instagram || "https://www.instagram.com/dentalbehappynunoa";
 
   return (
     <footer className="bg-[#0a0a0c] text-[#f4f4f6] text-xs border-t border-[#1f1f26] pt-16 pb-14">
@@ -121,7 +132,7 @@ export function Footer() {
               </p>
               <p className="pt-1">
                 <strong className="text-white block font-normal">WhatsApp / Teléfono:</strong>
-                <a href={`tel:${clinicInfo.contact.phoneClean}`} className="hover:text-white font-mono">
+                <a href={`tel:${phoneClean}`} className="hover:text-white font-mono">
                   {clinicInfo.contact.phone}
                 </a>
               </p>
@@ -142,7 +153,7 @@ export function Footer() {
             <ul className="space-y-2 text-xs font-mono text-neutral-300">
               <li>
                 <a
-                  href="https://www.instagram.com/dentalbehappynunoa"
+                  href={instagramHref}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition flex items-center gap-1.5"
@@ -152,7 +163,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://api.whatsapp.com/send/?phone=56947578597&text&type=phone_number&app_absent=0"
+                  href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition flex items-center gap-1.5"
@@ -162,7 +173,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://maps.google.com/?q=Suecia+3580+Nunoa+Santiago"
+                  href={mapsHref}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition flex items-center gap-1.5"

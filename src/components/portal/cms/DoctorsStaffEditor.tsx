@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { ImageUploadButton } from "./ImageUploadButton";
 import { Doctor } from "@/data/doctors";
 import {
   Plus,
@@ -313,6 +314,15 @@ export function DoctorsStaffEditor({
                       className="object-cover object-top"
                     />
                   </div>
+                </div>
+                <div className="pt-1">
+                  <ImageUploadButton
+                    compact
+                    label="Subir fotografía a la nube"
+                    onUploaded={(url) =>
+                      setEditingDoctor({ ...editingDoctor, image: url })
+                    }
+                  />
                 </div>
                 <div className="flex flex-wrap gap-1 pt-1">
                   <span className="text-[10px] font-mono text-slate-400 mr-1 self-center">

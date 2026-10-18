@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { ImageUploadButton } from "./ImageUploadButton";
 import { Treatment, TreatmentCategory } from "@/data/treatments";
 import {
   Plus,
@@ -368,6 +369,15 @@ export function TreatmentsCatalogEditor({
                           {img.label}
                         </button>
                       ))}
+                    </div>
+                    <div className="pt-1">
+                      <ImageUploadButton
+                        compact
+                        label="Subir fotografía a la nube"
+                        onUploaded={(url) =>
+                          setEditingTreatment({ ...editingTreatment, image: url })
+                        }
+                      />
                     </div>
                   </div>
 

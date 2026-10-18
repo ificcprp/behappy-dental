@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS public.site_cms_payloads (
 ALTER TABLE public.site_cms_payloads ENABLE ROW LEVEL SECURITY;
 
 -- Lectura pública para que todos los pacientes vean los precios, planes y textos actualizados
+DROP POLICY IF EXISTS "Permitir lectura pública del CMS" ON public.site_cms_payloads;
 CREATE POLICY "Permitir lectura pública del CMS"
     ON public.site_cms_payloads
     FOR SELECT
@@ -28,6 +29,7 @@ CREATE POLICY "Permitir lectura pública del CMS"
     USING (true);
 
 -- Escritura desde API Route (service_role o usuarios autenticados admin)
+DROP POLICY IF EXISTS "Permitir actualización del CMS desde portal administrativo" ON public.site_cms_payloads;
 CREATE POLICY "Permitir actualización del CMS desde portal administrativo"
     ON public.site_cms_payloads
     FOR ALL
@@ -58,12 +60,14 @@ CREATE INDEX IF NOT EXISTS idx_suscripciones_club_phone ON public.suscripciones_
 
 ALTER TABLE public.suscripciones_club ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Permitir registro público de solicitudes al Club BeHappy" ON public.suscripciones_club;
 CREATE POLICY "Permitir registro público de solicitudes al Club BeHappy"
     ON public.suscripciones_club
     FOR INSERT
     TO anon, authenticated
     WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Permitir gestión de suscripciones a personal autenticado" ON public.suscripciones_club;
 CREATE POLICY "Permitir gestión de suscripciones a personal autenticado"
     ON public.suscripciones_club
     FOR ALL

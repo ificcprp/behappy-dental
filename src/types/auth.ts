@@ -9,8 +9,15 @@ export interface UserProfile {
   role: UserRole;
   prevision?: string;
   convenioLevel?: "20%" | "40%" | "60%" | "Ninguno";
-  specialty?: string; // For doctors
+  specialty?: string; // For doctors (e.g. Ortodoncia, Implantes)
+  boxAssigned?: string; // For doctors (e.g. Box 1, Box 2)
+  clinicalRegistrationNumber?: string; // For doctors (Registro SIS / Superintendencia)
+  shift?: string; // For recepcion (e.g. Turno Mañana, Tarde, Completo)
+  assignedDesk?: string; // For recepcion (e.g. Recepción Central Suecia 3580)
+  positionTitle?: string; // For admin (e.g. Dirección Médica, Administración Central)
+  emergencyContact?: string; // For pacientes (Nombre y teléfono de contacto)
   avatarUrl?: string;
+  password?: string; // For credential management and handoff
   createdAt: string;
 }
 

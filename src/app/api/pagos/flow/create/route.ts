@@ -1,25 +1,69 @@
 import { NextResponse } from "next/server";
 import { flowCreateDentalPayment } from "@/infrastructure/payments/flow/client";
 import { supabase } from "@/lib/supabase";
+import { rateLimit, getClientIp } from "@/lib/rateLimit";
+import { flowCreateSchema, firstIssueMessage } from "@/lib/validation";
 
-interface CreatePaymentBody {
-  type: "abono_cita" | "copago_tratamiento" | "membresia_club";
-  amount: number;
-  subject: string;
-  email: string;
+function cloudReady(): boolean {
+  return (
+    !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co"
+  );
+}
+
+async function registerClubSubscriber(params: {
   patientName: string;
-  patientPhone?: string;
   patientRut?: string;
-  treatmentName?: string;
-  doctorName?: string;
-  appointmentId?: string;
+  patientPhone?: string;
+  email: string;
   planId?: string;
-  billingCycle?: "monthly" | "annual";
+  subject: string;
+  amount: number;
+  billingCycle?: string;
+  commerceOrder: string;
+  simulated: boolean;
+}) {
+  if (!cloudReady()) return;
+  try {
+    await supabase.from("suscripciones_club").insert([
+      {
+        titular_name: params.patientName,
+        titular_rut: params.patientRut || null,
+        titular_phone: params.patientPhone || "sin-telefono",
+        titular_email: params.email,
+        plan_id: params.planId || "plan-club",
+        plan_name: params.subject,
+        billing_cycle: params.billingCycle || "monthly",
+        monthly_amount_clp: params.amount,
+        status: params.simulated ? "activa" : "pendiente_activacion",
+        flow_subscription_id: params.commerceOrder,
+        notes: `Checkout ${params.simulated ? "simulado" : "Flow"} · ${params.commerceOrder}`,
+      },
+    ]);
+  } catch (dbErr) {
+    console.warn("Error registering club subscriber:", dbErr);
+  }
 }
 
 export async function POST(request: Request) {
   try {
-    const body: CreatePaymentBody = await request.json();
+    const limit = rateLimit(`flow-create:${getClientIp(request)}`, 10, 60 * 1000);
+    if (!limit.ok) {
+      return NextResponse.json(
+        { error: "Demasiadas solicitudes de pago. Intenta nuevamente en unos minutos." },
+        { status: 429, headers: { "Retry-After": String(limit.retryAfter || 60) } }
+      );
+    }
+
+    const rawBody = await request.json();
+    const parsed = flowCreateSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: `Datos de pago inválidos — ${firstIssueMessage(parsed.error)}` },
+        { status: 400 }
+      );
+    }
+
     const {
       type,
       amount,
@@ -33,21 +77,7 @@ export async function POST(request: Request) {
       appointmentId,
       planId,
       billingCycle,
-    } = body;
-
-    if (!amount || amount < 1000) {
-      return NextResponse.json(
-        { error: "El monto mínimo a procesar es $1.000 CLP." },
-        { status: 400 }
-      );
-    }
-
-    if (!email || !patientName || !subject) {
-      return NextResponse.json(
-        { error: "Email, nombre del paciente y concepto son obligatorios." },
-        { status: 400 }
-      );
-    }
+    } = parsed.data;
 
     const host = request.headers.get("host") || "behappydental.cl";
     const protocol = host.includes("localhost") ? "http" : "https";
@@ -71,7 +101,7 @@ export async function POST(request: Request) {
       const simulatedFlowOrder = Math.floor(100000 + Math.random() * 900000);
 
       // Si viene asociado a una cita, registramos o actualizamos
-      if (appointmentId && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co") {
+      if (appointmentId && cloudReady()) {
         try {
           await supabase.from("citas").update({
             flow_order_id: String(simulatedFlowOrder),
@@ -80,6 +110,21 @@ export async function POST(request: Request) {
         } catch (dbErr) {
           console.warn("Supabase simulator appointment update:", dbErr);
         }
+      }
+
+      if (type === "membresia_club") {
+        await registerClubSubscriber({
+          patientName,
+          patientRut,
+          patientPhone,
+          email,
+          planId,
+          subject,
+          amount,
+          billingCycle,
+          commerceOrder,
+          simulated: true,
+        });
       }
 
       const returnUrlWithParams = `${urlReturn}?token=${simulatedToken}&order=${commerceOrder}&amount=${amount}&subject=${encodeURIComponent(
@@ -116,11 +161,12 @@ export async function POST(request: Request) {
         appointmentId: appointmentId || "",
         planId: planId || "",
         billingCycle: billingCycle || "",
+        commerceOrder,
       },
     });
 
     // Guardar referencia en Supabase si aplica
-    if (appointmentId && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co") {
+    if (appointmentId && cloudReady()) {
       try {
         await supabase.from("citas").update({
           flow_order_id: String(flowResponse.flowOrder),
@@ -129,6 +175,21 @@ export async function POST(request: Request) {
       } catch (dbErr) {
         console.warn("Error updating Supabase with flow order:", dbErr);
       }
+    }
+
+    if (type === "membresia_club") {
+      await registerClubSubscriber({
+        patientName,
+        patientRut,
+        patientPhone,
+        email,
+        planId,
+        subject,
+        amount,
+        billingCycle,
+        commerceOrder,
+        simulated: false,
+      });
     }
 
     const redirectUrl = `${flowResponse.url}?token=${flowResponse.token}`;

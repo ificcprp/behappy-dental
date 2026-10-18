@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
+import { CLINIC_INFO } from "@/data/clinicInfo";
+import { WhatsAppLink } from "./WhatsAppLink";
 import { getCMSData, CMSData, DEFAULT_HEADER_CONFIG } from "@/lib/cmsStore";
 import { getCurrentSession, clearCurrentSession } from "@/lib/authService";
 import { UserProfile } from "@/types/auth";
@@ -436,10 +437,8 @@ export function Navbar() {
               {headerConfig.bookingButtonText || "Reservar Cita Online"}
             </button>
 
-            <a
-              href={createWhatsAppUrl("Hola Centro Dental BeHappy, me gustaría coordinar una hora de atención en Suecia 3580.")}
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppLink
+              message="Hola Centro Dental BeHappy, me gustaría coordinar una hora de atención en Suecia 3580."
               className={`block w-full py-2.5 text-center text-xs font-mono tracking-wider uppercase rounded-xs ${
                 isDark
                   ? "border border-[#3e3b35] text-[#a8a398] hover:text-white"
@@ -447,7 +446,7 @@ export function Navbar() {
               }`}
             >
               Contactar por WhatsApp
-            </a>
+            </WhatsAppLink>
           </div>
         </div>
       )}

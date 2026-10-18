@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { DOCTORS, Doctor } from "@/data/doctors";
 import { getCMSData, CMSData } from "@/lib/cmsStore";
-import { createWhatsAppUrl } from "@/data/clinicInfo";
 
 export function DoctorsSection() {
   const [doctorsList, setDoctorsList] = useState<Doctor[]>(DOCTORS);

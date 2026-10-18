@@ -6,6 +6,8 @@ import {
   saveCMSData,
   publishCMSData,
   resetCMSData,
+  syncCMSFromServer,
+  syncCMSDraftFromServer,
   CMSData,
   DEFAULT_MEMBERSHIP_PLANS,
   DEFAULT_HERO,
@@ -100,7 +102,25 @@ export function SiteCmsEditor() {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
     setCmsData(getCMSData());
+    (async () => {
+      // Orden garantizado: primero producción, luego el borrador (si existe) tiene prioridad en el editor
+      await syncCMSFromServer();
+      const draft = await syncCMSDraftFromServer();
+      if (mounted) setCmsData(draft || getCMSData());
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleAuthError = () => {
+      triggerToast("⚠ Sin sesión administrativa válida: los cambios quedan locales. Vuelve a iniciar sesión para sincronizar");
+    };
+    window.addEventListener("behappy_cms_auth_error", handleAuthError);
+    return () => window.removeEventListener("behappy_cms_auth_error", handleAuthError);
   }, []);
 
   const triggerToast = (msg: string) => {
@@ -108,7 +128,7 @@ export function SiteCmsEditor() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Guardar Borrador (Sin alterar producción)
+  // Guardar Borrador (no altera la versión publicada en producción)
   const handleSaveDraft = () => {
     const updated = saveCMSData(cmsData, {
       status: "draft",
@@ -116,7 +136,7 @@ export function SiteCmsEditor() {
       changeSummary: "Borrador de cambios en preparación",
     });
     setCmsData(updated);
-    triggerToast("✓ Borrador guardado exitosamente");
+    triggerToast("✓ Borrador guardado (solo visible para el equipo, aún sin publicar)");
   };
 
   // Publicar Cambios en Producción
@@ -223,7 +243,7 @@ export function SiteCmsEditor() {
           onChange={(updated) => {
             const next = { ...cmsData, headerConfig: updated };
             setCmsData(next);
-            saveCMSData(next);
+            saveCMSData(next, { status: "draft" });
             triggerToast("✓ Estilo de cabecera y navegación actualizado");
           }}
         />
@@ -235,7 +255,7 @@ export function SiteCmsEditor() {
           onUpdateHero={(updated) => {
             const next = { ...cmsData, hero: updated };
             setCmsData(next);
-            saveCMSData(next);
+            saveCMSData(next, { status: "draft" });
           }}
           presetImages={CLINIC_PRESET_IMAGES.hero}
         />
@@ -247,7 +267,7 @@ export function SiteCmsEditor() {
           onUpdateWelcomeSection={(updated) => {
             const next = { ...cmsData, welcomeSection: updated };
             setCmsData(next);
-            saveCMSData(next);
+            saveCMSData(next, { status: "draft" });
           }}
           presetImages={CLINIC_PRESET_IMAGES.hero}
         />
@@ -259,7 +279,7 @@ export function SiteCmsEditor() {
           onUpdatePreventionSection={(updated) => {
             const next = { ...cmsData, preventionSection: updated };
             setCmsData(next);
-            saveCMSData(next);
+            saveCMSData(next, { status: "draft" });
           }}
         />
       )}
@@ -270,7 +290,7 @@ export function SiteCmsEditor() {
           onUpdatePlans={(updated) => {
             const next = { ...cmsData, membershipPlans: updated };
             setCmsData(next);
-            saveCMSData(next);
+            saveCMSData(next, { status: "draft" });
           }}
         />
       )}
@@ -281,7 +301,7 @@ export function SiteCmsEditor() {
           onUpdateTreatments={(updated) => {
             const next = { ...cmsData, treatments: updated };
             setCmsData(next);
-            saveCMSData(next);
+            saveCMSData(next, { status: "draft" });
             triggerToast("✓ Catálogo de tratamientos actualizado");
           }}
           presetImages={CLINIC_PRESET_IMAGES.treatments}
@@ -294,7 +314,7 @@ export function SiteCmsEditor() {
           onUpdateDoctors={(updated) => {
             const next = { ...cmsData, doctors: updated };
             setCmsData(next);
-            saveCMSData(next);
+            saveCMSData(next, { status: "draft" });
             triggerToast("✓ Staff médico actualizado");
           }}
           presetImages={CLINIC_PRESET_IMAGES.doctors}
@@ -307,7 +327,7 @@ export function SiteCmsEditor() {
           onUpdatePromotions={(updated) => {
             const next = { ...cmsData, promotions: updated };
             setCmsData(next);
-            saveCMSData(next);
+            saveCMSData(next, { status: "draft" });
             triggerToast("✓ Campañas actualizadas");
           }}
         />
@@ -321,7 +341,7 @@ export function SiteCmsEditor() {
             setCmsData(next);
           }}
           onSave={() => {
-            saveCMSData(cmsData);
+            saveCMSData(cmsData, { status: "draft" });
             triggerToast("✓ Canales oficiales y horarios guardados");
           }}
         />
@@ -333,7 +353,7 @@ export function SiteCmsEditor() {
           onUpdateAnnouncements={(updated) => {
             const next = { ...cmsData, announcements: updated };
             setCmsData(next);
-            saveCMSData(next);
+            saveCMSData(next, { status: "draft" });
             triggerToast("✓ Anuncios marquesina actualizados");
           }}
         />
@@ -345,7 +365,7 @@ export function SiteCmsEditor() {
           onUpdateAuthPortal={(updated) => {
             const next = { ...cmsData, authPortal: updated };
             setCmsData(next);
-            saveCMSData(next);
+            saveCMSData(next, { status: "draft" });
             triggerToast("✓ Portal de Acceso actualizado");
           }}
           triggerToast={triggerToast}

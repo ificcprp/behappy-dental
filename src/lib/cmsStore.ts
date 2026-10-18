@@ -425,6 +425,24 @@ function normalizeLegacySeguroTerms(data: CMSData): CMSData {
   return data;
 }
 
+function mergeIncomingCMS(parsed: Partial<CMSData>): CMSData {
+  return normalizeLegacySeguroTerms({
+    ...DEFAULT_CMS_DATA,
+    ...parsed,
+    authPortal: parsed.authPortal ? { ...DEFAULT_AUTH_PORTAL, ...parsed.authPortal } : DEFAULT_AUTH_PORTAL,
+    headerConfig: parsed.headerConfig ? { ...DEFAULT_HEADER_CONFIG, ...parsed.headerConfig } : DEFAULT_HEADER_CONFIG,
+    membershipPlans:
+      parsed.membershipPlans && parsed.membershipPlans.length > 0
+        ? parsed.membershipPlans
+        : DEFAULT_MEMBERSHIP_PLANS
+  });
+}
+
+function persistIncomingCMS(merged: CMSData): void {
+  localStorage.setItem(STORAGE_CMS_KEY, JSON.stringify(merged));
+  window.dispatchEvent(new CustomEvent(CMS_CHANGE_EVENT, { detail: merged }));
+}
+
 export async function syncCMSFromServer(): Promise<CMSData | null> {
   if (typeof window === "undefined") return null;
   try {
@@ -432,18 +450,29 @@ export async function syncCMSFromServer(): Promise<CMSData | null> {
     if (!res.ok) return null;
     const json = await res.json();
     if (json?.success && json?.source === "supabase" && json?.data) {
-      const merged: CMSData = normalizeLegacySeguroTerms({
-        ...DEFAULT_CMS_DATA,
-        ...json.data,
-        authPortal: json.data.authPortal ? { ...DEFAULT_AUTH_PORTAL, ...json.data.authPortal } : DEFAULT_AUTH_PORTAL,
-        headerConfig: json.data.headerConfig ? { ...DEFAULT_HEADER_CONFIG, ...json.data.headerConfig } : DEFAULT_HEADER_CONFIG,
-        membershipPlans:
-          json.data.membershipPlans && json.data.membershipPlans.length > 0
-            ? json.data.membershipPlans
-            : DEFAULT_MEMBERSHIP_PLANS
-      });
-      localStorage.setItem(STORAGE_CMS_KEY, JSON.stringify(merged));
-      window.dispatchEvent(new CustomEvent(CMS_CHANGE_EVENT, { detail: merged }));
+      const merged = mergeIncomingCMS(json.data);
+      persistIncomingCMS(merged);
+      return merged;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Descarga el BORRADOR en la nube (solo administradores autenticados).
+ * Si no hay sesión administrativa válida, retorna null silenciosamente.
+ */
+export async function syncCMSDraftFromServer(): Promise<CMSData | null> {
+  if (typeof window === "undefined") return null;
+  try {
+    const res = await fetch(`/api/cms?draft=true&t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (json?.success && json?.source === "supabase-draft" && json?.data) {
+      const merged = mergeIncomingCMS(json.data);
+      persistIncomingCMS(merged);
       return merged;
     }
     return null;
@@ -507,10 +536,12 @@ export function saveCMSData(data: Partial<CMSData>, options: SaveCMSOptions = {}
   if (typeof window === "undefined") return DEFAULT_CMS_DATA;
   try {
     const current = getCMSData();
+    const nextStatus: "draft" | "published" =
+      options.status || current.currentStatus || "published";
     const updated: CMSData = {
       ...current,
       ...data,
-      currentStatus: options.status || current.currentStatus || "published",
+      currentStatus: nextStatus,
       versionTag: options.versionTag || current.versionTag,
       auditSummary: options.changeSummary || current.auditSummary,
       lastUpdated: new Date().toISOString()
@@ -526,14 +557,20 @@ export function saveCMSData(data: Partial<CMSData>, options: SaveCMSOptions = {}
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...updated,
-        __action: options.status === "draft" ? "save_draft" : "publish",
+        __action: nextStatus === "draft" ? "save_draft" : "publish",
         __versionTag: options.versionTag || `v-${new Date().toISOString().slice(0, 10)}`,
         __changeSummary: options.changeSummary || "Actualización desde editor CMS",
         __userEmail: options.userEmail || "admin@behappydental.cl"
       })
-    }).catch(() => {
-      // Offline or network error handled gracefully
-    });
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          window.dispatchEvent(new CustomEvent("behappy_cms_auth_error"));
+        }
+      })
+      .catch(() => {
+        // Offline or network error handled gracefully
+      });
 
     return updated;
   } catch (err) {

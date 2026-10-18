@@ -40,8 +40,11 @@ export async function POST(request: Request) {
     if (paymentStatus.status === 2) {
       const opt = paymentStatus.optional as Record<string, string> | undefined;
       const appointmentId = opt?.appointmentId;
+      const cloudReady =
+        process.env.NEXT_PUBLIC_SUPABASE_URL &&
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co";
 
-      if (appointmentId && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co") {
+      if (appointmentId && cloudReady) {
         try {
           await supabase
             .from("citas")
@@ -53,6 +56,18 @@ export async function POST(request: Request) {
             .eq("id", appointmentId);
         } catch (dbErr) {
           console.warn("Error updating appointment payment in Supabase:", dbErr);
+        }
+      }
+
+      // Activación de suscripciones del Club BeHappy pagadas por Flow
+      if (opt?.type === "membresia_club" && opt.commerceOrder && cloudReady) {
+        try {
+          await supabase
+            .from("suscripciones_club")
+            .update({ status: "activa" })
+            .eq("flow_subscription_id", opt.commerceOrder);
+        } catch (dbErr) {
+          console.warn("Error activating club subscriber in Supabase:", dbErr);
         }
       }
     }

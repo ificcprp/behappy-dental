@@ -13,7 +13,7 @@ import {
   InformedConsent,
   DentalBudget
 } from "@/types/auth";
-import { createWhatsAppUrl } from "@/data/clinicInfo";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import {
   getCurrentSession,
   setCurrentSession,
@@ -25,6 +25,7 @@ import {
 import {
   getStoredAppointments,
   addStoredAppointment,
+  syncAppointmentToCloud,
   updateStoredAppointmentStatus,
   getStoredClinicalRecords,
   addStoredClinicalRecord,
@@ -34,6 +35,7 @@ import {
   addStoredConsent,
   getStoredBudgets,
   addStoredBudget,
+  syncClinicalFromServer,
   CLINICAL_CHANGE_EVENT
 } from "@/lib/clinicalStore";
 import { SiteCmsEditor } from "@/components/portal/SiteCmsEditor";
@@ -72,6 +74,7 @@ import { AnatomicalOdontogram } from "@/components/portal/AnatomicalOdontogram";
 import { ClinicalDocumentModal } from "@/components/portal/ClinicalDocumentModal";
 import { ClinicalBudgetPlan } from "@/components/portal/ClinicalBudgetPlan";
 import { InformedConsentModal } from "@/components/portal/InformedConsentModal";
+import { AdminUserManagement } from "@/components/portal/AdminUserManagement";
 
 function PortalContent() {
   const router = useRouter();
@@ -91,25 +94,6 @@ function PortalContent() {
 
   // Admin Navigation Sub-tab
   const [adminTab, setAdminTab] = useState<"dashboard" | "cms" | "citas" | "usuarios">(initialTabParam || "dashboard");
-  const [userSearch, setUserSearch] = useState("");
-  const [showNewUserModal, setShowNewUserModal] = useState(false);
-  const [newUserData, setNewUserData] = useState<{
-    fullName: string;
-    email: string;
-    rut: string;
-    phone: string;
-    role: UserRole;
-    prevision: string;
-    password?: string;
-  }>({
-    fullName: "",
-    email: "",
-    rut: "",
-    phone: "",
-    role: "paciente",
-    prevision: "Fonasa",
-    password: "admin"
-  });
 
   // Patient Sub-tabs
   const [patientTab, setPatientTab] = useState<"citas" | "ficha" | "odontograma" | "presupuesto" | "consentimientos" | "convenio">("citas");
@@ -168,6 +152,15 @@ function PortalContent() {
   // Admin user list
   const [userList, setUserList] = useState<UserProfile[]>([]);
 
+  useEffect(() => {
+    const handleUsersUpdate = (e: any) => {
+      if (e.detail) setUserList(e.detail);
+      else setUserList(getRegisteredUsers());
+    };
+    window.addEventListener("behappy_users_updated", handleUsersUpdate);
+    return () => window.removeEventListener("behappy_users_updated", handleUsersUpdate);
+  }, []);
+
   // 1. Session verification & authentication gate
   useEffect(() => {
     const session = getCurrentSession();
@@ -193,7 +186,21 @@ function PortalContent() {
     };
     syncClinical();
     window.addEventListener(CLINICAL_CHANGE_EVENT, syncClinical);
-    return () => window.removeEventListener(CLINICAL_CHANGE_EVENT, syncClinical);
+
+    // Staff sessions pull real cloud data (citas + fichas) periodically
+    const session = getCurrentSession();
+    let interval: ReturnType<typeof setInterval> | undefined;
+    if (session && session.role !== "paciente") {
+      void syncClinicalFromServer();
+      interval = setInterval(() => {
+        void syncClinicalFromServer();
+      }, 45000);
+    }
+
+    return () => {
+      window.removeEventListener(CLINICAL_CHANGE_EVENT, syncClinical);
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   // Logout handler
@@ -231,7 +238,7 @@ function PortalContent() {
     e.preventDefault();
     if (!walkinName) return;
 
-    addStoredAppointment({
+    const appointment = addStoredAppointment({
       date: "Hoy",
       time: "Ahora (Walk-in)",
       doctorName: walkinDoctor,
@@ -243,6 +250,8 @@ function PortalContent() {
       patientName: walkinName,
       patientPhone: walkinPhone || "Sin teléfono"
     });
+
+    syncAppointmentToCloud(appointment);
 
     setShowWalkinModal(false);
     toast.success(`Paciente ${walkinName} ingresado a sala de espera`);
@@ -270,40 +279,6 @@ function PortalContent() {
     const currentIdx = statuses.indexOf(tooth.status);
     const nextStatus = statuses[(currentIdx + 1) % statuses.length];
     updateStoredToothStatus(tooth.toothNumber, nextStatus);
-  };
-
-  // Admin Change Role
-  const handleAdminRoleChange = (userId: string, targetRole: UserRole) => {
-    updateUserRole(userId, targetRole);
-    setUserList(getRegisteredUsers());
-    toast.success(`Rol actualizado a: ${targetRole}`);
-  };
-
-  // Admin Create New User
-  const handleCreateUser = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newUserData.email || !newUserData.fullName) return;
-    registerNewUser({
-      fullName: newUserData.fullName,
-      email: newUserData.email,
-      password: newUserData.password || "BeHappy2026!",
-      rut: newUserData.rut || "",
-      phone: newUserData.phone || "",
-      role: newUserData.role,
-      prevision: newUserData.prevision,
-    });
-    setUserList(getRegisteredUsers());
-    setShowNewUserModal(false);
-    toast.success(`Usuario ${newUserData.fullName} registrado correctamente`);
-    setNewUserData({
-      fullName: "",
-      email: "",
-      rut: "",
-      phone: "",
-      role: "paciente",
-      prevision: "Fonasa",
-      password: ""
-    });
   };
 
   // Loading Screen (Prevents any unauthorized visual leak)
@@ -454,7 +429,7 @@ function PortalContent() {
                 </a>
 
                 <a
-                  href={createWhatsAppUrl(`Hola Centro Dental BeHappy, soy ${currentUser.fullName} y tengo una consulta sobre mi tratamiento.`)}
+                  href={buildWhatsAppUrl(`Hola Centro Dental BeHappy, soy ${currentUser.fullName} y tengo una consulta sobre mi tratamiento.`)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-4 py-2.5 border border-slate-300 hover:border-slate-800 bg-white text-slate-800 text-xs font-mono tracking-wider uppercase rounded transition flex items-center gap-1.5 shadow-2xs"
@@ -650,7 +625,7 @@ function PortalContent() {
                           </button>
 
                           <a
-                            href={createWhatsAppUrl(`Hola Centro Dental BeHappy, deseo coordinar mi cita de ${item.treatmentName} con ${item.doctorName}.`)}
+                            href={buildWhatsAppUrl(`Hola Centro Dental BeHappy, deseo coordinar mi cita de ${item.treatmentName} con ${item.doctorName}.`)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-3 py-1.5 border border-slate-300 hover:border-slate-800 rounded text-[10px] font-mono uppercase tracking-wider text-slate-700 transition bg-white text-center"
@@ -1163,7 +1138,7 @@ function PortalContent() {
                       </button>
 
                       <a
-                        href={createWhatsAppUrl(`¡Hola ${item.patientName}! Le recordamos su cita de ${item.treatmentName} en BeHappy Ñuñoa para hoy a las ${item.time} hrs. ¿Nos confirma su asistencia?`)}
+                        href={buildWhatsAppUrl(`¡Hola ${item.patientName}! Le recordamos su cita de ${item.treatmentName} en BeHappy Ñuñoa para hoy a las ${item.time} hrs. ¿Nos confirma su asistencia?`)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-3 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-xs font-mono uppercase text-slate-800 transition bg-white"
@@ -1536,164 +1511,7 @@ function PortalContent() {
 
               {/* TAB 4: USERS & ROLES */}
               {adminTab === "usuarios" && (
-                <div className="space-y-4">
-                  <div className="bg-white border border-slate-200 rounded-lg p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs">
-                    <div className="relative flex-1 max-w-sm">
-                      <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                      <input
-                        type="text"
-                        placeholder="Buscar usuario por nombre o correo..."
-                        value={userSearch}
-                        onChange={(e) => setUserSearch(e.target.value)}
-                        className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
-                      />
-                    </div>
-
-                    <button
-                      onClick={() => setShowNewUserModal(true)}
-                      className="px-4 py-2 bg-slate-900 hover:bg-black text-white font-mono text-xs uppercase tracking-wider rounded font-bold flex items-center justify-center gap-1.5 shadow-sm transition"
-                    >
-                      <UserPlus className="w-4 h-4" />
-                      <span>Crear Usuario</span>
-                    </button>
-                  </div>
-
-                  <div className="bg-white border border-slate-200 rounded-lg overflow-x-auto shadow-xs">
-                    <table className="w-full text-left text-xs font-mono">
-                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase">
-                        <tr>
-                          <th className="p-3">Nombre & RUT</th>
-                          <th className="p-3">Correo & Teléfono</th>
-                          <th className="p-3">Previsión</th>
-                          <th className="p-3">Rol Asignado</th>
-                          <th className="p-3 text-right">Modificar Rol</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {userList
-                          .filter((u) =>
-                            u.fullName.toLowerCase().includes(userSearch.toLowerCase()) ||
-                            u.email.toLowerCase().includes(userSearch.toLowerCase())
-                          )
-                          .map((u) => (
-                            <tr key={u.id} className="hover:bg-slate-50/60 transition">
-                              <td className="p-3">
-                                <div className="font-semibold text-slate-900">{u.fullName}</div>
-                                <div className="text-[10px] text-slate-500">{u.rut || "Sin RUT"}</div>
-                              </td>
-                              <td className="p-3">
-                                <div className="text-slate-800">{u.email}</div>
-                                <div className="text-[10px] text-slate-500">{u.phone || "Sin teléfono"}</div>
-                              </td>
-                              <td className="p-3 text-slate-700">
-                                {u.prevision || "Particular"}
-                              </td>
-                              <td className="p-3">
-                                <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${roleLabels[u.role]?.color || "bg-slate-100 text-slate-700 border-slate-200"}`}>
-                                  {u.role}
-                                </span>
-                              </td>
-                              <td className="p-3 text-right">
-                                <select
-                                  value={u.role}
-                                  onChange={(e) => handleAdminRoleChange(u.id, e.target.value as UserRole)}
-                                  className="px-2 py-1 bg-white border border-slate-300 rounded text-slate-800 text-[11px] font-mono focus:outline-none focus:border-slate-900"
-                                >
-                                  <option value="paciente">Paciente</option>
-                                  <option value="doctor">Doctor</option>
-                                  <option value="recepcion">Recepción</option>
-                                  <option value="admin">Admin</option>
-                                </select>
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Modal Create User */}
-                  {showNewUserModal && (
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-                      <div className="bg-white border border-slate-200 rounded-lg max-w-md w-full p-6 space-y-4 shadow-xl">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                          <h3 className="text-base font-semibold text-slate-900">Crear Nuevo Usuario</h3>
-                          <button onClick={() => setShowNewUserModal(false)} className="text-slate-400 hover:text-slate-800">
-                            <X className="w-5 h-5" />
-                          </button>
-                        </div>
-
-                        <form onSubmit={handleCreateUser} className="space-y-3">
-                          <div>
-                            <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1">Nombre Completo *</label>
-                            <input
-                              type="text"
-                              required
-                              value={newUserData.fullName}
-                              onChange={(e) => setNewUserData({ ...newUserData, fullName: e.target.value })}
-                              placeholder="Ej: Carolina Morales Silva"
-                              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1">Correo Electrónico *</label>
-                            <input
-                              type="email"
-                              required
-                              value={newUserData.email}
-                              onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
-                              placeholder="correo@ejemplo.cl"
-                              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono"
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1">RUT</label>
-                              <input
-                                type="text"
-                                value={newUserData.rut}
-                                onChange={(e) => setNewUserData({ ...newUserData, rut: e.target.value })}
-                                placeholder="12.345.678-9"
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1">Rol</label>
-                              <select
-                                value={newUserData.role}
-                                onChange={(e) => setNewUserData({ ...newUserData, role: e.target.value as UserRole })}
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono"
-                              >
-                                <option value="paciente">Paciente</option>
-                                <option value="doctor">Doctor</option>
-                                <option value="recepcion">Recepción</option>
-                                <option value="admin">Admin</option>
-                              </select>
-                            </div>
-                          </div>
-
-                          <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-                            <button
-                              type="button"
-                              onClick={() => setShowNewUserModal(false)}
-                              className="px-4 py-2 border border-slate-300 rounded text-xs font-mono uppercase text-slate-600"
-                            >
-                              Cancelar
-                            </button>
-                            <button
-                              type="submit"
-                              className="px-5 py-2 bg-slate-900 hover:bg-black text-white font-bold text-xs font-mono uppercase rounded shadow-sm"
-                            >
-                              Guardar Usuario
-                            </button>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
+                <AdminUserManagement currentUser={currentUser} />
               )}
 
             </div>

@@ -58,6 +58,44 @@ export function addStoredAppointment(
   return newAppointment;
 }
 
+const PORTAL_TO_SERVER_STATUS: Record<PatientAppointment["status"], string> = {
+  pendiente: "solicitada",
+  confirmada: "confirmada",
+  en_espera: "confirmada",
+  en_box: "confirmada",
+  completada: "atendida",
+  cancelada: "cancelada",
+};
+
+const SERVER_TO_PORTAL_STATUS: Record<string, PatientAppointment["status"]> = {
+  solicitada: "pendiente",
+  confirmada: "confirmada",
+  en_espera: "en_espera",
+  en_box: "en_box",
+  atendida: "completada",
+  completada: "completada",
+  cancelada: "cancelada",
+};
+
+export function syncAppointmentToCloud(appointment: PatientAppointment) {
+  if (typeof window === "undefined") return;
+  fetch("/api/citas", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      patient_name: appointment.patientName || "Paciente presencial",
+      patient_phone: appointment.patientPhone || "sin-registro",
+      patient_email: appointment.patientEmail || null,
+      doctor_name: appointment.doctorName,
+      treatment_name: appointment.treatmentName,
+      preferred_date: appointment.date,
+      preferred_time_slot: appointment.time,
+      notes: appointment.notes || null,
+      utm_source: "walkin_portal",
+    }),
+  }).catch(() => {});
+}
+
 export function updateStoredAppointmentStatus(
   id: string,
   newStatus: PatientAppointment["status"]
@@ -66,11 +104,11 @@ export function updateStoredAppointmentStatus(
   const updated = current.map((a) => (a.id === id ? { ...a, status: newStatus } : a));
   saveStoredAppointments(updated);
 
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && id.startsWith("srv-")) {
     fetch("/api/citas", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status: newStatus }),
+      body: JSON.stringify({ id: id.slice(4), status: PORTAL_TO_SERVER_STATUS[newStatus] }),
     }).catch(() => {});
   }
 
@@ -245,4 +283,120 @@ export function addStoredBudget(budget: DentalBudget): DentalBudget {
   const updated = [budget, ...current.filter((b) => b.id !== budget.id)];
   saveStoredBudgets(updated);
   return budget;
+}
+
+/* =========================================================================
+   6. CLOUD SYNC (STAFF SESSIONS ONLY)
+   ========================================================================= */
+
+interface ServerCitaRow {
+  id: string;
+  patient_name?: string | null;
+  patient_phone?: string | null;
+  patient_email?: string | null;
+  doctor_name?: string | null;
+  treatment_name?: string | null;
+  preferred_date?: string | null;
+  preferred_time_slot?: string | null;
+  notes?: string | null;
+  status?: string | null;
+  created_at?: string | null;
+}
+
+interface ServerRecordRow {
+  id: string;
+  patient_id?: string | null;
+  doctor_name?: string | null;
+  diagnosis?: string | null;
+  treatment_performed?: string | null;
+  prescription?: string | null;
+  next_step?: string | null;
+  created_at?: string | null;
+}
+
+function mapServerCita(row: ServerCitaRow): PatientAppointment {
+  return {
+    id: `srv-${row.id}`,
+    date: row.preferred_date || (row.created_at || "").slice(0, 10),
+    time: row.preferred_time_slot || "Por coordinar",
+    doctorName: row.doctor_name || "Primer especialista disponible",
+    treatmentName: row.treatment_name || "Evaluación General",
+    status: SERVER_TO_PORTAL_STATUS[String(row.status)] || "pendiente",
+    patientName: row.patient_name || "Paciente",
+    patientPhone: row.patient_phone || undefined,
+    patientEmail: row.patient_email || undefined,
+    notes: row.notes || undefined,
+  };
+}
+
+function mapServerRecord(row: ServerRecordRow): ClinicalRecord {
+  return {
+    id: `srv-${row.id}`,
+    patientId: row.patient_id || "paciente_anonimo",
+    doctorName: row.doctor_name || "Especialista Tratante",
+    date: (row.created_at || new Date().toISOString()).slice(0, 10),
+    diagnosis: row.diagnosis || "Sin diagnóstico registrado",
+    treatmentPerformed: row.treatment_performed || "Sin procedimiento registrado",
+    prescription: row.prescription || undefined,
+    nextStep: row.next_step || undefined,
+  };
+}
+
+function appointmentDedupeKey(a: PatientAppointment): string {
+  return `${(a.patientName || "").trim().toLowerCase()}|${a.date}|${a.treatmentName.trim().toLowerCase()}`;
+}
+
+function recordDedupeKey(r: ClinicalRecord): string {
+  return `${r.patientId.trim().toLowerCase()}|${r.diagnosis.trim().toLowerCase()}|${r.treatmentPerformed.trim().toLowerCase()}`;
+}
+
+export async function syncClinicalFromServer(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+
+  try {
+    const [citasRes, recordsRes] = await Promise.all([
+      fetch("/api/citas", { cache: "no-store" }),
+      fetch("/api/clinica/records", { cache: "no-store" }),
+    ]);
+
+    let changed = false;
+
+    if (citasRes.ok) {
+      const json = await citasRes.json().catch(() => null);
+      if (json?.success && Array.isArray(json.citas)) {
+        const serverAppointments = (json.citas as ServerCitaRow[]).map(mapServerCita);
+        const serverIds = new Set(serverAppointments.map((a) => a.id));
+        const serverKeys = new Set(serverAppointments.map(appointmentDedupeKey));
+        const current = getStoredAppointments();
+        const kept = current.filter((a) => {
+          if (serverIds.has(a.id)) return false;
+          if (a.id.startsWith("srv-")) return true;
+          return !serverKeys.has(appointmentDedupeKey(a));
+        });
+        saveStoredAppointments([...serverAppointments, ...kept]);
+        changed = true;
+      }
+    }
+
+    if (recordsRes.ok) {
+      const json = await recordsRes.json().catch(() => null);
+      if (json?.success && Array.isArray(json.records)) {
+        const serverRecords = (json.records as ServerRecordRow[]).map(mapServerRecord);
+        const serverIds = new Set(serverRecords.map((r) => r.id));
+        const serverKeys = new Set(serverRecords.map(recordDedupeKey));
+        const current = getStoredClinicalRecords();
+        const kept = current.filter((r) => {
+          if (serverIds.has(r.id)) return false;
+          if (r.id.startsWith("srv-")) return true;
+          return !serverKeys.has(recordDedupeKey(r));
+        });
+        saveStoredClinicalRecords([...serverRecords, ...kept]);
+        changed = true;
+      }
+    }
+
+    return changed;
+  } catch {
+    return false;
+  }
 }

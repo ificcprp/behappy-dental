@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { authenticateUser, registerNewUser } from "@/lib/authService";
+import { authenticateUser, registerNewUser, requestServerSession } from "@/lib/authService";
 import { formatRut } from "@/lib/rutValidator";
 import { AuthNavbarHeader } from "@/components/auth/AuthNavbarHeader";
 import { getCMSData, CMSData, DEFAULT_AUTH_PORTAL } from "@/lib/cmsStore";
@@ -67,7 +67,7 @@ function LoginContent() {
   };
 
   // Handle Login Submit
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(null);
     setLoginLoading(true);
@@ -79,14 +79,15 @@ function LoginContent() {
       return;
     }
 
-    setTimeout(() => {
-      setLoginLoading(false);
-      router.push(`/portal?role=${user.role}`);
-    }, 300);
+    // Ensure the signed server session cookie exists before entering the portal
+    await requestServerSession(user.email, { password });
+
+    setLoginLoading(false);
+    router.push(`/portal?role=${user.role}`);
   };
 
   // Handle Register Submit
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegError(null);
     setRegLoading(true);
@@ -106,15 +107,17 @@ function LoginContent() {
         prevision: regData.prevision,
         password: regData.password || "BeHappy2026!",
         role: "paciente",
+        setAsActiveSession: true,
       });
 
+      // Self-registered patients live in localStorage: issue a portal-only server session
+      await requestServerSession(user.email, { demo: true });
+
+      setRegLoading(false);
+      setRegSuccess(true);
       setTimeout(() => {
-        setRegLoading(false);
-        setRegSuccess(true);
-        setTimeout(() => {
-          router.push(`/portal?role=${user.role}`);
-        }, 500);
-      }, 400);
+        router.push(`/portal?role=${user.role}`);
+      }, 500);
     } catch (err: any) {
       setRegLoading(false);
       setRegError(err?.message || "Ocurrió un error al registrar la ficha. Intente nuevamente.");

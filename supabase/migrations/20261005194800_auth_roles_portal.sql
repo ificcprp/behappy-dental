@@ -3,7 +3,11 @@
 -- ==============================================================================
 
 -- 1. Tipo Enum para Roles de Usuario
-CREATE TYPE user_role AS ENUM ('paciente', 'doctor', 'recepcion', 'admin');
+DO $$ BEGIN
+    CREATE TYPE user_role AS ENUM ('paciente', 'doctor', 'recepcion', 'admin');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- 2. Tabla Perfiles de Usuario (Extensión de auth.users de Supabase)
 CREATE TABLE IF NOT EXISTS public.profiles (
@@ -84,11 +88,13 @@ ALTER TABLE public.convenios_pacientes ENABLE ROW LEVEL SECURITY;
 
 -- Políticas de Seguridad:
 -- Paciente: Solo puede ver su propio perfil, citas y fichas
+DROP POLICY IF EXISTS "Pacientes pueden ver su propio perfil" ON public.profiles;
 CREATE POLICY "Pacientes pueden ver su propio perfil" 
     ON public.profiles FOR SELECT 
     USING (auth.uid() = id);
 
 -- Staff (Doctor, Recepción, Admin) pueden ver todos los perfiles
+DROP POLICY IF EXISTS "Staff puede ver todos los perfiles" ON public.profiles;
 CREATE POLICY "Staff puede ver todos los perfiles" 
     ON public.profiles FOR SELECT 
     USING (
@@ -99,10 +105,12 @@ CREATE POLICY "Staff puede ver todos los perfiles"
     );
 
 -- Fichas Clínicas: Paciente lee la suya, doctores crean/editan
+DROP POLICY IF EXISTS "Pacientes pueden leer sus fichas clínicas" ON public.fichas_clinicas;
 CREATE POLICY "Pacientes pueden leer sus fichas clínicas" 
     ON public.fichas_clinicas FOR SELECT 
     USING (paciente_id = auth.uid());
 
+DROP POLICY IF EXISTS "Doctores y Admins pueden crear fichas clínicas" ON public.fichas_clinicas;
 CREATE POLICY "Doctores y Admins pueden crear fichas clínicas" 
     ON public.fichas_clinicas FOR ALL 
     USING (

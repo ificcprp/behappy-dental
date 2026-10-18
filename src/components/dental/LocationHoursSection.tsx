@@ -39,7 +39,7 @@ export function LocationHoursSection() {
             Ubicación y Consulta
           </h2>
           <p className="text-sm sm:text-base text-[#66635d] font-light max-w-2xl leading-relaxed">
-            Visítanos en Suecia 3580, oficina 304, Ñuñoa. Edificio médico con estacionamiento y conectividad inmediata a red de Metro.
+            Visítanos en {clinicInfo.address.full}. Edificio médico con estacionamiento y conectividad inmediata a red de Metro.
           </p>
         </div>
 

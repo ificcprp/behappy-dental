@@ -36,8 +36,3 @@ export const CLINIC_INFO = {
     facebookPixel: "1353498186525546"
   }
 };
-
-export function createWhatsAppUrl(message: string): string {
-  const encoded = encodeURIComponent(message);
-  return `https://api.whatsapp.com/send/?phone=${CLINIC_INFO.contact.whatsappNumber}&text=${encoded}&type=phone_number&app_absent=0`;
-}

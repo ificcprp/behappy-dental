@@ -15,7 +15,7 @@ import {
   ArrowRight,
   AlertCircle
 } from "lucide-react";
-import { CLINIC_INFO, createWhatsAppUrl } from "@/data/clinicInfo";
+import { WhatsAppLink } from "@/components/dental/WhatsAppLink";
 
 interface PaymentDetails {
   status: number;
@@ -140,14 +140,12 @@ function RetornoPagoContent() {
           >
             Volver al Inicio
           </Link>
-          <a
-            href={createWhatsAppUrl("Hola, tuve un inconveniente con el pago online en el sitio web.")}
-            target="_blank"
-            rel="noopener noreferrer"
+          <WhatsAppLink
+            message="Hola, tuve un inconveniente con el pago online en el sitio web."
             className="px-5 py-2.5 border border-[#141413] text-[#141413] text-xs font-mono uppercase tracking-wider"
           >
             Asistencia WhatsApp
-          </a>
+          </WhatsAppLink>
         </div>
       </div>
     );
@@ -268,17 +266,13 @@ function RetornoPagoContent() {
               <span>Imprimir Comprobante</span>
             </button>
 
-            <a
-              href={createWhatsAppUrl(
-                `¡Hola Centro Dental BeHappy! Acabo de realizar el pago del comprobante #${payment.flowOrder} (${payment.subject}). Deseo validar la hora con recepción.`
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppLink
+              message={`¡Hola Centro Dental BeHappy! Acabo de realizar el pago del comprobante #${payment.flowOrder} (${payment.subject}). Deseo validar la hora con recepción.`}
               className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-xs uppercase tracking-wider font-semibold transition flex items-center justify-center gap-2 shadow-sm"
             >
               <MessageCircle className="w-3.5 h-3.5" />
               <span>Avisar por WhatsApp</span>
-            </a>
+            </WhatsAppLink>
           </div>
 
           <div className="pt-2 text-center">

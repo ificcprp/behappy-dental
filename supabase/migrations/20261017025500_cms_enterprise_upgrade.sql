@@ -22,12 +22,14 @@ CREATE INDEX IF NOT EXISTS idx_cms_versions_created_at ON public.cms_versions(cr
 
 ALTER TABLE public.cms_versions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Permitir lectura de versiones a usuarios autenticados" ON public.cms_versions;
 CREATE POLICY "Permitir lectura de versiones a usuarios autenticados"
     ON public.cms_versions
     FOR SELECT
     TO anon, authenticated
     USING (true);
 
+DROP POLICY IF EXISTS "Permitir inserción y actualización de versiones a personal autorizado" ON public.cms_versions;
 CREATE POLICY "Permitir inserción y actualización de versiones a personal autorizado"
     ON public.cms_versions
     FOR ALL
@@ -89,16 +91,19 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('clinic-media', 'clinic-media', true)
 ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "Permitir lectura pública de medios clínicos en clinic-media" ON storage.objects;
 CREATE POLICY "Permitir lectura pública de medios clínicos en clinic-media"
     ON storage.objects FOR SELECT
     TO anon, authenticated
     USING (bucket_id = 'clinic-media');
 
+DROP POLICY IF EXISTS "Permitir subida de medios a usuarios autorizados en clinic-media" ON storage.objects;
 CREATE POLICY "Permitir subida de medios a usuarios autorizados en clinic-media"
     ON storage.objects FOR INSERT
     TO anon, authenticated
     WITH CHECK (bucket_id = 'clinic-media');
 
+DROP POLICY IF EXISTS "Permitir actualización y borrado de medios en clinic-media" ON storage.objects;
 CREATE POLICY "Permitir actualización y borrado de medios en clinic-media"
     ON storage.objects FOR ALL
     TO anon, authenticated

@@ -1,13 +1,36 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { CLINIC_INFO } from "@/data/clinicInfo";
+import { isStaffSession } from "@/lib/cmsAuth";
+import { rateLimit, getClientIp } from "@/lib/rateLimit";
+import { citaSchema, citaPatchSchema, firstIssueMessage } from "@/lib/validation";
 
-export async function GET() {
+function cloudReady(): boolean {
+  return (
+    !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co"
+  );
+}
+
+export async function GET(request: Request) {
+  const session = isStaffSession(request);
+  if (!session) {
+    return NextResponse.json(
+      { success: false, error: "Se requiere sesión de staff para ver las citas." },
+      { status: 401 }
+    );
+  }
+
+  const limit = rateLimit(`citas-get:${getClientIp(request)}`, 60, 60 * 1000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { success: false, error: "Demasiadas solicitudes." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter || 60) } }
+    );
+  }
+
   try {
-    if (
-      process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co"
-    ) {
+    if (cloudReady()) {
       const { data, error } = await supabase
         .from("citas")
         .select("*")
@@ -35,7 +58,23 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const limit = rateLimit(`citas-post:${getClientIp(request)}`, 5, 10 * 60 * 1000);
+    if (!limit.ok) {
+      return NextResponse.json(
+        { error: "Demasiadas solicitudes de reserva. Intenta nuevamente en unos minutos." },
+        { status: 429, headers: { "Retry-After": String(limit.retryAfter || 60) } }
+      );
+    }
+
+    const rawBody = await request.json();
+    const parsed = citaSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: `Datos inválidos — ${firstIssueMessage(parsed.error)}` },
+        { status: 400 }
+      );
+    }
+
     const {
       patient_name,
       patient_phone,
@@ -48,21 +87,11 @@ export async function POST(request: Request) {
       preferred_time_slot,
       notes,
       utm_source,
-    } = body;
-
-    if (!patient_name || !patient_phone || !treatment_name) {
-      return NextResponse.json(
-        { error: "Nombre, teléfono y tratamiento son requeridos." },
-        { status: 400 }
-      );
-    }
+    } = parsed.data;
 
     let persistedInSupabase = false;
     try {
-      if (
-        process.env.NEXT_PUBLIC_SUPABASE_URL &&
-        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co"
-      ) {
+      if (cloudReady()) {
         const { error } = await supabase.from("citas").insert([
           {
             patient_name,
@@ -108,23 +137,37 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  try {
-    const body = await request.json();
-    const { id, status } = body;
+  const session = isStaffSession(request);
+  if (!session) {
+    return NextResponse.json(
+      { error: "Se requiere sesión de staff para actualizar citas." },
+      { status: 401 }
+    );
+  }
 
-    if (!id || !status) {
+  try {
+    const limit = rateLimit(`citas-patch:${getClientIp(request)}`, 60, 60 * 1000);
+    if (!limit.ok) {
       return NextResponse.json(
-        { error: "ID de cita y nuevo estado son requeridos." },
+        { error: "Demasiadas solicitudes." },
+        { status: 429, headers: { "Retry-After": String(limit.retryAfter || 60) } }
+      );
+    }
+
+    const rawBody = await request.json();
+    const parsed = citaPatchSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: `Datos inválidos — ${firstIssueMessage(parsed.error)}` },
         { status: 400 }
       );
     }
 
+    const { id, status } = parsed.data;
+
     let updatedInSupabase = false;
     try {
-      if (
-        process.env.NEXT_PUBLIC_SUPABASE_URL &&
-        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder-project.supabase.co"
-      ) {
+      if (cloudReady()) {
         const { error } = await supabase
           .from("citas")
           .update({ status })

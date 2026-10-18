@@ -29,17 +29,20 @@ CREATE INDEX IF NOT EXISTS idx_citas_patient_phone ON public.citas(patient_phone
 ALTER TABLE public.citas ENABLE ROW LEVEL SECURITY;
 
 -- Política 1: Permitir inserción anónima para que los pacientes puedan solicitar horas desde la web
+DROP POLICY IF EXISTS "Permitir solicitud de citas públicas" ON public.citas;
 CREATE POLICY "Permitir solicitud de citas públicas" ON public.citas
     FOR INSERT
     TO anon, authenticated
     WITH CHECK (true);
 
 -- Política 2: Solo personal autenticado (secretaria, doctores) puede leer y actualizar citas
+DROP POLICY IF EXISTS "Permitir lectura de citas a usuarios autenticados" ON public.citas;
 CREATE POLICY "Permitir lectura de citas a usuarios autenticados" ON public.citas
     FOR SELECT
     TO authenticated
     USING (true);
 
+DROP POLICY IF EXISTS "Permitir actualización de citas a usuarios autenticados" ON public.citas;
 CREATE POLICY "Permitir actualización de citas a usuarios autenticados" ON public.citas
     FOR UPDATE
     TO authenticated
