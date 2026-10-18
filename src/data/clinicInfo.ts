@@ -34,5 +34,20 @@ export const CLINIC_INFO = {
   tracking: {
     googleAnalytics: "G-E70JV667YE",
     facebookPixel: "1353498186525546"
+  },
+  dentalink: {
+    agendaUrl: "https://00b229f2077285343f1ffac76fd853c23816acec.agenda.softwaredentalink.com/",
+    apiBaseUrl: "https://api.dentalink.healthatom.com/api/v1",
+    sucursalId: 1,
+    dentistaIds: {
+      "dr-johnny-lugo": null,
+      "dra-keila-rodriguez": null,
+      "dra-gabriela-fernandez": null,
+      "dr-juan-jose-herrera": null,
+      "dr-william": null,
+      "dra-maria-helena": null,
+      "dra-natascha-martins": null,
+      "dra-maythe-gamboa": null
+    } as Record<string, number | null>
   }
 };

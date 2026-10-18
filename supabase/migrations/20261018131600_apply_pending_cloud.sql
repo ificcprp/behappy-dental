@@ -4,6 +4,7 @@
 --   1) site_cms_payloads (CMS en vivo)      4) columnas de pago en citas
 --   2) cms_versions (auditoría)             5) clinical_records (fichas)
 --   3) suscripciones_club (Club BeHappy)    6) bucket clinic-media
+--   7) vínculo con Dentalink en citas       8) sincronización Club↔Dentalink
 -- Seguridad: todas las escrituras pasan por la API Next.js con service_role;
 -- no se crean políticas de escritura anónima.
 -- ==============================================================================
@@ -84,6 +85,10 @@ CREATE TABLE IF NOT EXISTS public.suscripciones_club (
 CREATE INDEX IF NOT EXISTS idx_suscripciones_club_status ON public.suscripciones_club(status);
 CREATE INDEX IF NOT EXISTS idx_suscripciones_club_phone ON public.suscripciones_club(titular_phone);
 
+ALTER TABLE public.suscripciones_club ADD COLUMN IF NOT EXISTS dentalink_paciente_id BIGINT;
+ALTER TABLE public.suscripciones_club ADD COLUMN IF NOT EXISTS dentalink_convenio_synced_at TIMESTAMPTZ;
+ALTER TABLE public.suscripciones_club ADD COLUMN IF NOT EXISTS dentalink_sync_error TEXT;
+
 ALTER TABLE public.suscripciones_club ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Permitir registro público de solicitudes al Club BeHappy" ON public.suscripciones_club;
@@ -135,3 +140,10 @@ CREATE POLICY "clinic-media lectura publica"
     FOR SELECT
     TO anon, authenticated
     USING (bucket_id = 'clinic-media');
+
+-- ------------------------------------------------------------------------------
+-- 7. Citas: vínculo con Dentalink (para sincronizar estados vía PUT /citas/{id})
+-- ------------------------------------------------------------------------------
+ALTER TABLE public.citas ADD COLUMN IF NOT EXISTS dentalink_cita_id BIGINT;
+
+CREATE INDEX IF NOT EXISTS idx_citas_dentalink_cita_id ON public.citas(dentalink_cita_id);

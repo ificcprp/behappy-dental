@@ -1024,7 +1024,7 @@ p:last-child { margin-bottom: 0; }
       y soberanía digital.
     </h1>
     <p class="memo-subtitle">
-      Reemplazo de presencia estática en Hostinger por una plataforma médica propia de captación local en Ñuñoa, triaje orientativo por síntoma, simulación referencial de copagos Fonasa/Isapre, odontograma FDI en box y membresías recurrentes Club BeHappy.
+      Reemplazo de presencia estática en Hostinger por una plataforma médica propia de captación local en Ñuñoa, triaje orientativo por síntoma, simulación referencial de copagos Fonasa/Isapre, integración nativa API REST con agenda Dentalink y membresías recurrentes Club BeHappy.
     </p>
   </div>
 
@@ -1070,8 +1070,8 @@ p:last-child { margin-bottom: 0; }
   </p>
 
   <div class="callout callout-green" style="margin:6px 0;padding:6px 10px;font-size:0.69rem;line-height:1.4;">
-    <strong>El techo estructural de Hostinger y el ángulo de salida:</strong><br>
-    El <em>Website Builder</em> de Hostinger está limitado a plantillas con lógica reducida y sin autenticación persistente. Aunque permite incrustar código JS (haciendo técnicamente viable un simulador básico en el sitio anterior), <strong>lo inviable es la arquitectura que el negocio necesita alrededor</strong>: cuentas de pacientes con RUT y previsión, historial de citas, membresías PAC/PAT y CMS multirol con base relacional. Además, productos cerrados como su AI Builder exportan código estático no editable sin acceso FTP/SSH. Migrar fuera exige reconstrucción manual (<em>vendor lock-in</em>), respaldando la necesidad de soberanía digital con traspaso formal de repositorios a la clínica.
+    <strong>Arquitectura Headless y convivencia con Dentalink:</strong><br>
+    Hostinger no puede comunicarse con Dentalink ni procesar lógica relacional. <strong>Nuestra plataforma no compite ni duplica su software clínico:</strong> Dentalink se preserva al 100% como la Fuente Única de la Verdad para Ficha Clínica, Odontograma en Box, Boletas SII y Liquidación de Honorarios (Ley 20.584). El código propietario opera como un <em>Headless Clinical Front-Office</em> que atrae, triajea e inyecta pacientes directamente a los sillones de Suecia 3580 vía API REST, con soberanía de código en GitHub y Vercel.
   </div>
 
   <div class="section-rule mt-1" style="padding-top:8px;margin-top:6px;">
@@ -1099,6 +1099,11 @@ p:last-child { margin-bottom: 0; }
           <td class="td-n">Retención fija (MRR)<br><span class="td-s">Club BeHappy</span></td>
           <td class="td-s">Planes preventivos familiares ($14.990 – $32.990/mes) con débito automático vía Flow.cl (PAC/PAT), blindando el flujo de caja contra meses de baja estacional.</td>
           <td><span class="tag tag-green">Ingreso recurrente</span></td>
+        </tr>
+        <tr>
+          <td class="td-n">Operación Box<br><span class="td-s">API REST Dentalink</span></td>
+          <td class="td-s">Integración bidireccional que escribe citas directo en el monitor de recepción y consulta disponibilidad de sillones en tiempo real, sin doble digitación médica.</td>
+          <td><span class="tag tag-ok">0% Fricción Box</span></td>
         </tr>
       </tbody>
     </table>
@@ -1171,11 +1176,11 @@ p:last-child { margin-bottom: 0; }
     <!-- ACTIVO 04 -->
     <div class="module-card-compact">
       <div class="m-top">
-        <span class="module-badge">04 · Cierre en Box</span>
-        <span class="module-route">Ruta: /portal (Doctor)</span>
+        <span class="module-badge">04 · Integración Headless</span>
+        <span class="module-route">API REST Dentalink</span>
       </div>
-      <h3 class="m-h">Odontograma Anatómico FDI</h3>
-      <p class="m-desc">Mapeo visual de 32 piezas en pantalla (cuadrantes 1 a 4) con registro de patologías y presupuestos. Aumenta la comprensión y aceptación de planes de tratamiento.</p>
+      <h3 class="m-h">Sincronización Nativa con Agenda Dentalink</h3>
+      <p class="m-desc">Integración bidireccional vía API REST. La web consulta sillones en tiempo real y escribe citas en la recepción de Dentalink con triaje y procedencia UTM, sin doble digitación.</p>
     </div>
 
     <!-- ACTIVO 05 -->
@@ -1241,9 +1246,9 @@ p:last-child { margin-bottom: 0; }
           <td class="td-s"><span class="icon-ok">✓</span> Roles autenticados (Paciente/Doctor/Admin) en PostgreSQL.</td>
         </tr>
         <tr>
-          <td class="td-n">Lógica Médica &amp; Membresías</td>
-          <td class="td-s">Admite widgets JS básicos; sin PAC ni odontograma.</td>
-          <td class="td-s"><span class="icon-ok">✓</span> Odontograma FDI, triaje clínico y pagos PAC/PAT Flow.</td>
+          <td class="td-n">Lógica Médica &amp; Operación Box</td>
+          <td class="td-s">Sin conexión a Dentalink; agendamiento manual aislado.</td>
+          <td class="td-s"><span class="icon-ok">✓</span> Inyección automática en sillón Dentalink, triaje y PAC Flow.</td>
         </tr>
         <tr>
           <td class="td-n">Costos Operacionales &amp; Mantenimiento</td>
@@ -1260,7 +1265,7 @@ p:last-child { margin-bottom: 0; }
   </div>
 
   <div class="callout callout-green" style="font-size:0.67rem;padding:5px 10px;margin-top:6px;margin-bottom:0;line-height:1.35;">
-    <strong>Gobernanza legal y privacidad (Leyes 19.628, 20.584 y nueva Ley 21.719 · Vigencia plena 2026):</strong> El odontograma y el portal manejan datos sensibles de salud (diagnósticos, RUT, previsión). Se resguardan con cifrado TLS 1.3 / AES-256 bajo políticas RLS en Supabase (AWS sa-east-1, transferencia internacional segura). El navegador local jamás almacena fichas clínicas de pacientes. <strong>Publicidad sanitaria:</strong> El triaje es orientativo y no reemplaza el examen clínico presencial. Las garantías de 2 años aplican a la integridad mecánica de resinas bajo controles semestrales.
+    <strong>Gobernanza clínica y privacidad (Leyes 19.628, 20.584 y nueva Ley 21.719 · Vigencia plena 2026):</strong> La Ficha Clínica Oficial y el Odontograma Médico residen de forma inalterable y exclusiva dentro de Dentalink (Fuente Única de la Verdad). La web BeHappy actúa como canal de captación y triaje previo, transmitiendo citas y RUT bajo túneles TLS 1.3 / AES-256 sin almacenar datos sensibles de salud. <strong>Publicidad sanitaria:</strong> El triaje es orientativo y no reemplaza el examen presencial. Las garantías de 2 años aplican a la integridad mecánica de resinas bajo controles semestrales.
   </div>
 </div>
 
@@ -1312,7 +1317,7 @@ p:last-child { margin-bottom: 0; }
           <td style="text-align:center"><span class="tag tag-ok">Sí + Convenios Pyme</span></td>
         </tr>
         <tr>
-          <td class="td-n">Odontograma anatómico FDI + Portal Paciente + CMS en vivo</td>
+          <td class="td-n">Integración API REST Dentalink + Portal Paciente + CMS en vivo</td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
@@ -1417,14 +1422,14 @@ function toggleEditMode() {
 function saveProposalChanges() {
   const container = document.getElementById('proposal-container');
   if (container) {
-    localStorage.setItem('behappy_propuesta_html_v6', container.innerHTML);
+    localStorage.setItem('behappy_propuesta_html_v7', container.innerHTML);
     alert('✓ Cambios guardados con éxito en la memoria de tu navegador.');
   }
 }
 
 function resetProposalChanges() {
   if (confirm('¿Deseas restaurar la propuesta al contenido original de fábrica?')) {
-    localStorage.removeItem('behappy_propuesta_html_v6');
+    localStorage.removeItem('behappy_propuesta_html_v7');
     location.reload();
   }
 }
@@ -1437,7 +1442,7 @@ function exportToPdf() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('behappy_propuesta_html_v6');
+  const saved = localStorage.getItem('behappy_propuesta_html_v7');
   if (saved) {
     const container = document.getElementById('proposal-container');
     if (container) {

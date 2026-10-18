@@ -126,6 +126,7 @@ function PortalContent() {
   const [soapTreatment, setSoapTreatment] = useState("");
   const [soapPrescription, setSoapPrescription] = useState("");
   const [soapSavedToast, setSoapSavedToast] = useState(false);
+  const [doctorAgendaFilter, setDoctorAgendaFilter] = useState<"mis_citas" | "todas">("mis_citas");
 
   // CMS dynamic reactive data
   const [cmsData, setCmsData] = useState<CMSData>(getCMSData());
@@ -852,7 +853,7 @@ function PortalContent() {
             {/* Doctor Header */}
             <div className="bg-white border border-slate-200 rounded-lg p-6 sm:p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
               <div className="flex items-center gap-4">
-                <div className="relative w-14 h-14 rounded-full overflow-hidden bg-slate-100 border border-slate-300 shrink-0">
+                <div className="relative w-16 h-16 rounded-full overflow-hidden bg-slate-100 border-2 border-slate-300 shrink-0">
                   <Image
                     src={currentUser.avatarUrl || "/images/doctors/dr-johnny-lugo.png"}
                     alt={currentUser.fullName}
@@ -865,33 +866,101 @@ function PortalContent() {
                     CUERPO MÉDICO ACREDITADO · SUPERINTENDENCIA DE SALUD
                   </span>
                   <h2 className="text-2xl font-semibold text-slate-900">{currentUser.fullName}</h2>
-                  <p className="text-xs font-mono text-slate-500">{currentUser.specialty || "Cirujano Dentista"}</p>
+                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                    <p className="text-xs font-mono text-slate-700 font-semibold">{currentUser.specialty || "Cirujano Dentista"}</p>
+                    {currentUser.boxAssigned && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        {currentUser.boxAssigned}
+                      </span>
+                    )}
+                    {currentUser.clinicalRegistrationNumber && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        Reg. SIS: {currentUser.clinicalRegistrationNumber}
+                      </span>
+                    )}
+                    {currentUser.rut && (
+                      <span className="text-xs font-mono text-slate-400">
+                        RUT: {currentUser.rut}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="text-right">
+              <div className="text-left md:text-right space-y-1">
                 <span className="text-xs font-mono text-slate-500 block">Jornada Clínica Activa</span>
-                <span className="text-xs font-semibold text-slate-900">Lunes a Viernes 10:00 - 20:00</span>
+                <span className="text-xs font-semibold text-slate-900 block">Lunes a Viernes 10:00 - 20:00</span>
+                <span className="text-[11px] font-mono text-emerald-600 font-medium">Sede Suecia 3580, Ñuñoa</span>
               </div>
             </div>
 
             {/* Daily Agenda Table */}
             <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 shadow-2xs overflow-hidden">
-              <div className="p-4 bg-slate-50 flex items-center justify-between text-xs font-mono">
-                <span className="font-bold uppercase text-slate-900">Agenda Médica del Día</span>
-                <span className="text-slate-500">Pacientes Citados: {appointments.length}</span>
+              <div className="p-4 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold uppercase text-slate-900">Agenda Médica del Día</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-200/70 text-slate-700 font-bold text-[10px]">
+                    {appointments.length} Cita{appointments.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                {/* Filter toggle */}
+                <div className="inline-flex rounded-md border border-slate-200 bg-white p-0.5 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setDoctorAgendaFilter("mis_citas")}
+                    className={`px-3 py-1 rounded transition text-[11px] cursor-pointer ${
+                      doctorAgendaFilter === "mis_citas"
+                        ? "bg-slate-900 text-white font-bold"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    Mis Pacientes {currentUser?.boxAssigned ? `(${currentUser.boxAssigned})` : ""}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDoctorAgendaFilter("todas")}
+                    className={`px-3 py-1 rounded transition text-[11px] cursor-pointer ${
+                      doctorAgendaFilter === "todas"
+                        ? "bg-slate-900 text-white font-bold"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    Toda la Clínica ({appointments.length})
+                  </button>
+                </div>
               </div>
 
-              {appointments.length === 0 ? (
-                <div className="p-10 text-center space-y-2">
-                  <Clock className="w-6 h-6 text-slate-400 mx-auto" />
-                  <p className="text-xs text-slate-700 font-semibold">No hay pacientes citados para hoy</p>
-                  <p className="text-[11px] font-mono text-slate-500">
-                    Las citas agendadas por la web pública o registradas en recepción impactan aquí en tiempo real.
-                  </p>
-                </div>
-              ) : (
-                appointments.map((item) => (
+              {(() => {
+                const filteredDoctorAppointments = appointments.filter((item) => {
+                  if (doctorAgendaFilter === "todas") return true;
+                  if (!currentUser) return true;
+                  const cName = currentUser.fullName.toLowerCase().replace(/^(dr\.|dra\.)\s*/, "").trim();
+                  const itemDoc = (item.doctorName || "").toLowerCase().replace(/^(dr\.|dra\.)\s*/, "").trim();
+                  const matchName = itemDoc && (itemDoc.includes(cName) || cName.includes(itemDoc));
+                  const matchBox = currentUser.boxAssigned && item.box === currentUser.boxAssigned;
+                  return matchName || matchBox;
+                });
+
+                if (filteredDoctorAppointments.length === 0) {
+                  return (
+                    <div className="p-10 text-center space-y-2">
+                      <Clock className="w-6 h-6 text-slate-400 mx-auto" />
+                      <p className="text-xs text-slate-700 font-semibold">
+                        {doctorAgendaFilter === "mis_citas"
+                          ? `No hay citas directas agendadas para ${currentUser?.fullName} hoy`
+                          : "No hay pacientes citados para hoy"}
+                      </p>
+                      <p className="text-[11px] font-mono text-slate-500 max-w-md mx-auto">
+                        {doctorAgendaFilter === "mis_citas"
+                          ? "Puedes revisar todas las citas del día cambiando el filtro a 'Toda la Clínica' o admitir pacientes walk-in desde recepción."
+                          : "Las citas agendadas por la web pública o registradas en recepción impactan aquí en tiempo real."}
+                      </p>
+                    </div>
+                  );
+                }
+
+                return filteredDoctorAppointments.map((item) => (
                   <div key={item.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
@@ -904,6 +973,9 @@ function PortalContent() {
                       </div>
                       <p className="text-xs text-slate-600 font-light">
                         Procedimiento: <strong className="text-slate-900 font-medium">{item.treatmentName}</strong> · {item.box || "Box 1"}
+                        {item.doctorName && item.doctorName !== currentUser?.fullName && (
+                          <span className="text-slate-500"> · Asignado a: <strong className="text-slate-700">{item.doctorName}</strong></span>
+                        )}
                       </p>
                     </div>
 
@@ -915,21 +987,21 @@ function PortalContent() {
                           handleStatusChange(item.id, "en_box");
                           toast.info(`Paciente ${pName} cargado en Box y Ficha SOAP`);
                         }}
-                        className="px-3 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-[11px] font-mono uppercase text-slate-800 transition bg-white"
+                        className="px-3 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-[11px] font-mono uppercase text-slate-800 transition bg-white cursor-pointer"
                         title="Pasar paciente a box y precargar su ficha SOAP"
                       >
                         Pasar a Box
                       </button>
                       <button
                         onClick={() => handleStatusChange(item.id, "completada")}
-                        className="px-3 py-1.5 rounded bg-slate-900 text-white font-bold text-[11px] font-mono uppercase transition hover:bg-black"
+                        className="px-3 py-1.5 rounded bg-slate-900 text-white font-bold text-[11px] font-mono uppercase transition hover:bg-black cursor-pointer"
                       >
                         Finalizar ✓
                       </button>
                     </div>
                   </div>
-                ))
-              )}
+                ));
+              })()}
             </div>
 
             {/* SOAP Form (Ficha de Evolución) */}
@@ -1360,18 +1432,6 @@ function PortalContent() {
                   className="flex items-center justify-between text-xs text-slate-600 hover:text-slate-900 font-mono py-1"
                 >
                   <span>Catálogo de Tratamientos</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-                <a
-                  href="/demo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between text-xs text-amber-700 hover:text-amber-900 font-mono py-1"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-amber-600" />
-                    <span>Demo 4 Roles</span>
-                  </span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>

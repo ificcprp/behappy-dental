@@ -218,18 +218,7 @@ export function AuthPortalEditor({
                 />
               </div>
 
-              <div>
-                <label className="block text-[11px] font-mono text-slate-600 uppercase mb-1 font-bold">
-                  Texto Enlace Modo Demostración
-                </label>
-                <input
-                  type="text"
-                  value={current.demoAccessText}
-                  onChange={(e) => handleChange("demoAccessText", e.target.value)}
-                  placeholder="Acceso a Entorno de Demostración (Pitch & Roles)"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 text-xs rounded focus:bg-white focus:border-slate-800 outline-none"
-                />
-              </div>
+
 
               <div>
                 <label className="block text-[11px] font-mono text-slate-600 uppercase mb-1 font-bold">
@@ -451,9 +440,6 @@ export function AuthPortalEditor({
               }`}>
                 <p className={`text-[10px] font-mono ${isDark ? "text-[#a8a398]" : "text-[#78736a]"}`}>
                   {current.directBookingText}
-                </p>
-                <p className={`text-[9px] font-mono ${isDark ? "text-sky-400" : "text-[#0284c7]"}`}>
-                  {current.demoAccessText}
                 </p>
               </div>
             </div>

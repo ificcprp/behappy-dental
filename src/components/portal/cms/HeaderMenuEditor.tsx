@@ -219,25 +219,6 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
                     {name}
                   </span>
                 ))}
-
-                {/* Explicit Demo Mode Tag */}
-                {headerConfig.showDemoButton && (
-                  <span
-                    style={{
-                      fontSize: `${headerConfig.fontSize}px`,
-                      letterSpacing: headerConfig.letterSpacing,
-                      textTransform: headerConfig.textTransform,
-                    }}
-                    className={`px-2 py-0.5 rounded font-bold inline-flex items-center gap-1 whitespace-nowrap shrink-0 shadow-2xs transition-colors ${
-                      previewIsDark
-                        ? "text-amber-300 bg-amber-500/20 border border-amber-500/40"
-                        : "text-amber-900 bg-amber-500/10 border border-amber-500/30"
-                    }`}
-                  >
-                    <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
-                    <span>{headerConfig.demoButtonText || "Demo OS (4 Roles)"}</span>
-                  </span>
-                )}
               </div>
             ) : previewMode === "mobile" || headerConfig.burgerOnDesktop ? (
               <div className="flex items-center gap-2 shrink-0">
@@ -710,46 +691,9 @@ export function HeaderMenuEditor({ headerConfig, onChange }: HeaderMenuEditorPro
         {/* BLOQUE 4: Jerarquía de Botones & Explicitación Modo Demo */}
         <div className="bg-white border border-slate-200 p-6 rounded-lg shadow-xs space-y-6">
           <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-            <Sparkles className="w-4 h-4 text-amber-600" />
             <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider font-mono">
-              4. Jerarquía de Botones & Modo Demo
+              4. Botones Principales de Navegación
             </h3>
-          </div>
-
-          {/* Switch Modo Demo en Nav */}
-          <div className="p-4 rounded-md bg-amber-50/60 border border-amber-200 space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-xs font-bold text-amber-950 block flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Explicitar Modo Demo en la barra de navegación</span>
-                </span>
-                <span className="text-[11px] text-amber-800 font-light">
-                  Muestra un enlace distintivo hacia la suite de presentación (/demo)
-                </span>
-              </div>
-              <input
-                type="checkbox"
-                checked={headerConfig.showDemoButton}
-                onChange={(e) => update("showDemoButton", e.target.checked)}
-                className="w-4 h-4 text-amber-600 rounded border-amber-300 focus:ring-amber-500"
-              />
-            </div>
-
-            {headerConfig.showDemoButton && (
-              <div>
-                <label className="block text-[10px] font-mono uppercase tracking-wider text-amber-900 font-bold mb-1">
-                  Texto del enlace Demo
-                </label>
-                <input
-                  type="text"
-                  value={headerConfig.demoButtonText}
-                  onChange={(e) => update("demoButtonText", e.target.value)}
-                  placeholder="ej: Demo OS (4 Roles)"
-                  className="w-full px-3 py-1.5 bg-white border border-amber-200 text-xs font-mono rounded text-slate-900"
-                />
-              </div>
-            )}
           </div>
 
           {/* Botones de Acción: Portal Clínico y Cita */}

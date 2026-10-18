@@ -23,6 +23,7 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
   const [preferredDate, setPreferredDate] = useState("");
   const [preferredSlot, setPreferredSlot] = useState("tarde");
   const [patientName, setPatientName] = useState("");
+  const [patientRut, setPatientRut] = useState("");
   const [patientPhone, setPatientPhone] = useState("");
   const [patientEmail, setPatientEmail] = useState("");
   const [notes, setNotes] = useState("");
@@ -106,6 +107,7 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
 
       const payload = {
         patient_name: patientName,
+        patient_rut: patientRut.trim() || null,
         patient_phone: patientPhone.startsWith("+56") ? patientPhone : `+56 9 ${patientPhone.replace(/\D/g, "")}`,
         patient_email: patientEmail || null,
         doctor_id: doctorObj ? doctorObj.id : null,
@@ -446,6 +448,20 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
                 </div>
 
                 <div>
+                  <label htmlFor="rut" className="block text-xs font-mono uppercase text-[#141413] font-medium mb-2">
+                    RUT del Paciente (Para Ficha Clínica)
+                  </label>
+                  <input
+                    type="text"
+                    id="rut"
+                    value={patientRut}
+                    onChange={(e) => setPatientRut(e.target.value)}
+                    placeholder="18.432.109-2"
+                    className="w-full px-4 py-3 bg-[#faf8f5] border border-[#ded9cd] text-[#141413] text-xs font-mono rounded-[2px] focus:outline-none focus:border-[#141413]"
+                  />
+                </div>
+
+                <div>
                   <label htmlFor="phone" className="block text-xs font-mono uppercase text-[#141413] font-medium mb-2">
                     Teléfono / WhatsApp *
                   </label>
@@ -474,16 +490,16 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
                   />
                 </div>
 
-                <div>
+                <div className="md:col-span-2">
                   <label htmlFor="notes" className="block text-xs font-mono uppercase text-[#141413] font-medium mb-2">
-                    Motivo o Síntoma Principal
+                    Motivo o Síntoma Principal (Para el odontólogo tratante)
                   </label>
                   <input
                     type="text"
                     id="notes"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Ej: Molestia molar derecho, control anual, etc."
+                    placeholder="Ej: Molestia en molar inferior derecho al masticar, o evaluación estética."
                     className="w-full px-4 py-3 bg-[#faf8f5] border border-[#ded9cd] text-[#141413] text-xs rounded-[2px] focus:outline-none focus:border-[#141413]"
                   />
                 </div>
@@ -583,6 +599,22 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
                   </>
                 )}
               </button>
+            </div>
+
+            {/* Direct Dentalink alternative / Trust indicator */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-[#78736a] border-t border-[#f0ede6]/60 gap-2">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Sincronización en vivo con agenda y sillones de Suecia 3580 (Dentalink®)</span>
+              </span>
+              <a
+                href={CLINIC_INFO.dentalink?.agendaUrl || "https://00b229f2077285343f1ffac76fd853c23816acec.agenda.softwaredentalink.com/"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-[#141413] transition"
+              >
+                ¿Prefieres la vista clásica de Dentalink? Abrir portal directo →
+              </a>
             </div>
 
           </form>

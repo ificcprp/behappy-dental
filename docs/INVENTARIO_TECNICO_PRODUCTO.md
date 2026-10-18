@@ -29,7 +29,8 @@
 | Endpoint | Métodos | Propósito |
 | :--- | :--- | :--- |
 | `/api/cms` | `GET`, `POST` | Obtención y actualización del payload de contenido del sitio web (tratamientos, doctores, contacto, ticker) |
-| `/api/citas` | `GET`, `POST`, `PATCH` | Agendamiento de citas, consulta de agenda por Box y actualización de estado de atención |
+| `/api/citas` | `GET`, `POST`, `PATCH` | Agendamiento headless con inyección directa en agenda y sillón de Dentalink, validación de RUT y fallback redundante |
+| `/api/dentalink/disponibilidad` | `GET` | Consulta en tiempo real de disponibilidad de sillones y agendas por doctor en Dentalink (HealthAtom) |
 | `/api/clinica/records` | `GET`, `POST` | Sincronización en la nube (Supabase PostgreSQL) de notas SOAP, odontogramas, presupuestos y consentimientos con fallback local |
 | `/api/pagos/flow/create` | `POST` | Generación de orden de pago en Flow.cl (Abono de reserva, copagos, suscripciones Club) |
 | `/api/pagos/flow/webhook` | `POST` | Callback server-to-server con verificación criptográfica HMAC-SHA256 y actualización en Supabase |

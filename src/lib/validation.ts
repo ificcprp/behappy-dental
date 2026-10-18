@@ -4,6 +4,7 @@ export const citaSchema = z.object({
   patient_name: z.string().trim().min(2).max(160),
   patient_phone: z.string().trim().min(6).max(30),
   patient_email: z.string().trim().email().max(160).optional().or(z.literal("")),
+  patient_rut: z.string().trim().max(30).optional().nullable(),
   doctor_id: z.string().trim().max(160).optional().nullable(),
   doctor_name: z.string().trim().max(160).optional().nullable(),
   treatment_id: z.string().trim().max(160).optional().nullable(),

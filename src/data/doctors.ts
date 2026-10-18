@@ -26,7 +26,11 @@ export const DOCTORS: Doctor[] = [
     description: "Especialista certificado en alineación dental invisible Invisalign y ortodoncia correctiva de alta precisión con más de 10 años de experiencia clínica.",
     image: "/images/doctors/dr-johnny-lugo.png",
     tags: ["Invisalign", "Brackets", "Alineadores"],
-    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)",
+    assignedBox: "Box 1",
+    sisRegistrationNumber: "SIS-84920",
+    universityDegree: "Univ. Central de Venezuela / Revalidación Univ. de Chile · Especialista en Ortodoncia",
+    isAvailableOnline: true
   },
   {
     id: "dra-keila-rodriguez",
@@ -37,7 +41,11 @@ export const DOCTORS: Doctor[] = [
     description: "Especializada en diseño de sonrisa personalizado, carillas de porcelana y resina de alta estética, devolviendo armonía y naturalidad al rostro.",
     image: "/images/doctors/dra-keila-rodriguez.png",
     tags: ["Diseño de Sonrisa", "Carillas", "Blanqueamiento"],
-    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)",
+    assignedBox: "Box 2",
+    sisRegistrationNumber: "SIS-85104",
+    universityDegree: "Universidad de Los Andes · Especialista en Odontología Restauradora y Estética",
+    isAvailableOnline: true
   },
   {
     id: "dra-gabriela-fernandez",
@@ -48,7 +56,11 @@ export const DOCTORS: Doctor[] = [
     description: "Certificada en sistemas Invisalign y ortodoncia interceptiva en adolescentes y adultos, enfocada en salud funcional de la articulación.",
     image: "/images/doctors/dra-gabriela-fernandez.png",
     tags: ["Ortodoncia", "Invisalign", "Mordida"],
-    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)",
+    assignedBox: "Box 1",
+    sisRegistrationNumber: "SIS-86412",
+    universityDegree: "Universidad Mayor · Especialista en Ortodoncia y Ortopedia Dentomaxilofacial",
+    isAvailableOnline: true
   },
   {
     id: "dr-juan-jose-herrera",
@@ -59,7 +71,11 @@ export const DOCTORS: Doctor[] = [
     description: "Especialista en regeneración ósea, tratamiento avanzado de encías y colocación de implantes de titanio que devuelven la función 100% natural.",
     image: "/images/doctors/dr-juan-jose-herrera.png",
     tags: ["Implantes", "Periodoncia", "Cirugía"],
-    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)",
+    assignedBox: "Box 3",
+    sisRegistrationNumber: "SIS-83719",
+    universityDegree: "Universidad de Concepción · Especialista en Periodoncia e Implantología Quirúrgica",
+    isAvailableOnline: true
   },
   {
     id: "dr-william",
@@ -70,7 +86,11 @@ export const DOCTORS: Doctor[] = [
     description: "Enfoque empático, libre de ansiedad y lúdico para niños y adolescentes. Prevención temprana y cuidado del desarrollo dental infantil.",
     image: "/images/doctors/dr-william.png",
     tags: ["Niños", "Prevención", "Sin Dolor"],
-    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)",
+    assignedBox: "Box 2",
+    sisRegistrationNumber: "SIS-87291",
+    universityDegree: "Universidad de Chile · Especialista en Odontopediatría Integral",
+    isAvailableOnline: true
   },
   {
     id: "dra-maria-helena",
@@ -81,7 +101,11 @@ export const DOCTORS: Doctor[] = [
     description: "Experta en prótesis fijas, removibles y materiales de vanguardia para pacientes que buscan recuperar la función masticatoria completa.",
     image: "/images/doctors/dra-maria-helena.png",
     tags: ["Prótesis", "Coronas", "Rehabilitación"],
-    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)",
+    assignedBox: "Box 2",
+    sisRegistrationNumber: "SIS-84115",
+    universityDegree: "Universidad de Chile · Especialista en Rehabilitación Oral y Prótesis Fija",
+    isAvailableOnline: true
   },
   {
     id: "dra-natascha-martins",
@@ -92,7 +116,11 @@ export const DOCTORS: Doctor[] = [
     description: "Manejo del dolor agudo y salvamento de piezas dentales comprometidas mediante instrumentación rotatoria y tecnología microscópica sin dolor.",
     image: "/images/doctors/dra-natascha-martins.png",
     tags: ["Tratamiento de Conducto", "Urgencias", "Sin Dolor"],
-    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)",
+    assignedBox: "Box 1",
+    sisRegistrationNumber: "SIS-85930",
+    universityDegree: "Universidad de Valparaíso · Especialista en Endodoncia Mecanizada",
+    isAvailableOnline: true
   },
   {
     id: "dra-maythe-gamboa",
@@ -103,6 +131,10 @@ export const DOCTORS: Doctor[] = [
     description: "Diagnóstico temprano y tratamiento especializado de lesiones de mucosa oral, glándulas salivales y salud bucal integral.",
     image: "/images/doctors/dra-maythe-gamboa.png",
     tags: ["Diagnóstico", "Medicina Bucal", "Prevención"],
-    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)"
+    schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)",
+    assignedBox: "Box 2",
+    sisRegistrationNumber: "SIS-88204",
+    universityDegree: "Universidad de Chile · Especialista en Medicina y Patología Bucal",
+    isAvailableOnline: true
   }
 ];

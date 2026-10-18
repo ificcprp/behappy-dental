@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { UserProfile, UserRole } from "@/types/auth";
 import {
   getRegisteredUsers,
@@ -16,6 +17,7 @@ import { toast } from "sonner";
 import {
   Search,
   UserPlus,
+  Users,
   Key,
   Copy,
   Check,
@@ -91,6 +93,12 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
   // Modals state
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createModalTab, setCreateModalTab] = useState<"crear" | "compartir">("crear");
+  const [shareFilter, setShareFilter] = useState<"doctor" | "recepcion" | "admin" | "todos">("doctor");
+  const [shareSearch, setShareSearch] = useState("");
+  const [copiedAllProfessionals, setCopiedAllProfessionals] = useState(false);
+  const [copiedSingleId, setCopiedSingleId] = useState<string | null>(null);
+
   const [showHandoffModal, setShowHandoffModal] = useState(false);
   const [handoffUser, setHandoffUser] = useState<(UserProfile & { password?: string }) | null>(null);
   const [copiedHandoff, setCopiedHandoff] = useState(false);
@@ -147,7 +155,8 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
     setCreatePassword(generateSuggestedPassword(newRole));
   };
 
-  const openCreateModal = () => {
+  const openCreateModal = (initialTab: "crear" | "compartir" = "crear") => {
+    setCreateModalTab(initialTab);
     setCreateRole("doctor");
     setCreateFullName("");
     setCreateEmail("");
@@ -166,6 +175,142 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
     setCreateConvenioLevel("20%");
     setCreateEmergencyContact("");
     setShowCreateModal(true);
+  };
+
+  // Copy entire professional roster summary
+  const handleCopyAllProfessionalsSummary = () => {
+    const doctors = users.filter((u) => u.role === "doctor");
+    const portalUrl =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/login`
+        : "https://behappydental.cl/login";
+
+    let text = `🦷 *Centro Dental BeHappy - Nómina Oficial del Cuerpo Médico*\n`;
+    text += `📍 Sede: Av. Suecia 3580, Providencia / Ñuñoa\n`;
+    text += `🔐 Portal de Acceso Clínico: ${portalUrl}\n\n`;
+    text += `📋 *Accesos de Especialistas (${doctors.length}):*\n`;
+
+    doctors.forEach((doc, idx) => {
+      text += `\n${idx + 1}. *${doc.fullName}*\n`;
+      text += `   • Especialidad: ${doc.specialty || "Cirujano Dentista"}\n`;
+      if (doc.boxAssigned) text += `   • Box Asignado: ${doc.boxAssigned}\n`;
+      if (doc.clinicalRegistrationNumber) text += `   • Registro SIS: ${doc.clinicalRegistrationNumber}\n`;
+      text += `   • Correo: ${doc.email}\n`;
+      text += `   • Clave: ${doc.password || "BeHappy2026!"}\n`;
+    });
+
+    text += `\n🔐 *Instrucciones:* Ingresar a ${portalUrl} con su correo y contraseña asignada.`;
+
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedAllProfessionals(true);
+      toast.success("Nómina completa de los 8 especialistas copiada");
+      setTimeout(() => setCopiedAllProfessionals(false), 3000);
+    }
+  };
+
+  // Copy individual professional credential message
+  const handleCopySingleProfessional = (u: UserProfile & { password?: string }) => {
+    const text = formatCredentialDeliveryMessage(u);
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedSingleId(u.id);
+      toast.success(`Mensaje de acceso para ${u.fullName} copiado`);
+      setTimeout(() => setCopiedSingleId(null), 2500);
+    }
+  };
+
+  // Direct create and open WhatsApp delivery
+  const handleCreateAndShareWhatsApp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!createFullName.trim() || !createEmail.trim()) {
+      toast.error("Por favor completa el nombre y correo del usuario");
+      return;
+    }
+
+    const finalPassword = createPassword.trim() || generateSuggestedPassword(createRole);
+    const finalSpecialty =
+      createRole === "doctor"
+        ? createCustomSpecialty.trim() || createSpecialty
+        : undefined;
+
+    const newUser = registerNewUser({
+      fullName: createFullName.trim(),
+      email: createEmail.trim(),
+      password: finalPassword,
+      rut: createRut.trim(),
+      phone: createPhone.trim(),
+      role: createRole,
+      specialty: finalSpecialty,
+      boxAssigned: createRole === "doctor" ? createBoxAssigned : undefined,
+      clinicalRegistrationNumber: createRole === "doctor" ? createSisRegistration.trim() : undefined,
+      shift: createRole === "recepcion" ? createShift : undefined,
+      assignedDesk: createRole === "recepcion" ? createAssignedDesk : undefined,
+      positionTitle: createRole === "admin" ? createPositionTitle : undefined,
+      prevision: createRole === "paciente" ? createPrevision : undefined,
+      convenioLevel: createRole === "paciente" ? createConvenioLevel : undefined,
+      emergencyContact: createRole === "paciente" ? createEmergencyContact.trim() : undefined,
+      setAsActiveSession: false,
+    });
+
+    if (createRole === "doctor" && createSyncWithCmsDoctors) {
+      try {
+        const cmsData = getCMSData();
+        const existingDocs = cmsData.doctors || [];
+        const cleanName = createFullName.trim();
+        const alreadyInCms = existingDocs.some(
+          (d) => d.name.toLowerCase() === cleanName.toLowerCase()
+        );
+
+        if (!alreadyInCms) {
+          const slug = cleanName
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)+/g, "");
+
+          const newDoctorEntry = {
+            id: `doc-${Date.now()}`,
+            name: cleanName.startsWith("Dr.") || cleanName.startsWith("Dra.") ? cleanName : `Dr. ${cleanName}`,
+            slug,
+            role: finalSpecialty || "Odontólogo Especialista",
+            specialty: finalSpecialty || "Odontología General",
+            description: `Especialista en ${finalSpecialty || "salud dental"} en Centro Dental BeHappy Sede Suecia 3580.`,
+            image: "/images/doctors/dr-johnny-lugo.png",
+            tags: [finalSpecialty || "Odontología", "Atención Clínica"],
+            schedule: "Lunes a Viernes 10:00 - 20:00 / Sábado 10:00 - 18:00 (Previa reserva)",
+            assignedBox: (createBoxAssigned as "Box 1" | "Box 2" | "Box 3") || "Box 1",
+            sisRegistrationNumber: createSisRegistration.trim() || undefined,
+            isAvailableOnline: true,
+          };
+
+          saveCMSData(
+            { doctors: [...existingDocs, newDoctorEntry] },
+            {
+              status: "draft",
+              changeSummary: "Alta de doctor desde gestión de usuarios (pendiente de publicar)",
+            }
+          );
+        }
+      } catch (err) {
+        console.error("Error syncing doctor to CMS:", err);
+      }
+    }
+
+    refreshUsers();
+    setShowCreateModal(false);
+
+    const message = formatCredentialDeliveryMessage(newUser);
+    const cleanPhone = createPhone.replace(/[^0-9]/g, "");
+    const waUrl = cleanPhone
+      ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`
+      : `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+    if (typeof window !== "undefined") {
+      window.open(waUrl, "_blank");
+    }
+    toast.success(`Usuario ${newUser.fullName} guardado y WhatsApp abierto para entrega`);
   };
 
   // Submit Create User
@@ -416,13 +561,24 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
             </p>
           </div>
 
-          <button
-            onClick={openCreateModal}
-            className="self-start md:self-center px-4 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono text-xs uppercase tracking-wider font-bold rounded-md shadow-lg hover:shadow-xl transition flex items-center gap-2 shrink-0"
-          >
-            <UserPlus className="w-4 h-4 text-slate-950" />
-            <span>Crear Usuario con Rol & Clave</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start md:self-center">
+            <button
+              onClick={() => openCreateModal("compartir")}
+              className="px-4 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-mono text-xs uppercase tracking-wider font-bold rounded-md transition flex items-center gap-2 cursor-pointer shadow-sm"
+              title="Ver nómina de especialistas y enviar accesos directos por WhatsApp"
+            >
+              <Share2 className="w-4 h-4 text-emerald-400" />
+              <span>Compartir Cuentas con Profesionales</span>
+            </button>
+
+            <button
+              onClick={() => openCreateModal("crear")}
+              className="px-4 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono text-xs uppercase tracking-wider font-bold rounded-md shadow-lg hover:shadow-xl transition flex items-center gap-2 cursor-pointer"
+            >
+              <UserPlus className="w-4 h-4 text-slate-950" />
+              <span>Invitar / Crear Usuario</span>
+            </button>
+          </div>
         </div>
 
         {/* Metric Badges */}
@@ -728,405 +884,687 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
       </div>
 
       {/* ========================================================================= */}
-      {/* MODAL 1: CREAR USUARIO CON ROL, PERFIL REAL Y CONTRASEÑA */}
+      {/* MODAL 1: INVITAR / CREAR USUARIOS O COMPARTIR CUENTAS CON PROFESIONALES */}
       {/* ========================================================================= */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white border border-slate-300 rounded-xl max-w-xl w-full p-5 sm:p-6 space-y-4 shadow-2xl my-8">
+          <div className={`bg-white border border-slate-300 rounded-xl w-full p-5 sm:p-6 space-y-4 shadow-2xl my-8 transition-all ${
+            createModalTab === "compartir" ? "max-w-3xl" : "max-w-xl"
+          }`}>
+            {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <span className="text-[10px] font-mono tracking-widest text-emerald-700 uppercase font-bold block">
-                  NUEVO ACCESO DIRECTO
-                </span>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900">
-                  Crear Usuario con Rol & Contraseña
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono tracking-widest text-emerald-700 uppercase font-bold block">
+                    GESTIÓN DE ACCESOS & EQUIPO
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-mono uppercase bg-slate-100 text-slate-700 font-bold border border-slate-200">
+                    Sede Suecia 3580
+                  </span>
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+                  Invitar a Otros & Compartir Cuentas
                 </h3>
                 <p className="text-xs text-slate-500 font-light mt-0.5">
-                  Configura el perfil exacto y entrega las credenciales directamente en 1 clic.
+                  Crea perfiles con credenciales directas o envía de inmediato los accesos por WhatsApp a cada profesional.
                 </p>
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-slate-400 hover:text-slate-800 p-1 rounded"
+                className="text-slate-400 hover:text-slate-800 p-1 rounded transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="space-y-4 font-mono text-xs">
-              {/* Role Selection Buttons */}
-              <div>
-                <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1.5 font-bold">
-                  Selecciona el Rol del Usuario *
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {(["doctor", "recepcion", "admin", "paciente"] as const).map((r) => {
-                    const meta = roleBadgeConfig[r];
-                    const Icon = meta.icon;
-                    const isSelected = createRole === r;
-                    return (
-                      <button
-                        key={r}
-                        type="button"
-                        onClick={() => handleRoleSelectionChange(r)}
-                        className={`p-2.5 rounded-lg border text-left transition flex flex-col gap-1 ${
-                          isSelected
-                            ? `border-slate-900 bg-slate-900 text-white shadow-sm ring-2 ring-slate-900/10`
-                            : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
-                        }`}
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-white" : meta.text}`} />
-                          <span className="font-bold text-[11px] uppercase">{r}</span>
-                        </div>
-                        <span className={`text-[10px] ${isSelected ? "text-slate-300" : "text-slate-500"}`}>
-                          {r === "doctor" && "Box Clínico"}
-                          {r === "recepcion" && "Turno & Agenda"}
-                          {r === "admin" && "Control Total"}
-                          {r === "paciente" && "Ficha & Convenio"}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* General Fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                <div>
-                  <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
-                    Nombre Completo *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={createFullName}
-                    onChange={(e) => setCreateFullName(e.target.value)}
-                    placeholder={
-                      createRole === "doctor"
-                        ? "Ej: Dr. Roberto Silva"
-                        : createRole === "recepcion"
-                        ? "Ej: Andrea Muñoz"
-                        : "Ej: Nombre y Apellido"
-                    }
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs focus:outline-none focus:border-slate-900 focus:bg-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
-                    Correo Electrónico (Usuario de Acceso) *
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={createEmail}
-                    onChange={(e) => setCreateEmail(e.target.value)}
-                    placeholder="usuario@behappydental.cl"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
-                    RUT Chileno
-                  </label>
-                  <input
-                    type="text"
-                    value={createRut}
-                    onChange={(e) => setCreateRut(e.target.value)}
-                    placeholder="15.820.419-3"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
-                    Teléfono Móvil (WhatsApp)
-                  </label>
-                  <input
-                    type="tel"
-                    value={createPhone}
-                    onChange={(e) => setCreatePhone(e.target.value)}
-                    placeholder="+56 9 1234 5678"
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
-                  />
-                </div>
-              </div>
-
-              {/* DYNAMIC ROLE FIELDS */}
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-3">
-                <div className="text-[11px] font-bold uppercase text-slate-800 flex items-center gap-1.5 border-b border-slate-200 pb-1.5">
-                  <BadgeCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Configuración Específica para Perfil: {createRole.toUpperCase()}</span>
-                </div>
-
-                {/* DOCTOR FIELDS */}
-                {createRole === "doctor" && (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                          Especialidad Odontológica *
-                        </label>
-                        <select
-                          value={createSpecialty}
-                          onChange={(e) => setCreateSpecialty(e.target.value)}
-                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
-                        >
-                          {DENTAL_SPECIALTIES.map((esp) => (
-                            <option key={esp} value={esp}>
-                              {esp}
-                            </option>
-                          ))}
-                          <option value="otra">Otra especialidad...</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                          Box Clínico Predeterminado
-                        </label>
-                        <select
-                          value={createBoxAssigned}
-                          onChange={(e) => setCreateBoxAssigned(e.target.value)}
-                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
-                        >
-                          <option value="Box 1">Box 1 (Ortodoncia / General)</option>
-                          <option value="Box 2">Box 2 (Estética / Restauradora)</option>
-                          <option value="Box 3">Box 3 (Cirugía / Implantes)</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {createSpecialty === "otra" && (
-                      <div>
-                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                          Escribe la Especialidad
-                        </label>
-                        <input
-                          type="text"
-                          value={createCustomSpecialty}
-                          onChange={(e) => setCreateCustomSpecialty(e.target.value)}
-                          placeholder="Ej: Radiología Maxilofacial"
-                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
-                        />
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                          Registro SIS / Superintendencia
-                        </label>
-                        <input
-                          type="text"
-                          value={createSisRegistration}
-                          onChange={(e) => setCreateSisRegistration(e.target.value)}
-                          placeholder="Ej: SIS-84920"
-                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
-                        />
-                      </div>
-
-                      <div className="flex items-center pt-4">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={createSyncWithCmsDoctors}
-                            onChange={(e) => setCreateSyncWithCmsDoctors(e.target.checked)}
-                            className="rounded border-slate-300 text-slate-900 focus:ring-slate-900"
-                          />
-                          <span className="text-[10px] text-slate-700">
-                            Vincular a nómina de doctores del sitio web (CMS)
-                          </span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* RECEPCION FIELDS */}
-                {createRole === "recepcion" && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                        Turno & Horario
-                      </label>
-                      <select
-                        value={createShift}
-                        onChange={(e) => setCreateShift(e.target.value)}
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
-                      >
-                        {RECEPTION_SHIFTS.map((sh) => (
-                          <option key={sh} value={sh}>
-                            {sh}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                        Ubicación de Atención
-                      </label>
-                      <input
-                        type="text"
-                        value={createAssignedDesk}
-                        onChange={(e) => setCreateAssignedDesk(e.target.value)}
-                        placeholder="Recepción Central Suecia 3580"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* ADMIN FIELDS */}
-                {createRole === "admin" && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                        Cargo / Área de Dirección *
-                      </label>
-                      <select
-                        value={createPositionTitle}
-                        onChange={(e) => setCreatePositionTitle(e.target.value)}
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
-                      >
-                        {ADMIN_POSITIONS.map((pos) => (
-                          <option key={pos} value={pos}>
-                            {pos}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                        Nivel de Privilegios
-                      </label>
-                      <input
-                        type="text"
-                        disabled
-                        value="Acceso Total (CMS, Fichas, Finanzas, Usuarios)"
-                        className="w-full px-3 py-1.5 bg-slate-200 border border-slate-300 rounded text-slate-700 text-xs"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* PACIENTE FIELDS */}
-                {createRole === "paciente" && (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                        Previsión de Salud
-                      </label>
-                      <select
-                        value={createPrevision}
-                        onChange={(e) => setCreatePrevision(e.target.value)}
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
-                      >
-                        {HEALTH_PREVISIONS.map((prev) => (
-                          <option key={prev} value={prev}>
-                            {prev}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                        Convenio Club BeHappy
-                      </label>
-                      <select
-                        value={createConvenioLevel}
-                        onChange={(e) => setCreateConvenioLevel(e.target.value as any)}
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
-                      >
-                        <option value="20%">20% (Plan Preventivo)</option>
-                        <option value="40%">40% (Plan Oro)</option>
-                        <option value="60%">60% (Plan Corporativo)</option>
-                        <option value="Ninguno">Ninguno</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
-                        Contacto Emergencia
-                      </label>
-                      <input
-                        type="text"
-                        value={createEmergencyContact}
-                        onChange={(e) => setCreateEmergencyContact(e.target.value)}
-                        placeholder="Nombre y Teléfono"
-                        className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* PASSWORD SETUP & GENERATOR */}
-              <div className="bg-emerald-50/60 border border-emerald-200 rounded-lg p-3.5 space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="block text-[11px] font-mono uppercase text-emerald-950 font-bold flex items-center gap-1.5">
-                    <Key className="w-3.5 h-3.5 text-emerald-700" />
-                    <span>Contraseña de Acceso para Entregar *</span>
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setCreatePassword(generateSuggestedPassword(createRole))}
-                    className="text-[10px] text-emerald-800 hover:text-emerald-950 font-bold flex items-center gap-1 underline"
-                  >
-                    <Sparkles className="w-3 h-3 text-emerald-600" />
-                    Generar Contraseña Segura
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type={showCreatePasswordToggle ? "text" : "password"}
-                    required
-                    value={createPassword}
-                    onChange={(e) => setCreatePassword(e.target.value)}
-                    placeholder="Ej: BeHappy2026!"
-                    className="w-full pl-3 pr-10 py-2 bg-white border border-emerald-300 rounded text-slate-900 text-xs font-mono font-bold focus:outline-none focus:border-emerald-600"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCreatePasswordToggle(!showCreatePasswordToggle)}
-                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700"
-                  >
-                    {showCreatePasswordToggle ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-
-                <p className="text-[10px] text-emerald-800 leading-relaxed font-light">
-                  Esta es la contraseña que entregarás a la persona para que inicie sesión en{" "}
-                  <strong>/login</strong>. Al hacer clic en &quot;Guardar & Generar Ficha&quot;, obtendrás el mensaje listo para enviar por WhatsApp o correo.
-                </p>
-              </div>
-
-              {/* Actions */}
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
+            {/* Navigation Tabs inside Modal */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-2.5 gap-2">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 border border-slate-300 rounded text-xs font-mono uppercase text-slate-600 hover:bg-slate-50 transition"
+                  onClick={() => setCreateModalTab("crear")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                    createModalTab === "crear"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
                 >
-                  Cancelar
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>Invitar / Crear Nuevo Acceso</span>
                 </button>
+
                 <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs font-mono uppercase rounded-md shadow-md transition flex items-center gap-1.5"
+                  type="button"
+                  onClick={() => setCreateModalTab("compartir")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                    createModalTab === "compartir"
+                      ? "bg-emerald-600 text-white shadow-xs"
+                      : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
+                  }`}
                 >
-                  <Check className="w-4 h-4" />
-                  <span>Guardar & Generar Ficha de Entrega</span>
+                  <Share2 className="w-3.5 h-3.5 text-current" />
+                  <span>Compartir Cuentas con Profesionales ({users.filter((u) => u.role === "doctor").length})</span>
                 </button>
               </div>
-            </form>
+
+              {createModalTab === "compartir" && (
+                <button
+                  type="button"
+                  onClick={handleCopyAllProfessionalsSummary}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-[11px] font-mono font-bold rounded-md transition cursor-pointer shrink-0 self-start sm:self-auto"
+                >
+                  {copiedAllProfessionals ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedAllProfessionals ? "¡Nómina Copiada!" : "Copiar Nómina Completa"}</span>
+                </button>
+              )}
+            </div>
+
+            {/* ========================================================================= */}
+            {/* SUB-VIEW 1: FORMULARIO CREAR / INVITAR NUEVO ACCESO */}
+            {/* ========================================================================= */}
+            {createModalTab === "crear" && (
+              <form onSubmit={handleCreateSubmit} className="space-y-4 font-mono text-xs">
+                {/* Shortcut banner to Compartir Cuentas */}
+                <div className="bg-emerald-50/80 border border-emerald-200 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                  <div className="flex items-center gap-2">
+                    <Share2 className="w-4 h-4 text-emerald-700 shrink-0" />
+                    <span className="text-xs text-emerald-950 font-sans">
+                      ¿Deseas enviar las cuentas ya listas a los <strong>8 especialistas</strong> del equipo?
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCreateModalTab("compartir")}
+                    className="self-start sm:self-center px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-mono font-bold uppercase rounded transition shrink-0 cursor-pointer"
+                  >
+                    Ver Cuentas para Enviar →
+                  </button>
+                </div>
+
+                {/* Role Selection Buttons */}
+                <div>
+                  <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1.5 font-bold">
+                    Selecciona el Rol del Usuario *
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {(["doctor", "recepcion", "admin", "paciente"] as const).map((r) => {
+                      const meta = roleBadgeConfig[r];
+                      const Icon = meta.icon;
+                      const isSelected = createRole === r;
+                      return (
+                        <button
+                          key={r}
+                          type="button"
+                          onClick={() => handleRoleSelectionChange(r)}
+                          className={`p-2.5 rounded-lg border text-left transition flex flex-col gap-1 cursor-pointer ${
+                            isSelected
+                              ? `border-slate-900 bg-slate-900 text-white shadow-sm ring-2 ring-slate-900/10`
+                              : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-white" : meta.text}`} />
+                            <span className="font-bold text-[11px] uppercase">{r}</span>
+                          </div>
+                          <span className={`text-[10px] ${isSelected ? "text-slate-300" : "text-slate-500"}`}>
+                            {r === "doctor" && "Box Clínico"}
+                            {r === "recepcion" && "Turno & Agenda"}
+                            {r === "admin" && "Control Total"}
+                            {r === "paciente" && "Ficha & Convenio"}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* General Fields */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
+                      Nombre Completo *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={createFullName}
+                      onChange={(e) => setCreateFullName(e.target.value)}
+                      placeholder={
+                        createRole === "doctor"
+                          ? "Ej: Dr. Roberto Silva"
+                          : createRole === "recepcion"
+                          ? "Ej: Andrea Muñoz"
+                          : "Ej: Nombre y Apellido"
+                      }
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs focus:outline-none focus:border-slate-900 focus:bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
+                      Correo Electrónico (Usuario de Acceso) *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={createEmail}
+                      onChange={(e) => setCreateEmail(e.target.value)}
+                      placeholder="usuario@behappydental.cl"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
+                      RUT Chileno
+                    </label>
+                    <input
+                      type="text"
+                      value={createRut}
+                      onChange={(e) => setCreateRut(e.target.value)}
+                      placeholder="15.820.419-3"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
+                      Teléfono Móvil (WhatsApp para envío)
+                    </label>
+                    <input
+                      type="tel"
+                      value={createPhone}
+                      onChange={(e) => setCreatePhone(e.target.value)}
+                      placeholder="+56 9 1234 5678"
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
+                    />
+                  </div>
+                </div>
+
+                {/* DYNAMIC ROLE FIELDS */}
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-3">
+                  <div className="text-[11px] font-bold uppercase text-slate-800 flex items-center gap-1.5 border-b border-slate-200 pb-1.5">
+                    <BadgeCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Configuración Específica para Perfil: {createRole.toUpperCase()}</span>
+                  </div>
+
+                  {/* DOCTOR FIELDS */}
+                  {createRole === "doctor" && (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                            Especialidad Odontológica *
+                          </label>
+                          <select
+                            value={createSpecialty}
+                            onChange={(e) => setCreateSpecialty(e.target.value)}
+                            className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
+                          >
+                            {DENTAL_SPECIALTIES.map((esp) => (
+                              <option key={esp} value={esp}>
+                                {esp}
+                              </option>
+                            ))}
+                            <option value="otra">Otra especialidad...</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                            Box Clínico Predeterminado
+                          </label>
+                          <select
+                            value={createBoxAssigned}
+                            onChange={(e) => setCreateBoxAssigned(e.target.value)}
+                            className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
+                          >
+                            <option value="Box 1">Box 1 (Ortodoncia / General)</option>
+                            <option value="Box 2">Box 2 (Estética / Restauradora)</option>
+                            <option value="Box 3">Box 3 (Cirugía / Implantes)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {createSpecialty === "otra" && (
+                        <div>
+                          <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                            Escribe la Especialidad
+                          </label>
+                          <input
+                            type="text"
+                            value={createCustomSpecialty}
+                            onChange={(e) => setCreateCustomSpecialty(e.target.value)}
+                            placeholder="Ej: Radiología Maxilofacial"
+                            className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
+                          />
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                            Registro SIS / Superintendencia
+                          </label>
+                          <input
+                            type="text"
+                            value={createSisRegistration}
+                            onChange={(e) => setCreateSisRegistration(e.target.value)}
+                            placeholder="Ej: SIS-84920"
+                            className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
+                          />
+                        </div>
+
+                        <div className="flex items-center pt-4">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={createSyncWithCmsDoctors}
+                              onChange={(e) => setCreateSyncWithCmsDoctors(e.target.checked)}
+                              className="rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                            />
+                            <span className="text-[10px] text-slate-700">
+                              Vincular a nómina de doctores del sitio web (CMS)
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* RECEPCION FIELDS */}
+                  {createRole === "recepcion" && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                          Turno & Horario
+                        </label>
+                        <select
+                          value={createShift}
+                          onChange={(e) => setCreateShift(e.target.value)}
+                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
+                        >
+                          {RECEPTION_SHIFTS.map((sh) => (
+                            <option key={sh} value={sh}>
+                              {sh}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                          Ubicación de Atención
+                        </label>
+                        <input
+                          type="text"
+                          value={createAssignedDesk}
+                          onChange={(e) => setCreateAssignedDesk(e.target.value)}
+                          placeholder="Recepción Central Suecia 3580"
+                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ADMIN FIELDS */}
+                  {createRole === "admin" && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                          Cargo / Área de Dirección *
+                        </label>
+                        <select
+                          value={createPositionTitle}
+                          onChange={(e) => setCreatePositionTitle(e.target.value)}
+                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
+                        >
+                          {ADMIN_POSITIONS.map((pos) => (
+                            <option key={pos} value={pos}>
+                              {pos}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                          Nivel de Privilegios
+                        </label>
+                        <input
+                          type="text"
+                          disabled
+                          value="Acceso Total (CMS, Fichas, Finanzas, Usuarios)"
+                          className="w-full px-3 py-1.5 bg-slate-200 border border-slate-300 rounded text-slate-700 text-xs"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PACIENTE FIELDS */}
+                  {createRole === "paciente" && (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                          Previsión de Salud
+                        </label>
+                        <select
+                          value={createPrevision}
+                          onChange={(e) => setCreatePrevision(e.target.value)}
+                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
+                        >
+                          {HEALTH_PREVISIONS.map((prev) => (
+                            <option key={prev} value={prev}>
+                              {prev}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                          Convenio Club BeHappy
+                        </label>
+                        <select
+                          value={createConvenioLevel}
+                          onChange={(e) => setCreateConvenioLevel(e.target.value as any)}
+                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
+                        >
+                          <option value="20%">20% (Plan Preventivo)</option>
+                          <option value="40%">40% (Plan Oro)</option>
+                          <option value="60%">60% (Plan Corporativo)</option>
+                          <option value="Ninguno">Ninguno</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] uppercase text-slate-600 mb-1 font-semibold">
+                          Contacto Emergencia
+                        </label>
+                        <input
+                          type="text"
+                          value={createEmergencyContact}
+                          onChange={(e) => setCreateEmergencyContact(e.target.value)}
+                          placeholder="Nombre y Teléfono"
+                          className="w-full px-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* PASSWORD SETUP & GENERATOR */}
+                <div className="bg-emerald-50/60 border border-emerald-200 rounded-lg p-3.5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[11px] font-mono uppercase text-emerald-950 font-bold flex items-center gap-1.5">
+                      <Key className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>Contraseña de Acceso para Entregar *</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setCreatePassword(generateSuggestedPassword(createRole))}
+                      className="text-[10px] text-emerald-800 hover:text-emerald-950 font-bold flex items-center gap-1 underline cursor-pointer"
+                    >
+                      <Sparkles className="w-3 h-3 text-emerald-600" />
+                      Generar Contraseña Segura
+                    </button>
+                  </div>
+
+                  <div className="relative">
+                    <input
+                      type={showCreatePasswordToggle ? "text" : "password"}
+                      required
+                      value={createPassword}
+                      onChange={(e) => setCreatePassword(e.target.value)}
+                      placeholder="Ej: BeHappy2026!"
+                      className="w-full pl-3 pr-10 py-2 bg-white border border-emerald-300 rounded text-slate-900 text-xs font-mono font-bold focus:outline-none focus:border-emerald-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCreatePasswordToggle(!showCreatePasswordToggle)}
+                      className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+                    >
+                      {showCreatePasswordToggle ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+
+                  <p className="text-[10px] text-emerald-800 leading-relaxed font-light">
+                    Esta es la contraseña que entregarás a la persona para que inicie sesión en{" "}
+                    <strong>/login</strong>. Puedes enviársela de inmediato por WhatsApp o ver la ficha completa.
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateModal(false)}
+                    className="px-4 py-2 border border-slate-300 rounded text-xs font-mono uppercase text-slate-600 hover:bg-slate-50 transition cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCreateAndShareWhatsApp}
+                      className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs font-mono uppercase rounded-md shadow-md transition flex items-center gap-1.5 cursor-pointer"
+                      title="Guarda la cuenta y abre WhatsApp Web para enviar las credenciales"
+                    >
+                      <Phone className="w-4 h-4" />
+                      <span>Compartir por WhatsApp</span>
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white font-bold text-xs font-mono uppercase rounded-md shadow-md transition flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Check className="w-4 h-4 text-emerald-400" />
+                      <span>Guardar & Ver Ficha</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
+
+            {/* ========================================================================= */}
+            {/* SUB-VIEW 2: COMPARTIR CUENTAS CON PROFESIONALES */}
+            {/* ========================================================================= */}
+            {createModalTab === "compartir" && (
+              <div className="space-y-4 font-mono text-xs">
+                {/* Search & Filter Bar */}
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                  <div className="relative flex-1 max-w-sm">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                    <input
+                      type="text"
+                      placeholder="Buscar por especialista, especialidad o Box..."
+                      value={shareSearch}
+                      onChange={(e) => setShareSearch(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs focus:outline-none focus:border-slate-900"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                    <span className="text-[10px] text-slate-500 uppercase font-bold">Filtro:</span>
+                    {(["doctor", "recepcion", "admin", "todos"] as const).map((f) => (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => setShareFilter(f)}
+                        className={`px-2.5 py-1 rounded text-[10px] uppercase font-bold transition cursor-pointer ${
+                          shareFilter === f
+                            ? "bg-slate-900 text-white"
+                            : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+                        }`}
+                      >
+                        {f === "doctor"
+                          ? `Especialistas (${users.filter((u) => u.role === "doctor").length})`
+                          : f === "recepcion"
+                          ? `Recepción (${users.filter((u) => u.role === "recepcion").length})`
+                          : f === "admin"
+                          ? `Admins (${users.filter((u) => u.role === "admin").length})`
+                          : "Todos"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Professionals List */}
+                <div className="max-h-[55vh] overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
+                  {(() => {
+                    const shareList = users.filter((u) => {
+                      if (shareFilter !== "todos" && u.role !== shareFilter) return false;
+                      if (!shareSearch.trim()) return true;
+                      const term = shareSearch.toLowerCase();
+                      return (
+                        u.fullName.toLowerCase().includes(term) ||
+                        u.email.toLowerCase().includes(term) ||
+                        (u.specialty && u.specialty.toLowerCase().includes(term)) ||
+                        (u.boxAssigned && u.boxAssigned.toLowerCase().includes(term)) ||
+                        (u.clinicalRegistrationNumber && u.clinicalRegistrationNumber.toLowerCase().includes(term)) ||
+                        (u.positionTitle && u.positionTitle.toLowerCase().includes(term))
+                      );
+                    });
+
+                    if (shareList.length === 0) {
+                      return (
+                        <div className="p-8 text-center text-slate-500 space-y-1">
+                          <Users className="w-6 h-6 text-slate-400 mx-auto" />
+                          <p className="text-xs font-semibold">No se encontraron profesionales con ese filtro</p>
+                          <p className="text-[11px] text-slate-400">Intenta con otro término de búsqueda o selecciona &quot;Todos&quot;.</p>
+                        </div>
+                      );
+                    }
+
+                    return shareList.map((prof) => {
+                      return (
+                        <div
+                          key={prof.id}
+                          className="pt-2.5 first:pt-0 p-3 bg-slate-50/70 border border-slate-200 rounded-lg hover:border-slate-300 hover:bg-white transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="relative w-12 h-12 rounded-full overflow-hidden bg-white border border-slate-300 shrink-0">
+                              {prof.avatarUrl ? (
+                                <Image
+                                  src={prof.avatarUrl}
+                                  alt={prof.fullName}
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center font-bold text-xs uppercase bg-slate-200 text-slate-700">
+                                  {prof.fullName.slice(0, 2)}
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="space-y-1">
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <h4 className="font-bold text-slate-900 text-xs sm:text-sm">{prof.fullName}</h4>
+                                {prof.boxAssigned && (
+                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                    {prof.boxAssigned}
+                                  </span>
+                                )}
+                                {prof.clinicalRegistrationNumber && (
+                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                    {prof.clinicalRegistrationNumber}
+                                  </span>
+                                )}
+                              </div>
+
+                              <p className="text-[11px] text-slate-600 font-sans">
+                                {prof.specialty || prof.shift || prof.positionTitle || "Profesional BeHappy"}
+                              </p>
+
+                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-mono text-slate-500 pt-0.5">
+                                <span className="flex items-center gap-1">
+                                  <Mail className="w-3 h-3 text-slate-400" />
+                                  <strong className="text-slate-800">{prof.email}</strong>
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Lock className="w-3 h-3 text-emerald-600" />
+                                  Clave:{" "}
+                                  <span className="font-bold text-slate-900 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 select-all">
+                                    {prof.password || "BeHappy2026!"}
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Share Buttons */}
+                          <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-center">
+                            {/* WhatsApp Button */}
+                            <a
+                              href={`https://wa.me/${(prof.phone || "+56947578597").replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                                formatCredentialDeliveryMessage(prof)
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold rounded shadow-xs transition flex items-center gap-1.5"
+                              title={`Enviar mensaje con accesos por WhatsApp a ${prof.fullName}`}
+                            >
+                              <Phone className="w-3.5 h-3.5" />
+                              <span>WhatsApp</span>
+                            </a>
+
+                            {/* Copy Message */}
+                            <button
+                              type="button"
+                              onClick={() => handleCopySingleProfessional(prof)}
+                              className="p-1.5 border border-slate-300 hover:border-slate-800 rounded bg-white text-slate-700 transition cursor-pointer"
+                              title="Copiar mensaje de credenciales al portapapeles"
+                            >
+                              {copiedSingleId === prof.id ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+
+                            {/* Full Card */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setHandoffUser(prof);
+                                setShowHandoffModal(true);
+                              }}
+                              className="p-1.5 border border-slate-300 hover:border-slate-800 rounded bg-white text-slate-700 transition cursor-pointer"
+                              title="Ver ficha completa de entrega"
+                            >
+                              <FileCheck className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+
+                {/* Footer inside Compartir */}
+                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setCreateModalTab("crear")}
+                    className="text-xs text-slate-600 hover:text-slate-900 font-mono font-bold flex items-center gap-1 cursor-pointer"
+                  >
+                    ← Volver a Invitar / Crear Nuevo
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateModal(false)}
+                    className="px-4 py-2 border border-slate-300 rounded text-xs font-mono uppercase text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

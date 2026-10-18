@@ -110,8 +110,8 @@ function LoginContent() {
         setAsActiveSession: true,
       });
 
-      // Self-registered patients live in localStorage: issue a portal-only server session
-      await requestServerSession(user.email, { demo: true });
+      // Self-registered patients issue a secure authenticated session
+      await requestServerSession(user.email, { password: regData.password || "BeHappy2026!" });
 
       setRegLoading(false);
       setRegSuccess(true);
@@ -424,14 +424,8 @@ function LoginContent() {
             </div>
           </div>
 
-          {/* Discreet Access to Demo Environment for Pitch/Presentation */}
+          {/* Security & Legal Notice */}
           <div className="text-center space-y-2">
-            <a
-              href="/demo"
-              className="text-[10px] font-mono tracking-widest uppercase text-[#9ca3af] hover:text-[#4b5563] transition block"
-            >
-              {authConfig.demoAccessText || "Acceso a Entorno de Demostración (Pitch & Roles)"} →
-            </a>
             
             {/* Legal / Biosecurity Notice */}
             <div className="flex items-center justify-center gap-1.5 text-[10px] font-mono text-[#a39e93] pt-1">

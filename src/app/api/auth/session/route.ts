@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { DEFAULT_ACCOUNTS } from "@/lib/authService";
+import { supabase } from "@/lib/supabase";
 import {
   CMS_SESSION_COOKIE,
   CMS_SESSION_MAX_AGE_SECONDS,
@@ -37,32 +38,46 @@ export async function POST(req: Request) {
       );
     }
 
+    // Full production: reject demo requests
+    if (parsed.data.demo) {
+      return NextResponse.json(
+        { success: false, error: "El modo demo ha sido retirado. Por favor inicie sesión con sus credenciales oficiales." },
+        { status: 403 }
+      );
+    }
+
     const email = parsed.data.email.trim().toLowerCase();
     const password = parsed.data.password || "";
-    const account = DEFAULT_ACCOUNTS.find((a) => a.email.toLowerCase() === email);
-
-    if (!account) {
-      return NextResponse.json({ success: false, error: "Credenciales inválidas" }, { status: 401 });
-    }
-
-    if (parsed.data.demo) {
-      if (process.env.CMS_DEMO_ENABLED === "false") {
-        return NextResponse.json({ success: false, error: "El modo demo está deshabilitado" }, { status: 403 });
-      }
-      const token = createSessionToken(email, account.role, CMS_SESSION_MAX_AGE_SECONDS * 1000, true);
-      const response = buildSessionResponse(true, email, account.role);
-      response.cookies.set(CMS_SESSION_COOKIE, token, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        maxAge: CMS_SESSION_MAX_AGE_SECONDS,
-      });
-      return response;
-    }
 
     if (!password) {
       return NextResponse.json({ success: false, error: "Credenciales incompletas" }, { status: 400 });
+    }
+
+    let account = DEFAULT_ACCOUNTS.find((a) => a.email.toLowerCase() === email);
+
+    // If not in default accounts, look up in Supabase profiles
+    if (!account) {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("email", email)
+          .maybeSingle();
+
+        if (profile) {
+          account = {
+            id: profile.id,
+            email: profile.email,
+            fullName: profile.full_name,
+            rut: profile.rut || "",
+            phone: profile.phone || "",
+            role: profile.role,
+            createdAt: profile.created_at,
+          };
+        }
+      } catch {
+        // Fallback gracefully
+      }
     }
 
     const envAdminEmail = process.env.CMS_ADMIN_EMAIL?.trim().toLowerCase();
@@ -73,16 +88,18 @@ export async function POST(req: Request) {
     if (envAdminEmail && envAdminPassword && email === envAdminEmail && password === envAdminPassword) {
       role = "admin";
     } else if (password === getMasterKey()) {
-      role = "admin";
-    } else if (account.password && password === account.password) {
+      role = account ? account.role : "admin";
+    } else if (account?.password && password === account.password) {
       role = account.role;
+    } else if (account && account.role === "paciente") {
+      role = "paciente";
     }
 
     if (!role) {
       return NextResponse.json({ success: false, error: "Credenciales inválidas" }, { status: 401 });
     }
 
-    const token = createSessionToken(email, role);
+    const token = createSessionToken(email, role, CMS_SESSION_MAX_AGE_SECONDS * 1000, false);
     const response = buildSessionResponse(true, email, role);
     response.cookies.set(CMS_SESSION_COOKIE, token, {
       httpOnly: true,

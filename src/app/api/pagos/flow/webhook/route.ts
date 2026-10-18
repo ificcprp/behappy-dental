@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { flowGetPaymentStatus } from "@/infrastructure/payments/flow/client";
 import { supabase } from "@/lib/supabase";
+import { syncClubSubscriberConvenio } from "@/lib/clubConvenios";
 
 export async function POST(request: Request) {
   try {
@@ -62,10 +63,23 @@ export async function POST(request: Request) {
       // Activación de suscripciones del Club BeHappy pagadas por Flow
       if (opt?.type === "membresia_club" && opt.commerceOrder && cloudReady) {
         try {
-          await supabase
+          const { data: subscription } = await supabase
             .from("suscripciones_club")
             .update({ status: "activa" })
-            .eq("flow_subscription_id", opt.commerceOrder);
+            .eq("flow_subscription_id", opt.commerceOrder)
+            .select("id, titular_rut")
+            .maybeSingle();
+
+          if (subscription) {
+            const sync = await syncClubSubscriberConvenio({
+              subscriptionId: subscription.id,
+              rut: subscription.titular_rut,
+              action: "assign",
+            });
+            if (!sync.ok) {
+              console.warn("[Club] Convenio no sincronizado con Dentalink:", sync.reason);
+            }
+          }
         } catch (dbErr) {
           console.warn("Error activating club subscriber in Supabase:", dbErr);
         }

@@ -210,27 +210,6 @@ export function Navbar() {
                 );
               })}
 
-              {/* Modo Demo explicitado en la barra de navegación */}
-              {headerConfig.showDemoButton && (
-                <a
-                  href="/demo"
-                  style={{
-                    fontSize: `${headerConfig.fontSize}px`,
-                    letterSpacing: headerConfig.letterSpacing,
-                    textTransform: headerConfig.textTransform,
-                    fontFamily: getLinkFontFamily(),
-                  }}
-                  className={`px-2.5 py-1 rounded transition-colors inline-flex items-center gap-1.5 font-bold shadow-2xs whitespace-nowrap shrink-0 ${
-                    isDark
-                      ? "bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 hover:border-amber-400"
-                      : "bg-amber-500/10 border border-amber-500/30 text-amber-900 hover:bg-amber-500/20 hover:border-amber-500"
-                  }`}
-                  title="Explorar la suite interactiva de presentación para inversionistas (4 Roles)"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <span>{headerConfig.demoButtonText || "Demo OS (4 Roles)"}</span>
-                </a>
-              )}
             </nav>
           )}
 
@@ -367,24 +346,6 @@ export function Navbar() {
               );
             })}
 
-            {/* Enlace explícito de Modo Demo en menú móvil */}
-            {headerConfig.showDemoButton && (
-              <a
-                href="/demo"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block py-3 text-xs font-mono tracking-widest uppercase font-bold px-2 rounded-xs my-2 flex items-center justify-between border-b ${
-                  isDark
-                    ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
-                    : "bg-amber-50/50 text-amber-900 border-amber-200/60"
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                  <span>{headerConfig.demoButtonText || "Demo OS (4 Roles)"}</span>
-                </span>
-                <ArrowRight className="w-3.5 h-3.5 text-amber-500" />
-              </a>
-            )}
           </div>
 
           {/* Botones de acción móvil */}

@@ -358,8 +358,8 @@ export const DEFAULT_HEADER_CONFIG: CMSHeaderConfig = {
   letterSpacing: "0.16em",
   textTransform: "uppercase",
   fontFamily: "mono",
-  showDemoButton: true,
-  demoButtonText: "Demo Suite (4 Roles)",
+  showDemoButton: false,
+  demoButtonText: "",
   portalButtonText: "Portal Clínico",
   bookingButtonText: "Reservar Cita",
   isSticky: true,
@@ -512,7 +512,7 @@ export function getCMSData(): CMSData {
       preventionSection: parsed.preventionSection ? { ...DEFAULT_PREVENTION_SECTION, ...parsed.preventionSection } : DEFAULT_PREVENTION_SECTION,
       membershipPlans: parsed.membershipPlans && parsed.membershipPlans.length > 0 ? parsed.membershipPlans : DEFAULT_MEMBERSHIP_PLANS,
       authPortal: parsed.authPortal ? { ...DEFAULT_AUTH_PORTAL, ...parsed.authPortal } : DEFAULT_AUTH_PORTAL,
-      headerConfig: parsed.headerConfig ? { ...DEFAULT_HEADER_CONFIG, ...parsed.headerConfig } : DEFAULT_HEADER_CONFIG,
+      headerConfig: parsed.headerConfig ? { ...DEFAULT_HEADER_CONFIG, ...parsed.headerConfig, showDemoButton: false } : DEFAULT_HEADER_CONFIG,
       promotions: parsed.promotions && parsed.promotions.length > 0 ? parsed.promotions.map((p: any, idx: number) => ({
         ...p,
         image: p.image || (idx === 0 ? "/images/promos/seguro-dental.png" : "/images/promos/promos-vigentes.png")

@@ -107,11 +107,7 @@ export function Footer() {
                   Portal Clínico
                 </a>
               </li>
-              <li>
-                <a href="/demo" className="hover:text-amber-300 transition text-amber-400 font-medium">
-                  Demo OS (4 Roles) ↗
-                </a>
-              </li>
+
               <li>
                 <a href="/login" className="hover:text-white transition text-neutral-400">
                   Acceso / Iniciar Sesión ↗

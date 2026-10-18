@@ -3,6 +3,7 @@ import { flowCreateDentalPayment } from "@/infrastructure/payments/flow/client";
 import { supabase } from "@/lib/supabase";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 import { flowCreateSchema, firstIssueMessage } from "@/lib/validation";
+import { syncClubSubscriberConvenio } from "@/lib/clubConvenios";
 
 function cloudReady(): boolean {
   return (
@@ -22,26 +23,36 @@ async function registerClubSubscriber(params: {
   billingCycle?: string;
   commerceOrder: string;
   simulated: boolean;
-}) {
-  if (!cloudReady()) return;
+}): Promise<string | null> {
+  if (!cloudReady()) return null;
   try {
-    await supabase.from("suscripciones_club").insert([
-      {
-        titular_name: params.patientName,
-        titular_rut: params.patientRut || null,
-        titular_phone: params.patientPhone || "sin-telefono",
-        titular_email: params.email,
-        plan_id: params.planId || "plan-club",
-        plan_name: params.subject,
-        billing_cycle: params.billingCycle || "monthly",
-        monthly_amount_clp: params.amount,
-        status: params.simulated ? "activa" : "pendiente_activacion",
-        flow_subscription_id: params.commerceOrder,
-        notes: `Checkout ${params.simulated ? "simulado" : "Flow"} · ${params.commerceOrder}`,
-      },
-    ]);
+    const { data, error } = await supabase
+      .from("suscripciones_club")
+      .insert([
+        {
+          titular_name: params.patientName,
+          titular_rut: params.patientRut || null,
+          titular_phone: params.patientPhone || "sin-telefono",
+          titular_email: params.email,
+          plan_id: params.planId || "plan-club",
+          plan_name: params.subject,
+          billing_cycle: params.billingCycle || "monthly",
+          monthly_amount_clp: params.amount,
+          status: params.simulated ? "activa" : "pendiente_activacion",
+          flow_subscription_id: params.commerceOrder,
+          notes: `Checkout ${params.simulated ? "simulado" : "Flow"} · ${params.commerceOrder}`,
+        },
+      ])
+      .select("id")
+      .maybeSingle();
+    if (error) {
+      console.warn("Error registering club subscriber:", error.message);
+      return null;
+    }
+    return data?.id ?? null;
   } catch (dbErr) {
     console.warn("Error registering club subscriber:", dbErr);
+    return null;
   }
 }
 
@@ -113,7 +124,7 @@ export async function POST(request: Request) {
       }
 
       if (type === "membresia_club") {
-        await registerClubSubscriber({
+        const subscriptionId = await registerClubSubscriber({
           patientName,
           patientRut,
           patientPhone,
@@ -125,6 +136,16 @@ export async function POST(request: Request) {
           commerceOrder,
           simulated: true,
         });
+        if (subscriptionId) {
+          const sync = await syncClubSubscriberConvenio({
+            subscriptionId,
+            rut: patientRut || null,
+            action: "assign",
+          });
+          if (!sync.ok) {
+            console.warn("[Club] Convenio no sincronizado con Dentalink:", sync.reason);
+          }
+        }
       }
 
       const returnUrlWithParams = `${urlReturn}?token=${simulatedToken}&order=${commerceOrder}&amount=${amount}&subject=${encodeURIComponent(

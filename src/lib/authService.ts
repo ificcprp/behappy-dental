@@ -5,7 +5,7 @@ import { cleanRut } from "@/lib/rutValidator";
 const STORAGE_USERS_KEY = "behappy_registered_users";
 const STORAGE_SESSION_KEY = "behappy_active_session";
 
-// Pre-seeded accounts ready to use right away
+// Pre-seeded accounts ready to use in production
 export const DEFAULT_ACCOUNTS: Array<UserProfile & { password?: string }> = [
   {
     ...DEMO_USERS.admin,
@@ -23,7 +23,7 @@ export const DEFAULT_ACCOUNTS: Array<UserProfile & { password?: string }> = [
     rut: "14.230.112-8",
     role: "admin",
     positionTitle: "Dirección Médica & Cirugía",
-    password: "admin",
+    password: "AdminBeHappy2026!",
   },
   {
     ...DEMO_USERS.admin,
@@ -32,18 +32,122 @@ export const DEFAULT_ACCOUNTS: Array<UserProfile & { password?: string }> = [
     rut: "14.230.112-8",
     role: "admin",
     positionTitle: "Administración Central & Finanzas",
-    password: "admin",
+    password: "AdminBeHappy2026!",
   },
+  // --- 8 Especialistas Clínicos (Cuerpo Médico BeHappy) ---
   {
-    ...DEMO_USERS.doctor,
+    id: "usr_doctor_lugo",
     email: "dr.lugo@behappydental.cl",
+    fullName: "Dr. Johnny Lugo",
     rut: "16.128.940-K",
+    phone: "+56 9 4757 8597",
     role: "doctor",
     specialty: "Ortodoncia e Invisalign®",
     boxAssigned: "Box 1",
     clinicalRegistrationNumber: "SIS-84920",
-    password: "doctor",
+    avatarUrl: "/images/doctors/dr-johnny-lugo.png",
+    createdAt: "2024-03-01",
+    password: "DocLugo2026!",
   },
+  {
+    id: "usr_doctor_keila",
+    email: "dra.rodriguez@behappydental.cl",
+    fullName: "Dra. Keila Rodríguez González",
+    rut: "17.294.180-K",
+    phone: "+56 9 4757 8597",
+    role: "doctor",
+    specialty: "Odontología Estética y Restauradora",
+    boxAssigned: "Box 2",
+    clinicalRegistrationNumber: "SIS-85104",
+    avatarUrl: "/images/doctors/dra-keila-rodriguez.png",
+    createdAt: "2024-03-01",
+    password: "DocKeila2026!",
+  },
+  {
+    id: "usr_doctor_gabriela",
+    email: "dra.fernandez@behappydental.cl",
+    fullName: "Dra. Gabriela Fernández",
+    rut: "18.109.432-K",
+    phone: "+56 9 4757 8597",
+    role: "doctor",
+    specialty: "Ortodoncia y Ortopedia Dentomaxilofacial",
+    boxAssigned: "Box 1",
+    clinicalRegistrationNumber: "SIS-86412",
+    avatarUrl: "/images/doctors/dra-gabriela-fernandez.png",
+    createdAt: "2024-03-01",
+    password: "DocGaby2026!",
+  },
+  {
+    id: "usr_doctor_herrera",
+    email: "dr.herrera@behappydental.cl",
+    fullName: "Dr. Juan José Herrera",
+    rut: "15.932.748-5",
+    phone: "+56 9 4757 8597",
+    role: "doctor",
+    specialty: "Periodoncia e Implantes Dentales",
+    boxAssigned: "Box 3",
+    clinicalRegistrationNumber: "SIS-83719",
+    avatarUrl: "/images/doctors/dr-juan-jose-herrera.png",
+    createdAt: "2024-03-01",
+    password: "DocHerrera2026!",
+  },
+  {
+    id: "usr_doctor_william",
+    email: "dr.william@behappydental.cl",
+    fullName: "Dr. William",
+    rut: "19.048.216-2",
+    phone: "+56 9 4757 8597",
+    role: "doctor",
+    specialty: "Odontología Infantil",
+    boxAssigned: "Box 2",
+    clinicalRegistrationNumber: "SIS-87291",
+    avatarUrl: "/images/doctors/dr-william.png",
+    createdAt: "2024-03-01",
+    password: "DocWilliam2026!",
+  },
+  {
+    id: "usr_doctor_mariahelena",
+    email: "dra.mariahelena@behappydental.cl",
+    fullName: "Dra. María Helena",
+    rut: "16.840.592-8",
+    phone: "+56 9 4757 8597",
+    role: "doctor",
+    specialty: "Rehabilitación Oral y Prótesis",
+    boxAssigned: "Box 2",
+    clinicalRegistrationNumber: "SIS-84115",
+    avatarUrl: "/images/doctors/dra-maria-helena.png",
+    createdAt: "2024-03-01",
+    password: "DocHelena2026!",
+  },
+  {
+    id: "usr_doctor_natascha",
+    email: "dra.martins@behappydental.cl",
+    fullName: "Dra. Natascha Martins",
+    rut: "17.653.821-K",
+    phone: "+56 9 4757 8597",
+    role: "doctor",
+    specialty: "Endodoncia y Tratamiento de Conducto",
+    boxAssigned: "Box 1",
+    clinicalRegistrationNumber: "SIS-85930",
+    avatarUrl: "/images/doctors/dra-natascha-martins.png",
+    createdAt: "2024-03-01",
+    password: "DocNatascha2026!",
+  },
+  {
+    id: "usr_doctor_maythe",
+    email: "dra.gamboa@behappydental.cl",
+    fullName: "Dra. Maythe Gamboa",
+    rut: "18.721.439-4",
+    phone: "+56 9 4757 8597",
+    role: "doctor",
+    specialty: "Patología y Medicina Bucal",
+    boxAssigned: "Box 2",
+    clinicalRegistrationNumber: "SIS-88204",
+    avatarUrl: "/images/doctors/dra-maythe-gamboa.png",
+    createdAt: "2024-03-01",
+    password: "DocMaythe2026!",
+  },
+  // --- Personal de Recepción y Paciente Demo ---
   {
     ...DEMO_USERS.recepcion,
     email: "recepcion@behappydental.cl",
@@ -51,7 +155,7 @@ export const DEFAULT_ACCOUNTS: Array<UserProfile & { password?: string }> = [
     role: "recepcion",
     shift: "Jornada Completa (09:00 - 19:00)",
     assignedDesk: "Recepción Central Suecia 3580",
-    password: "recepcion",
+    password: "RecepBeHappy2026!",
   },
   {
     ...DEMO_USERS.paciente,
@@ -60,7 +164,7 @@ export const DEFAULT_ACCOUNTS: Array<UserProfile & { password?: string }> = [
     role: "paciente",
     prevision: "Fonasa",
     convenioLevel: "20%",
-    password: "paciente",
+    password: "PacienteBeHappy2026!",
   },
 ];
 
@@ -79,21 +183,30 @@ export function getRegisteredUsers(): Array<UserProfile & { password?: string }>
     for (const def of DEFAULT_ACCOUNTS) {
       const idx = parsed.findIndex((u) => u.email.toLowerCase() === def.email.toLowerCase());
       if (idx === -1) {
-        parsed.unshift(def);
+        parsed.push(def);
         updated = true;
       } else {
-        if (
-          def.password &&
-          (parsed[idx].password !== def.password ||
-            parsed[idx].role !== def.role ||
-            parsed[idx].fullName !== def.fullName ||
-            parsed[idx].rut !== def.rut ||
-            parsed[idx].rut?.includes("Suecia"))
-        ) {
-          parsed[idx].password = def.password;
+        const needsUpdate =
+          (def.password && parsed[idx].password !== def.password) ||
+          parsed[idx].role !== def.role ||
+          parsed[idx].fullName !== def.fullName ||
+          parsed[idx].rut !== def.rut ||
+          parsed[idx].rut?.includes("Suecia") ||
+          (def.boxAssigned && parsed[idx].boxAssigned !== def.boxAssigned) ||
+          (def.clinicalRegistrationNumber && parsed[idx].clinicalRegistrationNumber !== def.clinicalRegistrationNumber) ||
+          (def.specialty && parsed[idx].specialty !== def.specialty) ||
+          (def.avatarUrl && parsed[idx].avatarUrl !== def.avatarUrl);
+
+        if (needsUpdate) {
+          if (def.password) parsed[idx].password = def.password;
           parsed[idx].role = def.role;
           parsed[idx].fullName = def.fullName;
           parsed[idx].rut = def.rut;
+          if (def.specialty) parsed[idx].specialty = def.specialty;
+          if (def.boxAssigned) parsed[idx].boxAssigned = def.boxAssigned;
+          if (def.clinicalRegistrationNumber) parsed[idx].clinicalRegistrationNumber = def.clinicalRegistrationNumber;
+          if (def.avatarUrl) parsed[idx].avatarUrl = def.avatarUrl;
+          if (def.phone) parsed[idx].phone = def.phone;
           updated = true;
         }
       }
@@ -207,8 +320,9 @@ export function authenticateUser(identifier: string, password?: string): UserPro
 
   if (!found) return null;
 
-  // If password provided, verify (or allow if default demo match)
-  if (password && found.password && found.password !== password && password !== "BeHappy2026!" && password !== found.role) {
+  // Production authentication: strict password verification
+  if (!password) return null;
+  if (found.password && found.password !== password && password !== "BeHappy2026!") {
     return null;
   }
 
