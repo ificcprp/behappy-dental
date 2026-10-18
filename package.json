@@ -6,7 +6,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:e2e": "npx tsx --env-file=.env.local scripts/test-e2e.ts"
   },
   "dependencies": {
     "@react-email/render": "^1.4.0",
