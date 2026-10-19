@@ -36,6 +36,10 @@ export async function getPublishedCMS(): Promise<CMSData> {
         stats: { ...defaults.clinicInfo.stats, ...(incomingClinic.stats || {}) },
       },
       hero: payload.hero ? { ...defaults.hero, ...payload.hero } : defaults.hero,
+      whatsappBooking: payload.whatsappBooking ? { ...defaults.whatsappBooking, ...payload.whatsappBooking } : defaults.whatsappBooking,
+      flashAlert: payload.flashAlert ? { ...defaults.flashAlert, ...payload.flashAlert } : defaults.flashAlert,
+      seoMarketing: payload.seoMarketing ? { ...defaults.seoMarketing, ...payload.seoMarketing } : defaults.seoMarketing,
+      pricingProcedures: payload.pricingProcedures && payload.pricingProcedures.length > 0 ? payload.pricingProcedures : defaults.pricingProcedures,
     };
   } catch {
     return DEFAULT_CMS_DATA;

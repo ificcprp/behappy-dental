@@ -2,95 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
-import { getCMSData, CMSData } from "@/lib/cmsStore";
+import { getCMSData, CMSData, CMSPricingProcedure, DEFAULT_PRICING_PROCEDURES } from "@/lib/cmsStore";
 import { Treatment } from "@/data/treatments";
 
-interface ProcedurePrice {
-  id: string;
-  name: string;
-  marketPrice: number;
-  convenioDiscountPercent: number;
-  fonasaEstimateCoverage: number;
-  isapreEstimateCoverage: number;
-  category: string;
-  notes: string;
-}
-
-const DEFAULT_PROCEDURES: ProcedurePrice[] = [
-  {
-    id: "evaluacion",
-    name: "Evaluación Diagnóstica + Radiografía Digital",
-    marketPrice: 35000,
-    convenioDiscountPercent: 100, // 100% bonificado en membresía anual
-    fonasaEstimateCoverage: 5000,
-    isapreEstimateCoverage: 12000,
-    category: "Diagnóstico",
-    notes: "Cámara intraoral y Rx periapical de alta resolución."
-  },
-  {
-    id: "limpieza",
-    name: "Limpieza con Ultrasonido (Destartraje + Profilaxis)",
-    marketPrice: 55000,
-    convenioDiscountPercent: 50,
-    fonasaEstimateCoverage: 8000,
-    isapreEstimateCoverage: 20000,
-    category: "Prevención",
-    notes: "Remoción de sarro supragingival y pulido con flúor."
-  },
-  {
-    id: "resina",
-    name: "Restauración Estética Resina (Tapadura 1 cara)",
-    marketPrice: 65000,
-    convenioDiscountPercent: 40,
-    fonasaEstimateCoverage: 12000,
-    isapreEstimateCoverage: 25000,
-    category: "Restauradora",
-    notes: "Resina nanohíbrida del color exacto del diente."
-  },
-  {
-    id: "blanqueamiento",
-    name: "Blanqueamiento Led Clínico en Box",
-    marketPrice: 190000,
-    convenioDiscountPercent: 35,
-    fonasaEstimateCoverage: 0,
-    isapreEstimateCoverage: 0,
-    category: "Estética",
-    notes: "Aclaramiento en 1 sesión de 60 min sin dañar esmalte."
-  },
-  {
-    id: "invisalign",
-    name: "Ortodoncia Invisible Invisalign (Control Mensual)",
-    marketPrice: 85000,
-    convenioDiscountPercent: 30,
-    fonasaEstimateCoverage: 0,
-    isapreEstimateCoverage: 25000,
-    category: "Ortodoncia",
-    notes: "Alineadores transparentes certificados con Dr. Lugo."
-  },
-  {
-    id: "implante",
-    name: "Implante de Titanio Osteointegrado",
-    marketPrice: 650000,
-    convenioDiscountPercent: 25,
-    fonasaEstimateCoverage: 0,
-    isapreEstimateCoverage: 120000,
-    category: "Implantología",
-    notes: "Perno de titanio grado médico con cirugía guiada."
-  },
-  {
-    id: "endodoncia",
-    name: "Endodoncia Mecanizada (Tratamiento de Conducto)",
-    marketPrice: 180000,
-    convenioDiscountPercent: 30,
-    fonasaEstimateCoverage: 25000,
-    isapreEstimateCoverage: 70000,
-    category: "Especialidad",
-    notes: "Instrumentación rotatoria con odontólogo especialista."
-  }
-];
-
-function mapTreatmentsToProcedures(cmsTreatments?: Treatment[]): ProcedurePrice[] {
-  if (!cmsTreatments || cmsTreatments.length === 0) return DEFAULT_PROCEDURES;
+function mapTreatmentsToProcedures(cmsTreatments?: Treatment[]): CMSPricingProcedure[] {
+  if (!cmsTreatments || cmsTreatments.length === 0) return DEFAULT_PRICING_PROCEDURES;
   return cmsTreatments.map((t) => {
     const market = t.priceBaseCLP || 45000;
     const clubPrice = t.priceClubCLP || Math.round(market * 0.7);
@@ -114,25 +30,37 @@ function mapTreatmentsToProcedures(cmsTreatments?: Treatment[]): ProcedurePrice[
 }
 
 export function DentalPricingCalculator() {
-  const [procedures, setProcedures] = useState<ProcedurePrice[]>(DEFAULT_PROCEDURES);
+  const [procedures, setProcedures] = useState<CMSPricingProcedure[]>(() => {
+    try {
+      const cms = getCMSData();
+      return cms?.pricingProcedures && cms.pricingProcedures.length > 0
+        ? cms.pricingProcedures
+        : DEFAULT_PRICING_PROCEDURES;
+    } catch {
+      return DEFAULT_PRICING_PROCEDURES;
+    }
+  });
   const [selectedProcedureId, setSelectedProcedureId] = useState<string>("evaluacion");
   const [prevision, setPrevision] = useState<"particular" | "fonasa" | "isapre">("isapre");
   const [hasConvenio, setHasConvenio] = useState<boolean>(true);
 
   // Load from CMS on client mount and listen for real-time updates
   useEffect(() => {
-    const cms = getCMSData();
-    if (cms?.treatments && cms.treatments.length > 0) {
-      setProcedures(mapTreatmentsToProcedures(cms.treatments));
-      setSelectedProcedureId(cms.treatments[0].id || cms.treatments[0].slug);
-    }
-
-    const handleUpdate = (e: Event) => {
-      const custom = (e as CustomEvent<CMSData>).detail;
-      const tList = custom?.treatments || getCMSData().treatments;
-      if (tList && tList.length > 0) {
-        setProcedures(mapTreatmentsToProcedures(tList));
+    const loadProcedures = () => {
+      const cms = getCMSData();
+      if (cms?.pricingProcedures && cms.pricingProcedures.length > 0) {
+        setProcedures(cms.pricingProcedures);
+      } else if (cms?.treatments && cms.treatments.length > 0) {
+        setProcedures(mapTreatmentsToProcedures(cms.treatments));
+      } else {
+        setProcedures(DEFAULT_PRICING_PROCEDURES);
       }
+    };
+
+    loadProcedures();
+
+    const handleUpdate = () => {
+      loadProcedures();
     };
 
     window.addEventListener("behappy_cms_updated", handleUpdate);
@@ -140,7 +68,7 @@ export function DentalPricingCalculator() {
   }, []);
 
   const procedure =
-    procedures.find((p) => p.id === selectedProcedureId) || procedures[0] || DEFAULT_PROCEDURES[0];
+    procedures.find((p) => p.id === selectedProcedureId) || procedures[0] || DEFAULT_PRICING_PROCEDURES[0];
 
   // Calculations
   const market = procedure.marketPrice;

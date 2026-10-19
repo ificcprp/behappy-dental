@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import { Toaster } from "sonner";
+import { FlashAlertBanner } from "@/components/dental/FlashAlertBanner";
 import { TopAnnouncementTicker } from "@/components/dental/TopAnnouncementTicker";
 import { Navbar } from "@/components/dental/Navbar";
 import { Footer } from "@/components/dental/Footer";
@@ -41,31 +42,53 @@ export async function generateMetadata(): Promise<Metadata> {
   const cms = await getPublishedCMS();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://behappydental.cl";
   const customHeroTitle = cms.hero?.title && cms.hero.title !== DEFAULT_HERO.title;
-  const title = customHeroTitle ? `${cms.hero.title} | Centro Dental BeHappy Ñuñoa` : DEFAULT_TITLE;
-  const description = cms.hero?.subtitle || DEFAULT_DESCRIPTION;
+  
+  // Custom SEO from CMS if defined
+  const seo = cms.seoMarketing;
+  const title = seo?.metaTitle?.trim()
+    ? seo.metaTitle.trim()
+    : (customHeroTitle ? `${cms.hero.title} | Centro Dental BeHappy Ñuñoa` : DEFAULT_TITLE);
+
+  const description = seo?.metaDescription?.trim()
+    ? seo.metaDescription.trim()
+    : (cms.hero?.subtitle || DEFAULT_DESCRIPTION);
+
+  const ogTitle = seo?.ogTitle?.trim() ? seo.ogTitle.trim() : title;
+  const ogDescription = seo?.ogDescription?.trim() ? seo.ogDescription.trim() : description;
+
+  const rawOgImage = seo?.ogImage?.trim();
+  const ogImage = rawOgImage
+    ? (rawOgImage.startsWith("http") ? rawOgImage : `${siteUrl}${rawOgImage}`)
+    : (cms.hero?.bgImage ? `${siteUrl}${cms.hero.bgImage}` : `${siteUrl}/images/brand/logo.png`);
+
+  const keywords = Array.isArray(seo?.keywords) && seo.keywords.length > 0
+    ? seo.keywords
+    : (typeof (seo?.keywords as unknown) === "string" && (seo?.keywords as unknown as string).trim()
+      ? (seo?.keywords as unknown as string).split(",").map((k: string) => k.trim()).filter(Boolean)
+      : [
+          "centro dental en ñuñoa",
+          "dentista ñuñoa",
+          "invisalign santiago",
+          "implantes dentales ñuñoa",
+          "blanqueamiento dental",
+          "odontologia estetica santiago",
+          "Centro Dental BeHappy"
+        ]);
 
   return {
     metadataBase: new URL(siteUrl),
     title,
     description,
-    keywords: [
-      "centro dental en ñuñoa",
-      "dentista ñuñoa",
-      "invisalign santiago",
-      "implantes dentales ñuñoa",
-      "blanqueamiento dental",
-      "odontologia estetica santiago",
-      "Centro Dental BeHappy"
-    ],
+    keywords,
     authors: [{ name: cms.clinicInfo.name || "Centro Dental BeHappy" }],
     openGraph: {
-      title: cms.hero?.title || "Centro Dental BeHappy Ñuñoa | Sonrisas Felices",
-      description,
+      title: ogTitle,
+      description: ogDescription,
       url: siteUrl,
       siteName: cms.clinicInfo.name || "Centro Dental BeHappy",
       images: [
         {
-          url: cms.hero?.bgImage || "/images/brand/logo.png",
+          url: ogImage,
           width: 800,
           height: 800,
           alt: cms.clinicInfo.name || "Centro Dental BeHappy Ñuñoa"
@@ -87,7 +110,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cms = await getPublishedCMS();
-  const { clinicInfo } = cms;
+  const { clinicInfo, seoMarketing } = cms;
 
   const weekdayHours = parseTimeRange(clinicInfo.hours?.weekdays, { opens: "10:00", closes: "20:00" });
   const saturdayHours = parseTimeRange(clinicInfo.hours?.saturday, { opens: "10:00", closes: "18:00" });
@@ -146,6 +169,9 @@ export default async function RootLayout({
     sameAs: [clinicInfo.contact?.instagram || "https://www.instagram.com/dentalbehappynunoa"],
   };
 
+  const gaId = seoMarketing?.googleAnalyticsId?.trim();
+  const pixelId = seoMarketing?.metaPixelId?.trim();
+
   return (
     <html lang="es-CL">
       <head>
@@ -153,10 +179,28 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {gaId && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${gaId}');`,
+              }}
+            />
+          </>
+        )}
+        {pixelId && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', '${pixelId}');fbq('track', 'PageView');`,
+            }}
+          />
+        )}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} min-h-screen bg-[#faf8f5] text-[#141413] font-sans antialiased selection:bg-[#141413] selection:text-[#faf8f5]`}
       >
+        <FlashAlertBanner />
         <TopAnnouncementTicker />
         <Navbar />
         <main className="min-h-screen">{children}</main>

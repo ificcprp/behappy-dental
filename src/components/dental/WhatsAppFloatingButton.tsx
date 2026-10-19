@@ -2,14 +2,13 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { useWhatsAppUrl } from "./WhatsAppLink";
+import { useWhatsAppUrl, useFloatingWhatsAppMessage } from "./WhatsAppLink";
 import { MessageCircle } from "lucide-react";
 
 export function WhatsAppFloatingButton() {
   const pathname = usePathname();
-  const whatsappLink = useWhatsAppUrl(
-    "Hola Centro Dental BeHappy, me gustaría coordinar una hora de atención."
-  );
+  const floatingMsg = useFloatingWhatsAppMessage();
+  const whatsappLink = useWhatsAppUrl(floatingMsg);
 
   if (pathname?.startsWith("/portal") || pathname === "/login" || pathname === "/registro" || pathname === "/demo") return null;
 

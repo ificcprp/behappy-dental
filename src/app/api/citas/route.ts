@@ -15,6 +15,7 @@ import {
   addMinutesToTime,
   DENTALINK_ESTADO_CANDIDATAS,
 } from "@/lib/dentalink";
+import { getPublishedCMS } from "@/lib/cmsServer";
 
 const DEDUPE_WINDOW_MS = 10 * 60 * 1000;
 const inflightBookings = new Set<string>();
@@ -26,19 +27,42 @@ function cloudReady(): boolean {
   );
 }
 
-function buildWhatsappUrl(params: {
-  patientName: string;
-  treatmentName: string;
-  doctorName?: string | null;
-  dateIso?: string | null;
-  timeSlotText?: string | null;
-  patientPhone: string;
-}): string {
+function buildWhatsappUrl(
+  params: {
+    patientName: string;
+    patientRut?: string | null;
+    treatmentName: string;
+    doctorName?: string | null;
+    dateIso?: string | null;
+    timeSlotText?: string | null;
+    patientPhone: string;
+    notes?: string | null;
+  },
+  cmsWhatsapp?: {
+    whatsappNumber?: string;
+    bookingConfirmationTemplate?: string;
+  }
+): string {
+  const phone = (cmsWhatsapp?.whatsappNumber || CLINIC_INFO.contact.whatsappNumber).replace(/[^0-9]/g, "");
+  const template = cmsWhatsapp?.bookingConfirmationTemplate;
+
+  if (template) {
+    const filled = template
+      .replace("{paciente}", params.patientName)
+      .replace("{rut}", params.patientRut || "Sin RUT")
+      .replace("{tratamiento}", params.treatmentName)
+      .replace("{doctor}", params.doctorName || "Primer especialista disponible")
+      .replace("{fecha}", params.dateIso || "A convenir")
+      .replace("{horario}", params.timeSlotText || "A convenir")
+      .replace("{notas}", params.notes || "Sin observaciones");
+    return `https://api.whatsapp.com/send/?phone=${phone}&text=${encodeURIComponent(filled)}&type=phone_number&app_absent=0`;
+  }
+
   const docText = params.doctorName ? ` con ${params.doctorName}` : "";
   const slotText = params.timeSlotText ? ` (${params.timeSlotText})` : "";
   const dateText = params.dateIso ? ` para el ${params.dateIso}${slotText}` : "";
   const message = `Hola Centro Dental BeHappy, mi nombre es ${params.patientName}. Deseo confirmar una cita para *${params.treatmentName}*${docText}${dateText}. Mi teléfono de contacto es ${params.patientPhone}.`;
-  return `https://api.whatsapp.com/send/?phone=${CLINIC_INFO.contact.whatsappNumber}&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
+  return `https://api.whatsapp.com/send/?phone=${phone}&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
 }
 
 export async function GET(request: Request) {
@@ -119,14 +143,20 @@ export async function POST(request: Request) {
     } = parsed.data;
 
     const live = isDentalinkConfigured();
-    const whatsappUrl = buildWhatsappUrl({
-      patientName: patient_name,
-      treatmentName: treatment_name,
-      doctorName: doctor_name,
-      dateIso: preferred_date,
-      timeSlotText: preferred_time_slot,
-      patientPhone: patient_phone,
-    });
+    const cms = await getPublishedCMS();
+    const whatsappUrl = buildWhatsappUrl(
+      {
+        patientName: patient_name,
+        patientRut: patient_rut,
+        treatmentName: treatment_name,
+        doctorName: doctor_name,
+        dateIso: preferred_date,
+        timeSlotText: preferred_time_slot,
+        patientPhone: patient_phone,
+        notes,
+      },
+      cms.whatsappBooking
+    );
 
     let duplicated = false;
     if (cloudReady()) {

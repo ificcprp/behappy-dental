@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { CLINIC_INFO } from "@/data/clinicInfo";
-import { buildWhatsAppUrl, getWhatsAppNumber } from "@/lib/whatsapp";
+import { buildWhatsAppUrl, getWhatsAppNumber, getFloatingWhatsAppMessage } from "@/lib/whatsapp";
 
 export function useWhatsAppNumber(): string {
   const [number, setNumber] = useState(CLINIC_INFO.contact.whatsappNumber);
@@ -15,6 +15,19 @@ export function useWhatsAppNumber(): string {
   }, []);
 
   return number;
+}
+
+export function useFloatingWhatsAppMessage(): string {
+  const [msg, setMsg] = useState(getFloatingWhatsAppMessage());
+
+  useEffect(() => {
+    setMsg(getFloatingWhatsAppMessage());
+    const handleUpdate = () => setMsg(getFloatingWhatsAppMessage());
+    window.addEventListener("behappy_cms_updated", handleUpdate);
+    return () => window.removeEventListener("behappy_cms_updated", handleUpdate);
+  }, []);
+
+  return msg;
 }
 
 export function useWhatsAppUrl(message: string): string {

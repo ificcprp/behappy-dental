@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { TREATMENTS, Treatment } from "@/data/treatments";
 import { DOCTORS, Doctor } from "@/data/doctors";
 import { CLINIC_INFO } from "@/data/clinicInfo";
-import { getCMSData, CMSData } from "@/lib/cmsStore";
+import { getCMSData, CMSData, CMSWhatsappBooking, DEFAULT_WHATSAPP_BOOKING } from "@/lib/cmsStore";
 import { CheckCircle2, MessageCircle, ArrowRight, Calendar, Download } from "lucide-react";
 import { toast } from "sonner";
 import { addStoredAppointment } from "@/lib/clinicalStore";
@@ -17,6 +17,13 @@ interface BookingFormProps {
 export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId }: BookingFormProps) {
   const [treatmentsList, setTreatmentsList] = useState<Treatment[]>(TREATMENTS);
   const [doctorsList, setDoctorsList] = useState<Doctor[]>(DOCTORS);
+  const [whatsappBooking, setWhatsappBooking] = useState<CMSWhatsappBooking>(() => {
+    try {
+      return getCMSData()?.whatsappBooking || DEFAULT_WHATSAPP_BOOKING;
+    } catch {
+      return DEFAULT_WHATSAPP_BOOKING;
+    }
+  });
 
   const [selectedTreatment, setSelectedTreatment] = useState(initialTreatmentId || "revision-dental");
   const [selectedDoctor, setSelectedDoctor] = useState(initialDoctorId || "any");
@@ -27,7 +34,13 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
   const [patientPhone, setPatientPhone] = useState("");
   const [patientEmail, setPatientEmail] = useState("");
   const [notes, setNotes] = useState("");
-  const [paymentChoice, setPaymentChoice] = useState<"flow" | "whatsapp">("whatsapp");
+  const [paymentChoice, setPaymentChoice] = useState<"flow" | "whatsapp">(() => {
+    try {
+      return getCMSData()?.whatsappBooking?.depositRequired ? "flow" : "whatsapp";
+    } catch {
+      return "whatsapp";
+    }
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedData, setConfirmedData] = useState<{
     whatsappUrl: string;
@@ -43,11 +56,19 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
     const cms = getCMSData();
     if (cms?.treatments && cms.treatments.length > 0) setTreatmentsList(cms.treatments);
     if (cms?.doctors && cms.doctors.length > 0) setDoctorsList(cms.doctors);
+    if (cms?.whatsappBooking) {
+      setWhatsappBooking(cms.whatsappBooking);
+      if (cms.whatsappBooking.depositRequired) setPaymentChoice("flow");
+    }
 
     const handleCmsUpdate = (e: Event) => {
-      const custom = (e as CustomEvent<CMSData>).detail;
+      const custom = (e as CustomEvent<CMSData>).detail || getCMSData();
       if (custom?.treatments && custom.treatments.length > 0) setTreatmentsList(custom.treatments);
       if (custom?.doctors && custom.doctors.length > 0) setDoctorsList(custom.doctors);
+      if (custom?.whatsappBooking) {
+        setWhatsappBooking(custom.whatsappBooking);
+        if (custom.whatsappBooking.depositRequired) setPaymentChoice("flow");
+      }
     };
 
     const handleTriageSelected = (e: Event) => {
@@ -103,7 +124,9 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
 
       const doctorDisplayName = doctorObj ? doctorObj.name : "Primer especialista disponible";
       const treatmentDisplayName = treatmentObj ? treatmentObj.name : "Evaluación General";
-      const timeSlotDisplay = preferredSlot === "manana" ? "Mañana (10:00 - 14:00)" : "Tarde (14:00 - 20:00)";
+      const timeSlotDisplay = preferredSlot === "manana"
+        ? (whatsappBooking.timeSlotMorningText || "Mañana (10:00 - 14:00)")
+        : (whatsappBooking.timeSlotAfternoonText || "Tarde (14:00 - 20:00)");
 
       const payload = {
         patient_name: patientName,
@@ -160,7 +183,7 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               type: "abono_cita",
-              amount: 10000,
+              amount: whatsappBooking.depositAmount || 10000,
               subject: `Abono de Reserva · ${treatmentDisplayName}`,
               email: patientEmail.trim() || "contacto@behappydental.cl",
               patientName: patientName,
@@ -407,7 +430,7 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
                           : "bg-[#faf8f5] text-[#141413] border-[#ded9cd] hover:border-[#141413]"
                       }`}
                     >
-                      Mañana (10:00 - 14:00)
+                      {whatsappBooking.timeSlotMorningText || "Mañana (10:00 - 14:00)"}
                     </button>
                     <button
                       type="button"
@@ -418,7 +441,7 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
                           : "bg-[#faf8f5] text-[#141413] border-[#ded9cd] hover:border-[#141413]"
                       }`}
                     >
-                      Tarde (14:00 - 20:00)
+                      {whatsappBooking.timeSlotAfternoonText || "Tarde (14:00 - 20:00)"}
                     </button>
                   </div>
                 </div>
@@ -515,12 +538,18 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button
                   type="button"
-                  onClick={() => setPaymentChoice("whatsapp")}
+                  onClick={() => {
+                    if (whatsappBooking.depositRequired) {
+                      toast.info("La administración requiere abono previo para confirmar box online.");
+                      return;
+                    }
+                    setPaymentChoice("whatsapp");
+                  }}
                   className={`p-4 border text-left rounded-[2px] transition flex flex-col justify-between ${
                     paymentChoice === "whatsapp"
                       ? "border-[#141413] bg-white ring-1 ring-[#141413]"
                       : "border-[#ded9cd] bg-[#faf8f5] hover:border-[#141413]"
-                  }`}
+                  } ${whatsappBooking.depositRequired ? "opacity-60 cursor-not-allowed" : ""}`}
                 >
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
@@ -528,11 +557,13 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
                         Confirmación Presencial
                       </span>
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#f0ede6] text-[#78736a]">
-                        $0 Ahora
+                        {whatsappBooking.depositRequired ? "No disponible" : "$0 Ahora"}
                       </span>
                     </div>
                     <p className="text-[11px] text-[#66635d] font-light leading-relaxed">
-                      Confirmas tu hora directamente por WhatsApp y pagas en la sede de Suecia 3580 el día de tu atención.
+                      {whatsappBooking.depositRequired
+                        ? "La administración requiere abono previo para confirmar y reservar el box dental."
+                        : "Confirmas tu hora directamente por WhatsApp y pagas en la sede de Suecia 3580 el día de tu atención."}
                     </p>
                   </div>
                   <span className="text-[10px] font-mono text-[#141413] font-semibold mt-3 block">
@@ -554,15 +585,15 @@ export function AppointmentBookingSection({ initialDoctorId, initialTreatmentId 
                       <span className="text-xs font-bold font-mono text-emerald-800 uppercase flex items-center gap-1.5">
                         <span>Abono Online Flow.cl</span>
                         <span className="text-[9px] px-1.5 py-0.2 bg-emerald-600 text-white font-bold rounded">
-                          Recomendado
+                          {whatsappBooking.depositRequired ? "Obligatorio" : "Recomendado"}
                         </span>
                       </span>
                       <span className="text-xs font-mono font-bold text-emerald-700">
-                        $10.000 CLP
+                        ${(whatsappBooking.depositAmount || 10000).toLocaleString("es-CL")} CLP
                       </span>
                     </div>
                     <p className="text-[11px] text-[#66635d] font-light leading-relaxed">
-                      Abonas $10.000 vía Webpay Plus / Tarjetas para garantizar disponibilidad inmediata de tu box. Se descuenta de tu arancel final.
+                      Abonas ${(whatsappBooking.depositAmount || 10000).toLocaleString("es-CL")} vía Webpay Plus / Tarjetas para garantizar disponibilidad inmediata de tu box. Se descuenta de tu arancel final.
                     </p>
                   </div>
                   <span className="text-[10px] font-mono text-emerald-800 font-semibold mt-3 block">

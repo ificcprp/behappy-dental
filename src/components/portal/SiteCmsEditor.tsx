@@ -15,6 +15,12 @@ import {
   DEFAULT_PREVENTION_SECTION,
   DEFAULT_AUTH_PORTAL,
   DEFAULT_HEADER_CONFIG,
+  DEFAULT_WHATSAPP_BOOKING,
+  DEFAULT_FLASH_ALERT,
+  DEFAULT_PRICING_PROCEDURES,
+  DEFAULT_SEO_MARKETING,
+  exportCMSBackup,
+  importCMSBackup,
 } from "@/lib/cmsStore";
 import { Treatment } from "@/data/treatments";
 import { Doctor } from "@/data/doctors";
@@ -31,6 +37,10 @@ import {
   Check,
   KeyRound,
   Layout,
+  MessageCircle,
+  AlertTriangle,
+  Calculator,
+  Globe,
 } from "lucide-react";
 
 // Submódulos modulares Enterprise
@@ -47,6 +57,10 @@ import { ContactLocationEditor } from "./cms/ContactLocationEditor";
 import { AnnouncementsTickerEditor } from "./cms/AnnouncementsTickerEditor";
 import { AuthPortalEditor } from "./cms/AuthPortalEditor";
 import { HeaderMenuEditor } from "./cms/HeaderMenuEditor";
+import { WhatsappBookingEditor } from "./cms/WhatsappBookingEditor";
+import { FlashAlertEditor } from "./cms/FlashAlertEditor";
+import { PricingArancelesEditor } from "./cms/PricingArancelesEditor";
+import { SeoMarketingEditor } from "./cms/SeoMarketingEditor";
 
 // Presets de imágenes oficiales de Centro Dental BeHappy
 const CLINIC_PRESET_IMAGES = {
@@ -96,6 +110,10 @@ export function SiteCmsEditor() {
     | "contacto"
     | "anuncios"
     | "auth"
+    | "whatsapp"
+    | "alert"
+    | "aranceles"
+    | "seo"
   >("header");
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -126,6 +144,32 @@ export function SiteCmsEditor() {
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  // Exportar Backup Completo en JSON
+  const handleExportBackup = () => {
+    const { jsonString, filename } = exportCMSBackup();
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    triggerToast("✓ Archivo de respaldo exportado exitosamente");
+  };
+
+  // Restaurar Backup Completo desde JSON
+  const handleImportBackup = (jsonString: string) => {
+    const res = importCMSBackup(jsonString);
+    if (res.success && res.data) {
+      setCmsData(res.data);
+      triggerToast("✓ Respaldo JSON restaurado y aplicado en producción");
+    } else {
+      alert(res.message);
+    }
   };
 
   // Guardar Borrador (no altera la versión publicada en producción)
@@ -200,6 +244,8 @@ export function SiteCmsEditor() {
         onPublish={handlePublish}
         onOpenHistory={() => setIsHistoryModalOpen(true)}
         onReset={handleReset}
+        onExportBackup={handleExportBackup}
+        onImportBackup={handleImportBackup}
       />
 
       {/* Tabs Navigation (Adaptive Segmented Bar) */}
@@ -216,6 +262,10 @@ export function SiteCmsEditor() {
           { id: "contacto" as const, label: "8. Contacto", icon: PhoneCall, color: "text-amber-700" },
           { id: "anuncios" as const, label: "9. Marquesina", icon: Bell, color: "text-rose-600" },
           { id: "auth" as const, label: "10. Acceso", icon: KeyRound, color: "text-emerald-700" },
+          { id: "whatsapp" as const, label: "11. WhatsApp", icon: MessageCircle, color: "text-emerald-600" },
+          { id: "alert" as const, label: "12. Avisos", icon: AlertTriangle, color: "text-amber-600" },
+          { id: "aranceles" as const, label: "13. Aranceles", icon: Calculator, color: "text-cyan-600" },
+          { id: "seo" as const, label: "14. SEO & Ads", icon: Globe, color: "text-purple-600" },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -368,6 +418,59 @@ export function SiteCmsEditor() {
             saveCMSData(next, { status: "draft" });
             triggerToast("✓ Portal de Acceso actualizado");
           }}
+          triggerToast={triggerToast}
+        />
+      )}
+
+      {activeTab === "whatsapp" && (
+        <WhatsappBookingEditor
+          whatsappBooking={cmsData.whatsappBooking || DEFAULT_WHATSAPP_BOOKING}
+          onUpdateWhatsappBooking={(updated) => {
+            const next = { ...cmsData, whatsappBooking: updated };
+            setCmsData(next);
+            saveCMSData(next, { status: "draft" });
+            triggerToast("✓ WhatsApp y Agendamiento actualizados");
+          }}
+          triggerToast={triggerToast}
+        />
+      )}
+
+      {activeTab === "alert" && (
+        <FlashAlertEditor
+          flashAlert={cmsData.flashAlert || DEFAULT_FLASH_ALERT}
+          onUpdateFlashAlert={(updated) => {
+            const next = { ...cmsData, flashAlert: updated };
+            setCmsData(next);
+            saveCMSData(next, { status: "draft" });
+            triggerToast("✓ Banner de aviso y contingencia actualizado");
+          }}
+          triggerToast={triggerToast}
+        />
+      )}
+
+      {activeTab === "aranceles" && (
+        <PricingArancelesEditor
+          procedures={cmsData.pricingProcedures || DEFAULT_PRICING_PROCEDURES}
+          onUpdateProcedures={(updated) => {
+            const next = { ...cmsData, pricingProcedures: updated };
+            setCmsData(next);
+            saveCMSData(next, { status: "draft" });
+            triggerToast("✓ Aranceles y copagos del cotizador actualizados");
+          }}
+          triggerToast={triggerToast}
+        />
+      )}
+
+      {activeTab === "seo" && (
+        <SeoMarketingEditor
+          seoMarketing={cmsData.seoMarketing || DEFAULT_SEO_MARKETING}
+          onUpdateSeoMarketing={(updated) => {
+            const next = { ...cmsData, seoMarketing: updated };
+            setCmsData(next);
+            saveCMSData(next, { status: "draft" });
+            triggerToast("✓ SEO, OpenGraph y Píxeles actualizados");
+          }}
+          presetImages={CLINIC_PRESET_IMAGES.hero}
           triggerToast={triggerToast}
         />
       )}

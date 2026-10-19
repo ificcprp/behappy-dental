@@ -110,6 +110,51 @@ export interface CMSAuthPortal {
   securityNotice: string;
 }
 
+export interface CMSWhatsappBooking {
+  whatsappNumber: string;
+  emergencyWhatsappNumber: string;
+  floatingButtonMessage: string;
+  bookingConfirmationTemplate: string;
+  quoteTemplate: string;
+  depositAmount: number;
+  depositRequired: boolean;
+  timeSlotMorningText: string;
+  timeSlotAfternoonText: string;
+}
+
+export interface CMSFlashAlert {
+  enabled: boolean;
+  type: "urgency" | "info" | "promo";
+  badge: string;
+  message: string;
+  buttonText: string;
+  buttonUrl: string;
+  expiresAt?: string;
+}
+
+export interface CMSPricingProcedure {
+  id: string;
+  name: string;
+  marketPrice: number;
+  convenioDiscountPercent: number;
+  fonasaEstimateCoverage: number;
+  isapreEstimateCoverage: number;
+  category: string;
+  notes: string;
+}
+
+export interface CMSSeoMarketing {
+  metaTitle: string;
+  metaDescription: string;
+  keywords: string[];
+  ogTitle: string;
+  ogDescription: string;
+  ogImage: string;
+  googleAnalyticsId: string;
+  metaPixelId: string;
+  googleTagManagerId?: string;
+}
+
 export interface CMSData {
   treatments: Treatment[];
   doctors: Doctor[];
@@ -122,6 +167,10 @@ export interface CMSData {
   preventionSection: CMSPreventionSection;
   authPortal: CMSAuthPortal;
   headerConfig: CMSHeaderConfig;
+  whatsappBooking: CMSWhatsappBooking;
+  flashAlert: CMSFlashAlert;
+  pricingProcedures: CMSPricingProcedure[];
+  seoMarketing: CMSSeoMarketing;
   siteColorScheme?: "blanco" | "negro" | "sistema";
   heroHeadline: string;
   heroSubheadline: string;
@@ -366,6 +415,130 @@ export const DEFAULT_HEADER_CONFIG: CMSHeaderConfig = {
   enableBlur: true,
 };
 
+export const DEFAULT_WHATSAPP_BOOKING: CMSWhatsappBooking = {
+  whatsappNumber: "56947578597",
+  emergencyWhatsappNumber: "56947578597",
+  floatingButtonMessage: "Hola Centro Dental BeHappy, me gustaría coordinar una hora de atención.",
+  bookingConfirmationTemplate: "Hola Centro Dental BeHappy, mi nombre es {paciente}. Deseo confirmar una cita para *{tratamiento}* con {doctor} para el {fecha} ({horario}). Mi teléfono de contacto es {telefono}.",
+  quoteTemplate: "Hola Centro Dental BeHappy, me gustaría recibir más información y cotizar el tratamiento de *{tratamiento}*.",
+  depositAmount: 10000,
+  depositRequired: false,
+  timeSlotMorningText: "Mañana: 10:00 - 14:00",
+  timeSlotAfternoonText: "Tarde: 14:00 - 20:00"
+};
+
+export const DEFAULT_FLASH_ALERT: CMSFlashAlert = {
+  enabled: false,
+  type: "info",
+  badge: "COMUNICADO CLÍNICO",
+  message: "Atención normal en sede Suecia 3580, Ñuñoa. Agenda disponible para evaluaciones y urgencias.",
+  buttonText: "Consultar por WhatsApp",
+  buttonUrl: "https://api.whatsapp.com/send/?phone=56947578597&text=Hola%20Centro%20Dental%20BeHappy,%20tengo%20una%20consulta."
+};
+
+export const DEFAULT_PRICING_PROCEDURES: CMSPricingProcedure[] = [
+  {
+    id: "evaluacion",
+    name: "Evaluación Diagnóstica + Radiografía Digital",
+    marketPrice: 35000,
+    convenioDiscountPercent: 100,
+    fonasaEstimateCoverage: 5000,
+    isapreEstimateCoverage: 12000,
+    category: "Diagnóstico",
+    notes: "Cámara intraoral y Rx periapical de alta resolución."
+  },
+  {
+    id: "limpieza",
+    name: "Limpieza con Ultrasonido (Destartraje + Profilaxis)",
+    marketPrice: 55000,
+    convenioDiscountPercent: 50,
+    fonasaEstimateCoverage: 8000,
+    isapreEstimateCoverage: 20000,
+    category: "Prevención",
+    notes: "Remoción de sarro supragingival y pulido con flúor."
+  },
+  {
+    id: "resina",
+    name: "Restauración Estética Resina (Tapadura 1 cara)",
+    marketPrice: 65000,
+    convenioDiscountPercent: 40,
+    fonasaEstimateCoverage: 12000,
+    isapreEstimateCoverage: 25000,
+    category: "Restauradora",
+    notes: "Resina nanohíbrida del color exacto del diente."
+  },
+  {
+    id: "blanqueamiento",
+    name: "Blanqueamiento Led Clínico en Box",
+    marketPrice: 190000,
+    convenioDiscountPercent: 35,
+    fonasaEstimateCoverage: 0,
+    isapreEstimateCoverage: 0,
+    category: "Estética",
+    notes: "Aclaramiento en 1 sesión de 60 min sin dañar esmalte."
+  },
+  {
+    id: "invisalign",
+    name: "Ortodoncia Invisible Invisalign (Caso Integral)",
+    marketPrice: 2800000,
+    convenioDiscountPercent: 25,
+    fonasaEstimateCoverage: 0,
+    isapreEstimateCoverage: 350000,
+    category: "Ortodoncia",
+    notes: "Alineadores transparentes removibles, escaneo iTero 3D."
+  },
+  {
+    id: "implante",
+    name: "Implante de Titanio + Corona sobre Implante",
+    marketPrice: 750000,
+    convenioDiscountPercent: 30,
+    fonasaEstimateCoverage: 0,
+    isapreEstimateCoverage: 180000,
+    category: "Implantología",
+    notes: "Fijación de titanio biocompatible grado médico."
+  },
+  {
+    id: "plano-bruxismo",
+    name: "Plano de Alivio Oclusal / Bruxismo Rígido",
+    marketPrice: 160000,
+    convenioDiscountPercent: 40,
+    fonasaEstimateCoverage: 15000,
+    isapreEstimateCoverage: 50000,
+    category: "Oclusión",
+    notes: "Acrílico termocurado ajustado en articulador."
+  },
+  {
+    id: "endodoncia",
+    name: "Endodoncia Mecanizada (Tratamiento de Conducto)",
+    marketPrice: 180000,
+    convenioDiscountPercent: 30,
+    fonasaEstimateCoverage: 25000,
+    isapreEstimateCoverage: 70000,
+    category: "Especialidad",
+    notes: "Instrumentación rotatoria con odontólogo especialista."
+  }
+];
+
+export const DEFAULT_SEO_MARKETING: CMSSeoMarketing = {
+  metaTitle: "Centro Dental BeHappy Ñuñoa | Odontología Avanzada y Citas Online",
+  metaDescription: "Centro Dental BeHappy en Ñuñoa (Suecia 3580). Especialistas en Ortodoncia Invisalign, Implantes Dentales, Diseño de Sonrisa, Odontopediatría y Prevención con más de 13 años de experiencia.",
+  keywords: [
+    "centro dental en ñuñoa",
+    "dentista ñuñoa",
+    "invisalign santiago",
+    "implantes dentales ñuñoa",
+    "blanqueamiento dental",
+    "odontologia estetica santiago",
+    "Centro Dental BeHappy"
+  ],
+  ogTitle: "Centro Dental BeHappy Ñuñoa · Clínica Odontológica de Excelencia",
+  ogDescription: "Reserva tu hora online con nuestros especialistas acreditados en Suecia 3580, Ñuñoa. Planes preventivos con hasta 50% de descuento.",
+  ogImage: "/images/hero-woman.jpg",
+  googleAnalyticsId: "G-E70JV667YE",
+  metaPixelId: "1353498186525546",
+  googleTagManagerId: ""
+};
+
 export const DEFAULT_CMS_DATA: CMSData = {
   treatments: TREATMENTS,
   doctors: DOCTORS,
@@ -378,6 +551,10 @@ export const DEFAULT_CMS_DATA: CMSData = {
   preventionSection: DEFAULT_PREVENTION_SECTION,
   authPortal: DEFAULT_AUTH_PORTAL,
   headerConfig: DEFAULT_HEADER_CONFIG,
+  whatsappBooking: DEFAULT_WHATSAPP_BOOKING,
+  flashAlert: DEFAULT_FLASH_ALERT,
+  pricingProcedures: DEFAULT_PRICING_PROCEDURES,
+  seoMarketing: DEFAULT_SEO_MARKETING,
   siteColorScheme: "blanco",
   heroHeadline: "Centro Dental BeHappy",
   heroSubheadline: "Centro dental en Ñuñoa con la última tecnología y tratamientos de la más alta calidad.",
@@ -431,6 +608,13 @@ function mergeIncomingCMS(parsed: Partial<CMSData>): CMSData {
     ...parsed,
     authPortal: parsed.authPortal ? { ...DEFAULT_AUTH_PORTAL, ...parsed.authPortal } : DEFAULT_AUTH_PORTAL,
     headerConfig: parsed.headerConfig ? { ...DEFAULT_HEADER_CONFIG, ...parsed.headerConfig } : DEFAULT_HEADER_CONFIG,
+    whatsappBooking: parsed.whatsappBooking ? { ...DEFAULT_WHATSAPP_BOOKING, ...parsed.whatsappBooking } : DEFAULT_WHATSAPP_BOOKING,
+    flashAlert: parsed.flashAlert ? { ...DEFAULT_FLASH_ALERT, ...parsed.flashAlert } : DEFAULT_FLASH_ALERT,
+    pricingProcedures:
+      parsed.pricingProcedures && parsed.pricingProcedures.length > 0
+        ? parsed.pricingProcedures
+        : DEFAULT_PRICING_PROCEDURES,
+    seoMarketing: parsed.seoMarketing ? { ...DEFAULT_SEO_MARKETING, ...parsed.seoMarketing } : DEFAULT_SEO_MARKETING,
     membershipPlans:
       parsed.membershipPlans && parsed.membershipPlans.length > 0
         ? parsed.membershipPlans
@@ -513,6 +697,13 @@ export function getCMSData(): CMSData {
       membershipPlans: parsed.membershipPlans && parsed.membershipPlans.length > 0 ? parsed.membershipPlans : DEFAULT_MEMBERSHIP_PLANS,
       authPortal: parsed.authPortal ? { ...DEFAULT_AUTH_PORTAL, ...parsed.authPortal } : DEFAULT_AUTH_PORTAL,
       headerConfig: parsed.headerConfig ? { ...DEFAULT_HEADER_CONFIG, ...parsed.headerConfig, showDemoButton: false } : DEFAULT_HEADER_CONFIG,
+      whatsappBooking: parsed.whatsappBooking ? { ...DEFAULT_WHATSAPP_BOOKING, ...parsed.whatsappBooking } : DEFAULT_WHATSAPP_BOOKING,
+      flashAlert: parsed.flashAlert ? { ...DEFAULT_FLASH_ALERT, ...parsed.flashAlert } : DEFAULT_FLASH_ALERT,
+      pricingProcedures:
+        parsed.pricingProcedures && parsed.pricingProcedures.length > 0
+          ? parsed.pricingProcedures
+          : DEFAULT_PRICING_PROCEDURES,
+      seoMarketing: parsed.seoMarketing ? { ...DEFAULT_SEO_MARKETING, ...parsed.seoMarketing } : DEFAULT_SEO_MARKETING,
       promotions: parsed.promotions && parsed.promotions.length > 0 ? parsed.promotions.map((p: any, idx: number) => ({
         ...p,
         image: p.image || (idx === 0 ? "/images/promos/seguro-dental.png" : "/images/promos/promos-vigentes.png")
@@ -602,5 +793,46 @@ export function resetCMSData(): CMSData {
   } catch (err) {
     console.error("Error resetting CMS data:", err);
     return DEFAULT_CMS_DATA;
+  }
+}
+
+export function exportCMSBackup(): { jsonString: string; filename: string } {
+  const current = getCMSData();
+  const dateStr = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+  const filename = `behappy_cms_backup_${dateStr}.json`;
+  return {
+    jsonString: JSON.stringify(current, null, 2),
+    filename,
+  };
+}
+
+export function importCMSBackup(jsonString: string): { success: boolean; message: string; data?: CMSData } {
+  if (typeof window === "undefined") return { success: false, message: "Operación no disponible en el servidor." };
+  try {
+    const parsed = JSON.parse(jsonString);
+    if (!parsed || typeof parsed !== "object") {
+      return { success: false, message: "El archivo no contiene un objeto JSON válido." };
+    }
+    if (!parsed.clinicInfo && !parsed.treatments && !parsed.hero) {
+      return {
+        success: false,
+        message: "El archivo JSON no corresponde a una copia de seguridad válida de Centro Dental BeHappy."
+      };
+    }
+    const merged = mergeIncomingCMS(parsed);
+    const updated = saveCMSData(merged, {
+      status: "published",
+      changeSummary: "Restauración integral desde archivo de respaldo JSON"
+    });
+    return {
+      success: true,
+      message: "Copia de seguridad restaurada y aplicada en producción con éxito.",
+      data: updated
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: `Error al procesar el archivo de respaldo: ${err?.message || "Formato inválido"}`
+    };
   }
 }

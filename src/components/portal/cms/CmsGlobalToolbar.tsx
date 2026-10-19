@@ -9,7 +9,9 @@ import {
   CheckCircle,
   FileText,
   Clock,
-  Palette
+  Palette,
+  Download,
+  Upload,
 } from "lucide-react";
 
 interface CmsGlobalToolbarProps {
@@ -21,6 +23,8 @@ interface CmsGlobalToolbarProps {
   onPublish: () => void;
   onOpenHistory: () => void;
   onReset: () => void;
+  onExportBackup?: () => void;
+  onImportBackup?: (jsonString: string) => void;
 }
 
 export function CmsGlobalToolbar({
@@ -32,7 +36,25 @@ export function CmsGlobalToolbar({
   onPublish,
   onOpenHistory,
   onReset,
+  onExportBackup,
+  onImportBackup,
 }: CmsGlobalToolbarProps) {
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (content && onImportBackup) {
+        onImportBackup(content);
+      }
+    };
+    reader.readAsText(file);
+    // Reset file input value
+    e.target.value = "";
+  };
   return (
     <div className="border border-slate-200 bg-white rounded-lg p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
       {/* Estado y Versión Activa */}
@@ -113,6 +135,39 @@ export function CmsGlobalToolbar({
           <RotateCcw className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Restablecer</span>
         </button>
+
+        {/* Exportar Respaldo JSON */}
+        {onExportBackup && (
+          <button
+            onClick={onExportBackup}
+            className="px-3 py-1.5 border border-slate-200 hover:border-blue-400 bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-700 font-mono text-xs uppercase tracking-wider rounded transition flex items-center gap-1.5 shadow-2xs"
+            title="Descargar copia de seguridad completa en archivo .json"
+          >
+            <Download className="w-3.5 h-3.5 text-blue-600" />
+            <span className="hidden sm:inline">Exportar JSON</span>
+          </button>
+        )}
+
+        {/* Restaurar Respaldo JSON */}
+        {onImportBackup && (
+          <>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept=".json"
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="px-3 py-1.5 border border-slate-200 hover:border-purple-400 bg-white hover:bg-purple-50 text-slate-700 hover:text-purple-700 font-mono text-xs uppercase tracking-wider rounded transition flex items-center gap-1.5 shadow-2xs"
+              title="Restaurar copia de seguridad desde un archivo .json"
+            >
+              <Upload className="w-3.5 h-3.5 text-purple-600" />
+              <span className="hidden sm:inline">Restaurar JSON</span>
+            </button>
+          </>
+        )}
 
         {/* Ver Sitio Web en Vivo */}
         <a
