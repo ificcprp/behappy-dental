@@ -1064,14 +1064,14 @@ p:last-child { margin-bottom: 0; }
 
   <!-- § 01 DIAGNÓSTICO -->
   <div class="chapter-label">§ 01 &nbsp;·&nbsp; Diagnóstico de mercado en Ñuñoa &amp; economía de sillón</div>
-  <h2 class="section-h" style="font-size:1.65rem;margin-bottom:3px;">Capacidad de sillón.<br><em>La matemática real del box clínico y los límites de Hostinger.</em></h2>
+  <h2 class="section-h" style="font-size:1.65rem;margin-bottom:3px;">Capacidad de sillón.<br><em>La matemática real del box y la sinergia frontal con Dentalink.</em></h2>
   <p class="section-lead" style="font-size:0.72rem;line-height:1.45;margin-bottom:8px;">
     Una clínica en Suecia 3580 tiene costos fijos estructurales severos: arriendo de box clínico en Providencia/Ñuñoa, asistente dental, autoclave, insumos certificados (3M, Dentsply) y recepción. Cada hora de sillón desocupada representa entre <strong>$25.000 y $35.000 CLP de pérdida irrecuperable</strong>.
   </p>
 
   <div class="callout callout-green" style="margin:6px 0;padding:6px 10px;font-size:0.69rem;line-height:1.4;">
-    <strong>Arquitectura Headless y convivencia con Dentalink:</strong><br>
-    Hostinger no puede comunicarse con Dentalink ni procesar lógica relacional. <strong>Nuestra plataforma no compite ni duplica su software clínico:</strong> Dentalink se preserva al 100% como la Fuente Única de la Verdad para Ficha Clínica, Odontograma en Box, Boletas SII y Liquidación de Honorarios (Ley 20.584). El código propietario opera como un <em>Headless Clinical Front-Office</em> que atrae, triajea e inyecta pacientes directamente a los sillones de Suecia 3580 vía API REST, con soberanía de código en GitHub y Vercel.
+    <strong>Separación de responsabilidades: Front-Office de Captación vs. Back-Office Clínico Dentalink:</strong><br>
+    Dentalink es el software que gestiona la clínica por dentro y se preserva al 100%: Ficha Médica y Evoluciones (Ley 20.584), Odontograma en Box, Presupuestos por correo (<code>seguros-whitelabel</code>), Boletas SII y Liquidación de Especialistas. <strong>Nuestra plataforma resuelve lo que Dentalink no hace:</strong> salir a buscar pacientes a Google y Meta en Ñuñoa, traducir síntomas a citas calificadas, erradicar el miedo al cobro oculto y cobrar suscripciones mensuales (MRR) que Dentalink no puede procesar.
   </div>
 
   <div class="section-rule mt-1" style="padding-top:8px;margin-top:6px;">
@@ -1102,7 +1102,7 @@ p:last-child { margin-bottom: 0; }
         </tr>
         <tr>
           <td class="td-n">Operación Box<br><span class="td-s">API REST Dentalink</span></td>
-          <td class="td-s">Integración bidireccional que escribe citas directo en el monitor de recepción y consulta disponibilidad de sillones en tiempo real, sin doble digitación médica.</td>
+          <td class="td-s">Inyección directa en agenda y sillón con RUT y campaña publicitaria (UTM). Reconocimiento de socios del Club BeHappy sin doble digitación médica.</td>
           <td><span class="tag tag-ok">0% Fricción Box</span></td>
         </tr>
       </tbody>
@@ -1150,7 +1150,7 @@ p:last-child { margin-bottom: 0; }
         <span class="module-route">Ruta: / (Home)</span>
       </div>
       <h3 class="m-h">Triaje Clínico por Síntoma</h3>
-      <p class="m-desc">Filtro orientativo que clasifica dolor, ortodoncia, estética o cirugía, asignando al cirujano dentista idóneo según especialidad SIS. No reemplaza anamnesis presencial.</p>
+      <p class="m-desc">Traduce molestias cotidianas (dolor al frío, estética, ortodoncia) al especialista SIS idóneo, resolviendo la barrera de entrada de la agenda médica fría de Dentalink.</p>
     </div>
 
     <!-- ACTIVO 02 -->
@@ -1160,27 +1160,27 @@ p:last-child { margin-bottom: 0; }
         <span class="module-route">Ruta: /precios</span>
       </div>
       <h3 class="m-h">Simulador Copago Fonasa/Isapre</h3>
-      <p class="m-desc">Cálculo referencial según aranceles vigentes al 01/10/2026. Desglose en $ CLP. Cobertura definitiva sujeta a diagnóstico en box y plan de salud del paciente.</p>
+      <p class="m-desc">Calculadora abierta e indexable en Google que estima copagos en $ CLP antes de consultar, derribando el temor a cobros ocultos que frena al 74% de pacientes.</p>
     </div>
 
     <!-- ACTIVO 03 -->
     <div class="module-card-compact">
       <div class="m-top">
-        <span class="module-badge">03 · Ingresos Recurrentes</span>
+        <span class="module-badge">03 · Ingresos Recurrentes (MRR)</span>
         <span class="module-route">Rutas: /club y /precios</span>
       </div>
-      <h3 class="m-h">Planes Dentales BeHappy</h3>
-      <p class="m-desc">100% cobertura preventiva/urgencias de dolor, 70% especialidades, 2 años de garantía técnica en resinas y descuentos por permanencia con débito PAC/PAT Flow.cl.</p>
+      <h3 class="m-h">Club BeHappy (Cobro Recurrente PAC/PAT)</h3>
+      <p class="m-desc">Débito automático mensual vía Flow.cl ($14.990 – $32.990) que Dentalink no puede recaudar nativamente. Conecta el pago con Dentalink asociando al paciente al convenio preferente.</p>
     </div>
 
     <!-- ACTIVO 04 -->
     <div class="module-card-compact">
       <div class="m-top">
         <span class="module-badge">04 · Integración Headless</span>
-        <span class="module-route">API REST Dentalink</span>
+        <span class="module-route">API REST Dentalink (HealthAtom)</span>
       </div>
-      <h3 class="m-h">Sincronización Nativa con Agenda Dentalink</h3>
-      <p class="m-desc">Integración bidireccional vía API REST. La web consulta sillones en tiempo real y escribe citas en la recepción de Dentalink con triaje y procedencia UTM, sin doble digitación.</p>
+      <h3 class="m-h">Conector Nativo con Agenda Dentalink</h3>
+      <p class="m-desc">Inyección directa en los sillones de Suecia 3580 vía API REST. La cita cae en el monitor de recepción con RUT, triaje y campaña UTM. Cero doble digitación médica.</p>
     </div>
 
     <!-- ACTIVO 05 -->
@@ -1190,7 +1190,7 @@ p:last-child { margin-bottom: 0; }
         <span class="module-route">Rutas: /registro y /portal</span>
       </div>
       <h3 class="m-h">Portal Paciente &amp; Auto-Registro</h3>
-      <p class="m-desc">Cuentas privadas creadas por el paciente con RUT y previsión. Expediente digital con contador de ahorro en $ CLP y agendamiento directo sin intermediarios.</p>
+      <p class="m-desc">Cuentas privadas con RUT y previsión. Historial de citas agendadas, estado de socio Club BeHappy y descarga de comprobantes sin intermediación de recepción.</p>
     </div>
 
     <!-- ACTIVO 06 -->
@@ -1199,8 +1199,8 @@ p:last-child { margin-bottom: 0; }
         <span class="module-badge">06 · Soberanía Clínica</span>
         <span class="module-route">Ruta: /login → /portal</span>
       </div>
-      <h3 class="m-h">Editor CMS en Vivo (4 Pestañas)</h3>
-      <p class="m-desc">Panel de edición en vivo: Portada, Promociones, Tratamientos y Membresías. Caché local para continuidad de interfaz pública; datos sensibles en base con políticas RLS.</p>
+      <h3 class="m-h">Editor CMS en Vivo &amp; Control de Marca</h3>
+      <p class="m-desc">Panel de autogestión de promociones estacionales, aranceles y directorio médico con caché instantánea y base de datos con políticas RLS (100% código propio).</p>
     </div>
   </div>
 
@@ -1230,35 +1230,40 @@ p:last-child { margin-bottom: 0; }
   </div>
 
   <div class="section-rule" style="margin-top:8px;padding-top:6px;">
-    <p class="sc mb-1">Comparativa técnica balanceada: Website Builder vs. Ecosistema BeHappy 2026</p>
+    <p class="sc mb-1">Comparativa técnica y comercial: Presencia Aislada vs. Ecosistema BeHappy 2026 + Dentalink</p>
     <table class="vs">
       <thead>
         <tr>
-          <th>Criterio Técnico y Operacional</th>
-          <th class="h-err" style="text-align:center;width:150px;">Hostinger Website Builder</th>
-          <th class="h-ok" style="text-align:center;width:190px;">Ecosistema BeHappy 2026</th>
+          <th>Criterio Operacional y Comercial</th>
+          <th class="h-err" style="text-align:center;width:150px;">Hostinger + Dentalink Solo</th>
+          <th class="h-ok" style="text-align:center;width:190px;">Ecosistema BeHappy + API Dentalink</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="td-n">Arquitectura, Identidad &amp; Roles</td>
-          <td class="td-s">Plantilla cerrada; sin cuentas ni roles de usuario.</td>
-          <td class="td-s"><span class="icon-ok">✓</span> Roles autenticados (Paciente/Doctor/Admin) en PostgreSQL.</td>
+          <td class="td-n">Captación &amp; Atribución Publicitaria</td>
+          <td class="td-s">Ciego a Google/Meta; CAC por sillón desconocido.</td>
+          <td class="td-s"><span class="icon-ok">✓</span> Medición exacta de CAC e inyección directa en sillón.</td>
         </tr>
         <tr>
-          <td class="td-n">Lógica Médica &amp; Operación Box</td>
-          <td class="td-s">Sin conexión a Dentalink; agendamiento manual aislado.</td>
-          <td class="td-s"><span class="icon-ok">✓</span> Inyección automática en sillón Dentalink, triaje y PAC Flow.</td>
+          <td class="td-n">Experiencia de Reserva (Triaje)</td>
+          <td class="td-s">Lista médica fría de aranceles; alta deserción.</td>
+          <td class="td-s"><span class="icon-ok">✓</span> Triaje empático por síntoma hacia el especialista SIS.</td>
         </tr>
         <tr>
-          <td class="td-n">Costos Operacionales &amp; Mantenimiento</td>
-          <td class="td-s"><strong>Costo mínimo</strong> ($4.000/mes) y cero mantención.</td>
-          <td class="td-s">Requiere soporte continuo, políticas RLS y supervisión cloud.</td>
+          <td class="td-n">Transparencia Pre-Consulta</td>
+          <td class="td-s">Incertidumbre de precios hasta llegar al box.</td>
+          <td class="td-s"><span class="icon-ok">✓</span> Simulador público Fonasa/Isapre en Google Ñuñoa.</td>
         </tr>
         <tr>
-          <td class="td-n">Soberanía de Código &amp; Portabilidad</td>
-          <td class="td-s">Vendor lock-in total; migrar exige reconstruir.</td>
-          <td class="td-s"><span class="icon-ok">✓</span> 100% propiedad del cliente (GitHub, Supabase, Vercel).</td>
+          <td class="td-n">Recaudación Recurrente (MRR)</td>
+          <td class="td-s">Dentalink no cobra suscripciones PAC/PAT mensuales.</td>
+          <td class="td-s"><span class="icon-ok">✓</span> Cobro mensual automático Flow.cl vinculado al convenio.</td>
+        </tr>
+        <tr>
+          <td class="td-n">Ficha Clínica &amp; Resguardo Legal</td>
+          <td class="td-s">Dentalink como EHR legal.</td>
+          <td class="td-s"><span class="icon-ok">✓</span> Dentalink 100% preservado como Fuente Única (Ley 20.584).</td>
         </tr>
       </tbody>
     </table>
@@ -1311,13 +1316,19 @@ p:last-child { margin-bottom: 0; }
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
         </tr>
         <tr>
-          <td class="td-n">Planes Dentales BeHappy con pasarela PAC/PAT Flow.cl</td>
+          <td class="td-n">Club BeHappy con débito recurrente PAC/PAT Flow.cl</td>
           <td style="text-align:center"><span class="tag tag-ok">Sí (Base)</span></td>
           <td style="text-align:center"><span class="tag tag-ok">Sí + Links Flow/WA</span></td>
           <td style="text-align:center"><span class="tag tag-ok">Sí + Convenios Pyme</span></td>
         </tr>
         <tr>
-          <td class="td-n">Integración API REST Dentalink + Portal Paciente + CMS en vivo</td>
+          <td class="td-n">Integración API REST Dentalink (Inyección de citas &amp; sync de convenios)</td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
+        </tr>
+        <tr>
+          <td class="td-n">Portal Paciente (RUT) + CMS de Marca en Vivo</td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
           <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
@@ -1422,14 +1433,14 @@ function toggleEditMode() {
 function saveProposalChanges() {
   const container = document.getElementById('proposal-container');
   if (container) {
-    localStorage.setItem('behappy_propuesta_html_v7', container.innerHTML);
+    localStorage.setItem('behappy_propuesta_html_v8', container.innerHTML);
     alert('✓ Cambios guardados con éxito en la memoria de tu navegador.');
   }
 }
 
 function resetProposalChanges() {
   if (confirm('¿Deseas restaurar la propuesta al contenido original de fábrica?')) {
-    localStorage.removeItem('behappy_propuesta_html_v7');
+    localStorage.removeItem('behappy_propuesta_html_v8');
     location.reload();
   }
 }
@@ -1442,7 +1453,7 @@ function exportToPdf() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('behappy_propuesta_html_v7');
+  const saved = localStorage.getItem('behappy_propuesta_html_v8');
   if (saved) {
     const container = document.getElementById('proposal-container');
     if (container) {

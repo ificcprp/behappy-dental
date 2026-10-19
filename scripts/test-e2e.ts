@@ -1,4 +1,4 @@
-import { supabase } from "../src/lib/supabase.ts";
+import { supabase } from "../src/lib/supabase";
 
 const BASE_URL = process.env.TEST_BASE_URL || "http://localhost:3000";
 
