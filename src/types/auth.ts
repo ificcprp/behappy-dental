@@ -36,6 +36,10 @@ export interface PatientAppointment {
   patientPhone?: string;
   patientEmail?: string;
   notes?: string;
+  dentalinkCitaId?: number | string;
+  dentalinkPending?: boolean;
+  utmSource?: string;
+  paymentStatus?: "pendiente" | "pagado" | "abono_flow" | "anulado";
 }
 
 export interface ClinicalRecord {

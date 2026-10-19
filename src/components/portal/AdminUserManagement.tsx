@@ -510,30 +510,30 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
   const roleBadgeConfig: Record<UserRole, { label: string; bg: string; text: string; border: string; icon: any }> = {
     doctor: {
       label: "Doctor / Médico",
-      bg: "bg-blue-50",
-      text: "text-blue-700",
-      border: "border-blue-200",
+      bg: "bg-blue-50 dark:bg-blue-950/40",
+      text: "text-blue-700 dark:text-blue-300",
+      border: "border-blue-200 dark:border-blue-800",
       icon: Stethoscope,
     },
     recepcion: {
       label: "Recepción / Admisión",
-      bg: "bg-amber-50",
-      text: "text-amber-700",
-      border: "border-amber-200",
+      bg: "bg-amber-50 dark:bg-amber-950/40",
+      text: "text-amber-700 dark:text-amber-300",
+      border: "border-amber-200 dark:border-amber-800",
       icon: Clock,
     },
     admin: {
       label: "Dirección / Admin",
-      bg: "bg-purple-50",
-      text: "text-purple-700",
-      border: "border-purple-200",
+      bg: "bg-purple-50 dark:bg-purple-950/40",
+      text: "text-purple-700 dark:text-purple-300",
+      border: "border-purple-200 dark:border-purple-800",
       icon: Shield,
     },
     paciente: {
       label: "Paciente",
-      bg: "bg-teal-50",
-      text: "text-teal-700",
-      border: "border-teal-200",
+      bg: "bg-teal-50 dark:bg-teal-950/40",
+      text: "text-teal-700 dark:text-teal-300",
+      border: "border-teal-200 dark:border-teal-800",
       icon: UserCheck,
     },
   };
@@ -541,20 +541,20 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
   return (
     <div className="space-y-5">
       {/* Top Banner with Stats & CTA */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-lg p-5 sm:p-6 shadow-md border border-slate-800">
+      <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-lg p-5 sm:p-6 shadow-xs border border-slate-200 dark:border-slate-800">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" />
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-emerald-50 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 font-bold flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                 Gestión Integral de Accesos
               </span>
-              <span className="text-xs text-slate-400 font-mono">Sede Suecia 3580</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">Sede Suecia 3580</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               Usuarios, Perfiles Clínicos & Credenciales
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
               Crea perfiles reales con contraseña directa para administradores, doctores, recepcionistas y pacientes.
               Entrega los accesos de inmediato por WhatsApp o correo en 1 clic.
             </p>
@@ -563,97 +563,97 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
           <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start md:self-center">
             <button
               onClick={() => openCreateModal("compartir")}
-              className="px-4 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-mono text-xs uppercase tracking-wider font-bold rounded-md transition flex items-center gap-2 cursor-pointer shadow-sm"
+              className="px-4 py-2.5 sm:py-3 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-mono text-xs uppercase tracking-wider font-bold rounded-md transition flex items-center gap-2 cursor-pointer shadow-xs hover:border-slate-400"
               title="Ver nómina de especialistas y enviar accesos directos por WhatsApp"
             >
-              <Share2 className="w-4 h-4 text-emerald-400" />
+              <Share2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>Compartir Cuentas con Profesionales</span>
             </button>
 
             <button
               onClick={() => openCreateModal("crear")}
-              className="px-4 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono text-xs uppercase tracking-wider font-bold rounded-md shadow-lg hover:shadow-xl transition flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-mono text-xs uppercase tracking-wider font-bold rounded-md shadow-sm hover:shadow transition flex items-center gap-2 cursor-pointer"
             >
-              <UserPlus className="w-4 h-4 text-slate-950" />
+              <UserPlus className="w-4 h-4 text-white dark:text-slate-950" />
               <span>Invitar / Crear Usuario</span>
             </button>
           </div>
         </div>
 
         {/* Metric Badges */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-4 mt-4 border-t border-slate-700/60 font-mono text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 font-mono text-xs">
           <button
             onClick={() => setRoleFilter("todos")}
-            className={`p-2.5 rounded border text-left transition ${
+            className={`p-2.5 rounded border text-left transition cursor-pointer ${
               roleFilter === "todos"
-                ? "bg-white/15 border-white text-white"
-                : "bg-slate-800/40 border-slate-700 text-slate-400 hover:text-slate-200"
+                ? "bg-slate-900 border-slate-900 text-white dark:bg-white dark:border-white dark:text-slate-900 shadow-xs"
+                : "bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-100 dark:bg-slate-800/40 dark:border-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             }`}
           >
-            <div className="text-[10px] uppercase text-slate-400">Total Usuarios</div>
-            <div className="text-lg font-bold text-white">{countByRole.todos}</div>
+            <div className={`text-[10px] uppercase ${roleFilter === "todos" ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400"}`}>Total Usuarios</div>
+            <div className={`text-lg font-bold ${roleFilter === "todos" ? "text-white dark:text-slate-900" : "text-slate-900 dark:text-white"}`}>{countByRole.todos}</div>
           </button>
 
           <button
             onClick={() => setRoleFilter("doctor")}
-            className={`p-2.5 rounded border text-left transition ${
+            className={`p-2.5 rounded border text-left transition cursor-pointer ${
               roleFilter === "doctor"
-                ? "bg-blue-500/20 border-blue-400 text-white"
-                : "bg-slate-800/40 border-slate-700 text-slate-400 hover:text-blue-300"
+                ? "bg-blue-50 border-blue-400 text-blue-900 dark:bg-blue-500/20 dark:border-blue-400 dark:text-white shadow-xs"
+                : "bg-slate-50 border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-700 dark:bg-slate-800/40 dark:border-slate-700 dark:text-slate-400 dark:hover:text-blue-300"
             }`}
           >
-            <div className="text-[10px] uppercase text-blue-300 flex items-center gap-1">
+            <div className={`text-[10px] uppercase flex items-center gap-1 ${roleFilter === "doctor" ? "text-blue-800 dark:text-blue-300" : "text-blue-600 dark:text-blue-400"}`}>
               <Stethoscope className="w-3 h-3" /> Doctores
             </div>
-            <div className="text-lg font-bold text-blue-200">{countByRole.doctor}</div>
+            <div className={`text-lg font-bold ${roleFilter === "doctor" ? "text-blue-950 dark:text-blue-100" : "text-slate-900 dark:text-blue-200"}`}>{countByRole.doctor}</div>
           </button>
 
           <button
             onClick={() => setRoleFilter("recepcion")}
-            className={`p-2.5 rounded border text-left transition ${
+            className={`p-2.5 rounded border text-left transition cursor-pointer ${
               roleFilter === "recepcion"
-                ? "bg-amber-500/20 border-amber-400 text-white"
-                : "bg-slate-800/40 border-slate-700 text-slate-400 hover:text-amber-300"
+                ? "bg-amber-50 border-amber-400 text-amber-900 dark:bg-amber-500/20 dark:border-amber-400 dark:text-white shadow-xs"
+                : "bg-slate-50 border-slate-200 text-slate-600 hover:border-amber-300 hover:text-amber-700 dark:bg-slate-800/40 dark:border-slate-700 dark:text-slate-400 dark:hover:text-amber-300"
             }`}
           >
-            <div className="text-[10px] uppercase text-amber-300 flex items-center gap-1">
+            <div className={`text-[10px] uppercase flex items-center gap-1 ${roleFilter === "recepcion" ? "text-amber-800 dark:text-amber-300" : "text-amber-600 dark:text-amber-400"}`}>
               <Clock className="w-3 h-3" /> Recepción
             </div>
-            <div className="text-lg font-bold text-amber-200">{countByRole.recepcion}</div>
+            <div className={`text-lg font-bold ${roleFilter === "recepcion" ? "text-amber-950 dark:text-amber-100" : "text-slate-900 dark:text-amber-200"}`}>{countByRole.recepcion}</div>
           </button>
 
           <button
             onClick={() => setRoleFilter("admin")}
-            className={`p-2.5 rounded border text-left transition ${
+            className={`p-2.5 rounded border text-left transition cursor-pointer ${
               roleFilter === "admin"
-                ? "bg-purple-500/20 border-purple-400 text-white"
-                : "bg-slate-800/40 border-slate-700 text-slate-400 hover:text-purple-300"
+                ? "bg-purple-50 border-purple-400 text-purple-900 dark:bg-purple-500/20 dark:border-purple-400 dark:text-white shadow-xs"
+                : "bg-slate-50 border-slate-200 text-slate-600 hover:border-purple-300 hover:text-purple-700 dark:bg-slate-800/40 dark:border-slate-700 dark:text-slate-400 dark:hover:text-purple-300"
             }`}
           >
-            <div className="text-[10px] uppercase text-purple-300 flex items-center gap-1">
+            <div className={`text-[10px] uppercase flex items-center gap-1 ${roleFilter === "admin" ? "text-purple-800 dark:text-purple-300" : "text-purple-600 dark:text-purple-400"}`}>
               <Shield className="w-3 h-3" /> Admins
             </div>
-            <div className="text-lg font-bold text-purple-200">{countByRole.admin}</div>
+            <div className={`text-lg font-bold ${roleFilter === "admin" ? "text-purple-950 dark:text-purple-100" : "text-slate-900 dark:text-purple-200"}`}>{countByRole.admin}</div>
           </button>
 
           <button
             onClick={() => setRoleFilter("paciente")}
-            className={`p-2.5 rounded border text-left transition ${
+            className={`p-2.5 rounded border text-left transition cursor-pointer ${
               roleFilter === "paciente"
-                ? "bg-teal-500/20 border-teal-400 text-white"
-                : "bg-slate-800/40 border-slate-700 text-slate-400 hover:text-teal-300"
+                ? "bg-teal-50 border-teal-400 text-teal-900 dark:bg-teal-500/20 dark:border-teal-400 dark:text-white shadow-xs"
+                : "bg-slate-50 border-slate-200 text-slate-600 hover:border-teal-300 hover:text-teal-700 dark:bg-slate-800/40 dark:border-slate-700 dark:text-slate-400 dark:hover:text-teal-300"
             }`}
           >
-            <div className="text-[10px] uppercase text-teal-300 flex items-center gap-1">
+            <div className={`text-[10px] uppercase flex items-center gap-1 ${roleFilter === "paciente" ? "text-teal-800 dark:text-teal-300" : "text-teal-600 dark:text-teal-400"}`}>
               <UserCheck className="w-3 h-3" /> Pacientes
             </div>
-            <div className="text-lg font-bold text-teal-200">{countByRole.paciente}</div>
+            <div className={`text-lg font-bold ${roleFilter === "paciente" ? "text-teal-950 dark:text-teal-100" : "text-slate-900 dark:text-teal-200"}`}>{countByRole.paciente}</div>
           </button>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white border border-slate-200 rounded-lg p-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           <input
@@ -661,22 +661,22 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
             placeholder="Buscar por nombre, correo, RUT o especialidad..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
+            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white placeholder:text-slate-400 text-xs font-mono focus:outline-none focus:border-slate-900 dark:focus:border-slate-400 focus:bg-white dark:focus:bg-slate-800"
           />
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-          <span className="text-[11px] font-mono text-slate-500 uppercase flex items-center gap-1">
+          <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1">
             <Filter className="w-3 h-3" /> Rol:
           </span>
           {(["todos", "doctor", "recepcion", "admin", "paciente"] as const).map((r) => (
             <button
               key={r}
               onClick={() => setRoleFilter(r)}
-              className={`px-2.5 py-1 rounded text-[11px] font-mono uppercase transition font-medium whitespace-nowrap ${
+              className={`px-2.5 py-1 rounded text-[11px] font-mono uppercase transition font-medium whitespace-nowrap cursor-pointer ${
                 roleFilter === r
-                  ? "bg-slate-900 text-white font-bold"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  ? "bg-slate-900 text-white font-bold dark:bg-white dark:text-slate-900 shadow-xs"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
               }`}
             >
               {r === "todos" ? "Todos" : r}
@@ -686,10 +686,10 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs font-mono">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[11px]">
+            <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 uppercase text-[11px]">
               <tr>
                 <th className="p-3.5">Usuario & Identificación</th>
                 <th className="p-3.5">Rol & Perfil Específico</th>
@@ -698,10 +698,10 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                 <th className="p-3.5 text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-400 text-xs font-mono">
+                  <td colSpan={5} className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs font-mono">
                     No se encontraron usuarios con los criterios de búsqueda seleccionados.
                   </td>
                 </tr>
@@ -712,7 +712,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                   const isCurrentAuthUser = currentUser?.id === u.id || currentUser?.email.toLowerCase() === u.email.toLowerCase();
 
                   return (
-                    <tr key={u.id} className="hover:bg-slate-50/70 transition">
+                    <tr key={u.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition">
                       {/* Name & RUT */}
                       <td className="p-3.5">
                         <div className="flex items-center gap-2.5">
@@ -720,15 +720,15 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                             {u.fullName.slice(0, 2)}
                           </div>
                           <div>
-                            <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+                            <div className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
                               <span>{u.fullName}</span>
                               {isCurrentAuthUser && (
-                                <span className="px-1.5 py-0.2 rounded text-[9px] font-mono uppercase bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">
+                                <span className="px-1.5 py-0.2 rounded text-[9px] font-mono uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800">
                                   Tú (Sesión Activa)
                                 </span>
                               )}
                             </div>
-                            <div className="text-[10px] text-slate-500 font-mono">
+                            <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                               RUT: {u.rut || "Sin registrar"}
                             </div>
                           </div>
@@ -747,40 +747,40 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
                           {/* Doctor specific */}
                           {u.role === "doctor" && (
-                            <div className="text-[11px] text-slate-700">
-                              <span className="font-medium text-blue-900">{u.specialty || "Odontología General"}</span>
+                            <div className="text-[11px] text-slate-700 dark:text-slate-300">
+                              <span className="font-medium text-blue-900 dark:text-blue-300">{u.specialty || "Odontología General"}</span>
                               {u.boxAssigned && (
-                                <span className="text-slate-500 block text-[10px]">Asignado: {u.boxAssigned}</span>
+                                <span className="text-slate-500 dark:text-slate-400 block text-[10px]">Asignado: {u.boxAssigned}</span>
                               )}
                               {u.clinicalRegistrationNumber && (
-                                <span className="text-slate-500 block text-[10px]">SIS: {u.clinicalRegistrationNumber}</span>
+                                <span className="text-slate-500 dark:text-slate-400 block text-[10px]">SIS: {u.clinicalRegistrationNumber}</span>
                               )}
                             </div>
                           )}
 
                           {/* Reception specific */}
                           {u.role === "recepcion" && (
-                            <div className="text-[11px] text-slate-700">
-                              <span className="font-medium text-amber-900">{u.shift || "Jornada Completa"}</span>
+                            <div className="text-[11px] text-slate-700 dark:text-slate-300">
+                              <span className="font-medium text-amber-900 dark:text-amber-300">{u.shift || "Jornada Completa"}</span>
                               {u.assignedDesk && (
-                                <span className="text-slate-500 block text-[10px]">{u.assignedDesk}</span>
+                                <span className="text-slate-500 dark:text-slate-400 block text-[10px]">{u.assignedDesk}</span>
                               )}
                             </div>
                           )}
 
                           {/* Admin specific */}
                           {u.role === "admin" && (
-                            <div className="text-[11px] text-slate-700">
-                              <span className="font-medium text-purple-900">{u.positionTitle || "Administración Central"}</span>
-                              <span className="text-slate-500 block text-[10px]">Control Total CMS & Fichas</span>
+                            <div className="text-[11px] text-slate-700 dark:text-slate-300">
+                              <span className="font-medium text-purple-900 dark:text-purple-300">{u.positionTitle || "Administración Central"}</span>
+                              <span className="text-slate-500 dark:text-slate-400 block text-[10px]">Control Total CMS & Fichas</span>
                             </div>
                           )}
 
                           {/* Patient specific */}
                           {u.role === "paciente" && (
-                            <div className="text-[11px] text-slate-700">
-                              <span className="font-medium text-teal-900">Previsión: {u.prevision || "Fonasa"}</span>
-                              <span className="text-slate-500 block text-[10px]">
+                            <div className="text-[11px] text-slate-700 dark:text-slate-300">
+                              <span className="font-medium text-teal-900 dark:text-teal-300">Previsión: {u.prevision || "Fonasa"}</span>
+                              <span className="text-slate-500 dark:text-slate-400 block text-[10px]">
                                 Club BeHappy: {u.convenioLevel || "20%"}
                               </span>
                             </div>
@@ -791,11 +791,11 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       {/* Contact */}
                       <td className="p-3.5">
                         <div className="space-y-0.5">
-                          <div className="text-slate-900 flex items-center gap-1 text-[11px]">
+                          <div className="text-slate-900 dark:text-slate-100 flex items-center gap-1 text-[11px]">
                             <Mail className="w-3 h-3 text-slate-400" />
                             <span>{u.email}</span>
                           </div>
-                          <div className="text-slate-500 flex items-center gap-1 text-[10px]">
+                          <div className="text-slate-500 dark:text-slate-400 flex items-center gap-1 text-[10px]">
                             <Phone className="w-3 h-3 text-slate-400" />
                             <span>{u.phone || "Sin teléfono"}</span>
                           </div>
@@ -806,13 +806,13 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       <td className="p-3.5">
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-1.5">
-                            <span className="px-2 py-1 bg-slate-100 border border-slate-300 rounded font-mono text-[11px] text-slate-500 font-bold tracking-widest">
+                            <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded font-mono text-[11px] text-slate-500 dark:text-slate-400 font-bold tracking-widest">
                               ••••••••
                             </span>
                             <button
                               onClick={() => handleCopyPasswordOnly(u.password || "BeHappy2026!")}
                               title="Copiar contraseña"
-                              className="p-1 hover:bg-slate-200 rounded text-slate-600 transition"
+                              className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-300 transition cursor-pointer"
                             >
                               <Copy className="w-3.5 h-3.5" />
                             </button>
@@ -820,7 +820,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
                           <button
                             onClick={() => openHandoffForUser(u)}
-                            className="inline-flex items-center gap-1 text-[10px] text-emerald-700 hover:text-emerald-900 font-bold transition underline"
+                            className="inline-flex items-center gap-1 text-[10px] text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-bold transition underline cursor-pointer"
                           >
                             <Share2 className="w-3 h-3" />
                             <span>Ficha de Entrega (WhatsApp)</span>
@@ -838,7 +838,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                               setNewQuickPassword(generateSuggestedPassword(u.role));
                             }}
                             title="Cambiar contraseña"
-                            className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded transition"
+                            className="p-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded transition cursor-pointer"
                           >
                             <Key className="w-3.5 h-3.5" />
                           </button>
@@ -847,7 +847,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                           <button
                             onClick={() => openEditModal(u)}
                             title="Editar perfil completo"
-                            className="p-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-700 rounded transition"
+                            className="p-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white dark:bg-slate-800 dark:hover:bg-slate-700 dark:hover:text-white text-slate-700 dark:text-slate-300 rounded transition cursor-pointer"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
@@ -863,10 +863,10 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                                 ? "Cuenta principal protegida"
                                 : "Eliminar usuario"
                             }
-                            className={`p-1.5 rounded transition ${
+                            className={`p-1.5 rounded transition cursor-pointer ${
                               isCurrentAuthUser || u.email.toLowerCase() === "gaboxxc@gmail.com"
-                                ? "opacity-30 cursor-not-allowed text-slate-400 bg-slate-50"
-                                : "hover:bg-red-50 text-red-600 bg-slate-100 hover:text-red-700"
+                                ? "opacity-30 cursor-not-allowed text-slate-400 bg-slate-50 dark:bg-slate-800"
+                                : "hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 bg-slate-100 dark:bg-slate-800 hover:text-red-700"
                             }`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -887,45 +887,45 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
       {/* ========================================================================= */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className={`bg-white border border-slate-300 rounded-xl w-full p-5 sm:p-6 space-y-4 shadow-2xl my-8 transition-all ${
+          <div className={`bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl w-full p-5 sm:p-6 space-y-4 shadow-2xl my-8 transition-all ${
             createModalTab === "compartir" ? "max-w-3xl" : "max-w-xl"
           }`}>
             {/* Modal Header */}
-            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono tracking-widest text-emerald-700 uppercase font-bold block">
+                  <span className="text-[10px] font-mono tracking-widest text-emerald-700 dark:text-emerald-400 uppercase font-bold block">
                     GESTIÓN DE ACCESOS & EQUIPO
                   </span>
-                  <span className="px-1.5 py-0.5 rounded text-[9px] font-mono uppercase bg-slate-100 text-slate-700 font-bold border border-slate-200">
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-mono uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
                     Sede Suecia 3580
                   </span>
                 </div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5">
                   Invitar a Otros & Compartir Cuentas
                 </h3>
-                <p className="text-xs text-slate-500 font-light mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-light mt-0.5">
                   Crea perfiles con credenciales directas o envía de inmediato los accesos por WhatsApp a cada profesional.
                 </p>
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-slate-400 hover:text-slate-800 p-1 rounded transition cursor-pointer"
+                className="text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 p-1 rounded transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Navigation Tabs inside Modal */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-2.5 gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5 gap-2">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setCreateModalTab("crear")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer ${
                     createModalTab === "crear"
-                      ? "bg-slate-900 text-white shadow-xs"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                   }`}
                 >
                   <UserPlus className="w-3.5 h-3.5" />
@@ -938,7 +938,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                   className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer ${
                     createModalTab === "compartir"
                       ? "bg-emerald-600 text-white shadow-xs"
-                      : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
+                      : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800"
                   }`}
                 >
                   <Share2 className="w-3.5 h-3.5 text-current" />
@@ -950,7 +950,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                 <button
                   type="button"
                   onClick={handleCopyAllProfessionalsSummary}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-[11px] font-mono font-bold rounded-md transition cursor-pointer shrink-0 self-start sm:self-auto"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-[11px] font-mono font-bold rounded-md transition cursor-pointer shrink-0 self-start sm:self-auto"
                 >
                   {copiedAllProfessionals ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                   <span>{copiedAllProfessionals ? "¡Nómina Copiada!" : "Copiar Nómina Completa"}</span>
@@ -964,10 +964,10 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
             {createModalTab === "crear" && (
               <form onSubmit={handleCreateSubmit} className="space-y-4 font-mono text-xs">
                 {/* Shortcut banner to Compartir Cuentas */}
-                <div className="bg-emerald-50/80 border border-emerald-200 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                   <div className="flex items-center gap-2">
-                    <Share2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                    <span className="text-xs text-emerald-950 font-sans">
+                    <Share2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                    <span className="text-xs text-emerald-950 dark:text-emerald-200 font-sans">
                       ¿Deseas enviar las cuentas ya listas a los <strong>8 especialistas</strong> del equipo?
                     </span>
                   </div>
@@ -982,7 +982,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
                 {/* Role Selection Buttons */}
                 <div>
-                  <label className="block text-[11px] font-mono uppercase text-slate-600 mb-1.5 font-bold">
+                  <label className="block text-[11px] font-mono uppercase text-slate-600 dark:text-slate-300 mb-1.5 font-bold">
                     Selecciona el Rol del Usuario *
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -997,15 +997,15 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                           onClick={() => handleRoleSelectionChange(r)}
                           className={`p-2.5 rounded-lg border text-left transition flex flex-col gap-1 cursor-pointer ${
                             isSelected
-                              ? `border-slate-900 bg-slate-900 text-white shadow-sm ring-2 ring-slate-900/10`
-                              : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                              ? `border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-900 shadow-sm ring-2 ring-slate-900/10 dark:ring-white/10`
+                              : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                           }`}
                         >
                           <div className="flex items-center gap-1.5">
-                            <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-white" : meta.text}`} />
+                            <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-white dark:text-slate-900" : meta.text}`} />
                             <span className="font-bold text-[11px] uppercase">{r}</span>
                           </div>
-                          <span className={`text-[10px] ${isSelected ? "text-slate-300" : "text-slate-500"}`}>
+                          <span className={`text-[10px] ${isSelected ? "text-slate-300 dark:text-slate-600" : "text-slate-500 dark:text-slate-400"}`}>
                             {r === "doctor" && "Box Clínico"}
                             {r === "recepcion" && "Turno & Agenda"}
                             {r === "admin" && "Control Total"}
@@ -1020,7 +1020,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                 {/* General Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
+                    <label className="block text-[11px] font-mono uppercase text-slate-700 dark:text-slate-300 mb-1 font-semibold">
                       Nombre Completo *
                     </label>
                     <input
@@ -1035,12 +1035,12 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                           ? "Ej: Andrea Muñoz"
                           : "Ej: Nombre y Apellido"
                       }
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs focus:outline-none focus:border-slate-900 focus:bg-white"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white placeholder:text-slate-400 text-xs focus:outline-none focus:border-slate-900 dark:focus:border-slate-400 focus:bg-white dark:focus:bg-slate-800"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
+                    <label className="block text-[11px] font-mono uppercase text-slate-700 dark:text-slate-300 mb-1 font-semibold">
                       Correo Electrónico (Usuario de Acceso) *
                     </label>
                     <input
@@ -1049,14 +1049,14 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       value={createEmail}
                       onChange={(e) => setCreateEmail(e.target.value)}
                       placeholder="usuario@behappydental.cl"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white placeholder:text-slate-400 text-xs font-mono focus:outline-none focus:border-slate-900 dark:focus:border-slate-400 focus:bg-white dark:focus:bg-slate-800"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
+                    <label className="block text-[11px] font-mono uppercase text-slate-700 dark:text-slate-300 mb-1 font-semibold">
                       RUT Chileno
                     </label>
                     <input
@@ -1064,12 +1064,12 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       value={createRut}
                       onChange={(e) => setCreateRut(e.target.value)}
                       placeholder="15.820.419-3"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white placeholder:text-slate-400 text-xs font-mono focus:outline-none focus:border-slate-900 dark:focus:border-slate-400 focus:bg-white dark:focus:bg-slate-800"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase text-slate-700 mb-1 font-semibold">
+                    <label className="block text-[11px] font-mono uppercase text-slate-700 dark:text-slate-300 mb-1 font-semibold">
                       Teléfono Móvil (WhatsApp para envío)
                     </label>
                     <input
@@ -1077,15 +1077,15 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       value={createPhone}
                       onChange={(e) => setCreatePhone(e.target.value)}
                       placeholder="+56 9 1234 5678"
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono focus:outline-none focus:border-slate-900 focus:bg-white"
+                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white placeholder:text-slate-400 text-xs font-mono focus:outline-none focus:border-slate-900 dark:focus:border-slate-400 focus:bg-white dark:focus:bg-slate-800"
                     />
                   </div>
                 </div>
 
                 {/* DYNAMIC ROLE FIELDS */}
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-3">
-                  <div className="text-[11px] font-bold uppercase text-slate-800 flex items-center gap-1.5 border-b border-slate-200 pb-1.5">
-                    <BadgeCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg p-3.5 space-y-3">
+                  <div className="text-[11px] font-bold uppercase text-slate-800 dark:text-slate-200 flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-700 pb-1.5">
+                    <BadgeCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                     <span>Configuración Específica para Perfil: {createRole.toUpperCase()}</span>
                   </div>
 
@@ -1358,7 +1358,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
                     <button
                       type="submit"
-                      className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white font-bold text-xs font-mono uppercase rounded-md shadow-md transition flex items-center gap-1.5 cursor-pointer"
+                      className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-bold text-xs font-mono uppercase rounded-md shadow-md transition flex items-center gap-1.5 cursor-pointer"
                     >
                       <Check className="w-4 h-4 text-emerald-400" />
                       <span>Guardar & Ver Ficha</span>
@@ -1374,7 +1374,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
             {createModalTab === "compartir" && (
               <div className="space-y-4 font-mono text-xs">
                 {/* Search & Filter Bar */}
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                   <div className="relative flex-1 max-w-sm">
                     <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
                     <input
@@ -1382,12 +1382,12 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       placeholder="Buscar por especialista, especialidad o Box..."
                       value={shareSearch}
                       onChange={(e) => setShareSearch(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded text-slate-900 text-xs focus:outline-none focus:border-slate-900"
+                      className="w-full pl-8 pr-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white placeholder:text-slate-400 text-xs focus:outline-none focus:border-slate-900 dark:focus:border-slate-400"
                     />
                   </div>
 
                   <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-                    <span className="text-[10px] text-slate-500 uppercase font-bold">Filtro:</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Filtro:</span>
                     {(["doctor", "recepcion", "admin", "todos"] as const).map((f) => (
                       <button
                         key={f}
@@ -1395,8 +1395,8 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                         onClick={() => setShareFilter(f)}
                         className={`px-2.5 py-1 rounded text-[10px] uppercase font-bold transition cursor-pointer ${
                           shareFilter === f
-                            ? "bg-slate-900 text-white"
-                            : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"
+                            ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
+                            : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                         }`}
                       >
                         {f === "doctor"
@@ -1412,7 +1412,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                 </div>
 
                 {/* Professionals List */}
-                <div className="max-h-[55vh] overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
+                <div className="max-h-[55vh] overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100 dark:divide-slate-800">
                   {(() => {
                     const shareList = users.filter((u) => {
                       if (shareFilter !== "todos" && u.role !== shareFilter) return false;
@@ -1430,7 +1430,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
                     if (shareList.length === 0) {
                       return (
-                        <div className="p-8 text-center text-slate-500 space-y-1">
+                        <div className="p-8 text-center text-slate-500 dark:text-slate-400 space-y-1">
                           <Users className="w-6 h-6 text-slate-400 mx-auto" />
                           <p className="text-xs font-semibold">No se encontraron profesionales con ese filtro</p>
                           <p className="text-[11px] text-slate-400">Intenta con otro término de búsqueda o selecciona &quot;Todos&quot;.</p>
@@ -1442,10 +1442,10 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       return (
                         <div
                           key={prof.id}
-                          className="pt-2.5 first:pt-0 p-3 bg-slate-50/70 border border-slate-200 rounded-lg hover:border-slate-300 hover:bg-white transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
+                          className="pt-2.5 first:pt-0 p-3 bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-slate-300 dark:hover:border-slate-600 hover:bg-white dark:hover:bg-slate-800 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
                         >
                           <div className="flex items-start gap-3">
-                            <div className="relative w-12 h-12 rounded-full overflow-hidden bg-white border border-slate-300 shrink-0">
+                            <div className="relative w-12 h-12 rounded-full overflow-hidden bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 shrink-0">
                               {prof.avatarUrl ? (
                                 <Image
                                   src={prof.avatarUrl}
@@ -1454,7 +1454,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                                   className="object-cover"
                                 />
                               ) : (
-                                <div className="w-full h-full flex items-center justify-center font-bold text-xs uppercase bg-slate-200 text-slate-700">
+                                <div className="w-full h-full flex items-center justify-center font-bold text-xs uppercase bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
                                   {prof.fullName.slice(0, 2)}
                                 </div>
                               )}
@@ -1462,27 +1462,27 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
                             <div className="space-y-1">
                               <div className="flex flex-wrap items-center gap-1.5">
-                                <h4 className="font-bold text-slate-900 text-xs sm:text-sm">{prof.fullName}</h4>
+                                <h4 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">{prof.fullName}</h4>
                                 {prof.boxAssigned && (
-                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200">
+                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                     {prof.boxAssigned}
                                   </span>
                                 )}
                                 {prof.clinicalRegistrationNumber && (
-                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                                     {prof.clinicalRegistrationNumber}
                                   </span>
                                 )}
                               </div>
 
-                              <p className="text-[11px] text-slate-600 font-sans">
+                              <p className="text-[11px] text-slate-600 dark:text-slate-300 font-sans">
                                 {prof.specialty || prof.shift || prof.positionTitle || "Profesional BeHappy"}
                               </p>
 
-                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-mono text-slate-500 pt-0.5">
+                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-mono text-slate-500 dark:text-slate-400 pt-0.5">
                                 <span className="flex items-center gap-1">
                                   <Mail className="w-3 h-3 text-slate-400" />
-                                  <strong className="text-slate-800">{prof.email}</strong>
+                                  <strong className="text-slate-800 dark:text-slate-200">{prof.email}</strong>
                                 </span>
                               </div>
                             </div>
@@ -1508,11 +1508,11 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                             <button
                               type="button"
                               onClick={() => handleCopySingleProfessional(prof)}
-                              className="p-1.5 border border-slate-300 hover:border-slate-800 rounded bg-white text-slate-700 transition cursor-pointer"
+                              className="p-1.5 border border-slate-300 dark:border-slate-700 hover:border-slate-800 dark:hover:border-slate-400 rounded bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition cursor-pointer"
                               title="Copiar mensaje de credenciales al portapapeles"
                             >
                               {copiedSingleId === prof.id ? (
-                                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                               ) : (
                                 <Copy className="w-3.5 h-3.5" />
                               )}
@@ -1525,7 +1525,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                                 setHandoffUser(prof);
                                 setShowHandoffModal(true);
                               }}
-                              className="p-1.5 border border-slate-300 hover:border-slate-800 rounded bg-white text-slate-700 transition cursor-pointer"
+                              className="p-1.5 border border-slate-300 dark:border-slate-700 hover:border-slate-800 dark:hover:border-slate-400 rounded bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition cursor-pointer"
                               title="Ver ficha completa de entrega"
                             >
                               <FileCheck className="w-3.5 h-3.5" />
@@ -1566,93 +1566,93 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
       {/* ========================================================================= */}
       {showHandoffModal && handoffUser && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white border border-slate-300 rounded-xl max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-2xl my-8">
-            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+          <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-2xl my-8">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 flex items-center justify-center">
                   <FileCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono tracking-widest text-emerald-700 uppercase font-bold block">
+                  <span className="text-[10px] font-mono tracking-widest text-emerald-700 dark:text-emerald-400 uppercase font-bold block">
                     LISTO PARA ENTREGAR
                   </span>
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                     Ficha de Credenciales de Acceso
                   </h3>
                 </div>
               </div>
               <button
                 onClick={() => setShowHandoffModal(false)}
-                className="text-slate-400 hover:text-slate-800 p-1 rounded"
+                className="text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 p-1 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Credential Card Preview */}
-            <div className="bg-slate-900 text-white p-4 sm:p-5 rounded-lg space-y-3 font-mono text-xs shadow-inner">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white p-4 sm:p-5 rounded-lg space-y-3 font-mono text-xs shadow-xs">
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">
                   CENTRO DENTAL BEHAPPY · SEDE SUECIA 3580
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-white/10 text-slate-200">
+                <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-200">
                   {handoffUser.role}
                 </span>
               </div>
 
               <div className="space-y-1.5">
-                <div className="text-sm font-bold text-white">{handoffUser.fullName}</div>
+                <div className="text-sm font-bold text-slate-900 dark:text-white">{handoffUser.fullName}</div>
                 {handoffUser.role === "doctor" && (
-                  <div className="text-xs text-blue-300">
+                  <div className="text-xs text-blue-600 dark:text-blue-300">
                     {handoffUser.specialty || "Cuerpo Médico"} {handoffUser.boxAssigned ? `· ${handoffUser.boxAssigned}` : ""}
                   </div>
                 )}
                 {handoffUser.role === "recepcion" && (
-                  <div className="text-xs text-amber-300">
+                  <div className="text-xs text-amber-600 dark:text-amber-300">
                     {handoffUser.shift || "Recepción"} · {handoffUser.assignedDesk || "Sede Suecia"}
                   </div>
                 )}
                 {handoffUser.role === "admin" && (
-                  <div className="text-xs text-purple-300">
+                  <div className="text-xs text-purple-600 dark:text-purple-300">
                     {handoffUser.positionTitle || "Dirección & Administración"} · Control Total
                   </div>
                 )}
                 {handoffUser.role === "paciente" && (
-                  <div className="text-xs text-teal-300">
+                  <div className="text-xs text-teal-600 dark:text-teal-300">
                     Previsión: {handoffUser.prevision || "Fonasa"} · Club: {handoffUser.convenioLevel || "20%"}
                   </div>
                 )}
               </div>
 
-              <div className="bg-slate-950/80 p-3 rounded border border-slate-800 space-y-2 mt-2">
+              <div className="bg-white dark:bg-slate-950/80 p-3 rounded border border-slate-200 dark:border-slate-800 space-y-2 mt-2">
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="text-slate-400">Usuario / Correo:</span>
-                  <span className="font-bold text-white select-all">{handoffUser.email}</span>
+                  <span className="text-slate-500 dark:text-slate-400">Usuario / Correo:</span>
+                  <span className="font-bold text-slate-900 dark:text-white select-all">{handoffUser.email}</span>
                 </div>
                 {handoffUser.rut && (
                   <div className="flex justify-between items-center text-[11px]">
-                    <span className="text-slate-400">RUT:</span>
-                    <span className="text-slate-200 select-all">{handoffUser.rut}</span>
+                    <span className="text-slate-500 dark:text-slate-400">RUT:</span>
+                    <span className="text-slate-700 dark:text-slate-200 select-all">{handoffUser.rut}</span>
                   </div>
                 )}
-                <div className="flex justify-between items-center text-[11px] pt-1 border-t border-slate-800">
-                  <span className="text-slate-400">Contraseña Asignada:</span>
+                <div className="flex justify-between items-center text-[11px] pt-1 border-t border-slate-200 dark:border-slate-800">
+                  <span className="text-slate-500 dark:text-slate-400">Contraseña Asignada:</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-emerald-400 text-sm tracking-widest">
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm tracking-widest">
                       ••••••••
                     </span>
                     <button
                       onClick={() => handleCopyPasswordOnly(handoffUser.password || "BeHappy2026!")}
                       title="Copiar contraseña"
-                      className="p-1 hover:bg-slate-800 rounded text-slate-300"
+                      className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-500 dark:text-slate-300 transition"
                     >
                       <Copy className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="text-slate-400">Portal de Acceso:</span>
-                  <span className="text-blue-300 underline text-[10px]">
+                  <span className="text-slate-500 dark:text-slate-400">Portal de Acceso:</span>
+                  <span className="text-blue-600 dark:text-blue-300 underline text-[10px]">
                     {typeof window !== "undefined" ? `${window.location.origin}/login` : "https://behappydental.cl/login"}
                   </span>
                 </div>
@@ -1676,16 +1676,16 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-lg transition flex items-center justify-center gap-2 uppercase tracking-wider text-xs border border-slate-300"
+                  className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-lg transition flex items-center justify-center gap-2 uppercase tracking-wider text-xs border border-slate-300 dark:border-slate-700"
                 >
-                  <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                  <Phone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span>Abrir WhatsApp Web con este Mensaje</span>
                 </a>
               )}
 
               <button
                 onClick={() => setShowHandoffModal(false)}
-                className="w-full py-2 text-slate-500 hover:text-slate-800 text-[11px] uppercase transition font-bold"
+                className="w-full py-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 text-[11px] uppercase transition font-bold"
               >
                 Listo / Cerrar
               </button>
@@ -1699,19 +1699,19 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
       {/* ========================================================================= */}
       {editingUser && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white border border-slate-300 rounded-xl max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-2xl my-8">
-            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+          <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-2xl my-8">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
-                <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase font-bold block">
+                <span className="text-[10px] font-mono tracking-widest text-slate-500 dark:text-slate-400 uppercase font-bold block">
                   EDICIÓN ADMINISTRATIVA
                 </span>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900">
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                   Editar Perfil & Credenciales
                 </h3>
               </div>
               <button
                 onClick={() => setEditingUser(null)}
-                className="text-slate-400 hover:text-slate-800 p-1 rounded"
+                className="text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 p-1 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1719,7 +1719,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
             <form onSubmit={handleEditSubmit} className="space-y-3 font-mono text-xs">
               <div>
-                <label className="block text-[11px] uppercase text-slate-700 mb-1 font-semibold">
+                <label className="block text-[11px] uppercase text-slate-700 dark:text-slate-300 mb-1 font-semibold">
                   Nombre Completo *
                 </label>
                 <input
@@ -1727,13 +1727,13 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                   required
                   value={editingUser.fullName}
                   onChange={(e) => setEditingUser({ ...editingUser, fullName: e.target.value })}
-                  className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs"
+                  className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white text-xs"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] uppercase text-slate-700 mb-1 font-semibold">
+                  <label className="block text-[11px] uppercase text-slate-700 dark:text-slate-300 mb-1 font-semibold">
                     Correo Electrónico *
                   </label>
                   <input
@@ -1741,44 +1741,44 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                     required
                     value={editingUser.email}
                     onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs"
+                    className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] uppercase text-slate-700 mb-1 font-semibold">
+                  <label className="block text-[11px] uppercase text-slate-700 dark:text-slate-300 mb-1 font-semibold">
                     RUT
                   </label>
                   <input
                     type="text"
                     value={editingUser.rut || ""}
                     onChange={(e) => setEditingUser({ ...editingUser, rut: e.target.value })}
-                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs"
+                    className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white text-xs"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] uppercase text-slate-700 mb-1 font-semibold">
+                  <label className="block text-[11px] uppercase text-slate-700 dark:text-slate-300 mb-1 font-semibold">
                     Teléfono
                   </label>
                   <input
                     type="text"
                     value={editingUser.phone || ""}
                     onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
-                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs"
+                    className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] uppercase text-slate-700 mb-1 font-semibold">
+                  <label className="block text-[11px] uppercase text-slate-700 dark:text-slate-300 mb-1 font-semibold">
                     Rol Asignado *
                   </label>
                   <select
                     value={editingUser.role}
                     onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as UserRole })}
-                    className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-bold"
+                    className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white text-xs font-bold"
                   >
                     <option value="doctor">Doctor</option>
                     <option value="recepcion">Recepción</option>
@@ -1790,9 +1790,9 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
               {/* Doctor Specific */}
               {editingUser.role === "doctor" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-blue-50/50 p-2.5 rounded border border-blue-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-blue-50/50 dark:bg-blue-950/30 p-2.5 rounded border border-blue-200 dark:border-blue-800">
                   <div>
-                    <label className="block text-[10px] uppercase text-blue-900 mb-1 font-semibold">
+                    <label className="block text-[10px] uppercase text-blue-900 dark:text-blue-300 mb-1 font-semibold">
                       Especialidad
                     </label>
                     <input
@@ -1800,11 +1800,11 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       value={editingUser.specialty || ""}
                       onChange={(e) => setEditingUser({ ...editingUser, specialty: e.target.value })}
                       placeholder="Ortodoncia e Invisalign®"
-                      className="w-full px-3 py-1.5 bg-white border border-blue-300 rounded text-slate-900 text-xs"
+                      className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-blue-300 dark:border-blue-700 rounded text-slate-900 dark:text-white text-xs"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase text-blue-900 mb-1 font-semibold">
+                    <label className="block text-[10px] uppercase text-blue-900 dark:text-blue-300 mb-1 font-semibold">
                       Box Asignado
                     </label>
                     <input
@@ -1812,7 +1812,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       value={editingUser.boxAssigned || ""}
                       onChange={(e) => setEditingUser({ ...editingUser, boxAssigned: e.target.value })}
                       placeholder="Box 1"
-                      className="w-full px-3 py-1.5 bg-white border border-blue-300 rounded text-slate-900 text-xs"
+                      className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-blue-300 dark:border-blue-700 rounded text-slate-900 dark:text-white text-xs"
                     />
                   </div>
                 </div>
@@ -1820,9 +1820,9 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
               {/* Recepcion Specific */}
               {editingUser.role === "recepcion" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-amber-50/50 p-2.5 rounded border border-amber-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-amber-50/50 dark:bg-amber-950/30 p-2.5 rounded border border-amber-200 dark:border-amber-800">
                   <div>
-                    <label className="block text-[10px] uppercase text-amber-900 mb-1 font-semibold">
+                    <label className="block text-[10px] uppercase text-amber-900 dark:text-amber-300 mb-1 font-semibold">
                       Turno
                     </label>
                     <input
@@ -1830,11 +1830,11 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       value={editingUser.shift || ""}
                       onChange={(e) => setEditingUser({ ...editingUser, shift: e.target.value })}
                       placeholder="Jornada Completa"
-                      className="w-full px-3 py-1.5 bg-white border border-amber-300 rounded text-slate-900 text-xs"
+                      className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded text-slate-900 dark:text-white text-xs"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase text-amber-900 mb-1 font-semibold">
+                    <label className="block text-[10px] uppercase text-amber-900 dark:text-amber-300 mb-1 font-semibold">
                       Puesto
                     </label>
                     <input
@@ -1842,7 +1842,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       value={editingUser.assignedDesk || ""}
                       onChange={(e) => setEditingUser({ ...editingUser, assignedDesk: e.target.value })}
                       placeholder="Recepción Central Suecia 3580"
-                      className="w-full px-3 py-1.5 bg-white border border-amber-300 rounded text-slate-900 text-xs"
+                      className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded text-slate-900 dark:text-white text-xs"
                     />
                   </div>
                 </div>
@@ -1850,8 +1850,8 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
               {/* Admin Specific */}
               {editingUser.role === "admin" && (
-                <div className="bg-purple-50/50 p-2.5 rounded border border-purple-200">
-                  <label className="block text-[10px] uppercase text-purple-900 mb-1 font-semibold">
+                <div className="bg-purple-50/50 dark:bg-purple-950/30 p-2.5 rounded border border-purple-200 dark:border-purple-800">
+                  <label className="block text-[10px] uppercase text-purple-900 dark:text-purple-300 mb-1 font-semibold">
                     Cargo / Dirección
                   </label>
                   <input
@@ -1859,16 +1859,16 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                     value={editingUser.positionTitle || ""}
                     onChange={(e) => setEditingUser({ ...editingUser, positionTitle: e.target.value })}
                     placeholder="Dirección Médica"
-                    className="w-full px-3 py-1.5 bg-white border border-purple-300 rounded text-slate-900 text-xs"
+                    className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-purple-300 dark:border-purple-700 rounded text-slate-900 dark:text-white text-xs"
                   />
                 </div>
               )}
 
               {/* Paciente Specific */}
               {editingUser.role === "paciente" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-teal-50/50 p-2.5 rounded border border-teal-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-teal-50/50 dark:bg-teal-950/30 p-2.5 rounded border border-teal-200 dark:border-teal-800">
                   <div>
-                    <label className="block text-[10px] uppercase text-teal-900 mb-1 font-semibold">
+                    <label className="block text-[10px] uppercase text-teal-900 dark:text-teal-300 mb-1 font-semibold">
                       Previsión
                     </label>
                     <input
@@ -1876,17 +1876,17 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       value={editingUser.prevision || ""}
                       onChange={(e) => setEditingUser({ ...editingUser, prevision: e.target.value })}
                       placeholder="Fonasa"
-                      className="w-full px-3 py-1.5 bg-white border border-teal-300 rounded text-slate-900 text-xs"
+                      className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-teal-300 dark:border-teal-700 rounded text-slate-900 dark:text-white text-xs"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase text-teal-900 mb-1 font-semibold">
+                    <label className="block text-[10px] uppercase text-teal-900 dark:text-teal-300 mb-1 font-semibold">
                       Convenio Club
                     </label>
                     <select
                       value={editingUser.convenioLevel || "20%"}
                       onChange={(e) => setEditingUser({ ...editingUser, convenioLevel: e.target.value as any })}
-                      className="w-full px-3 py-1.5 bg-white border border-teal-300 rounded text-slate-900 text-xs"
+                      className="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-teal-300 dark:border-teal-700 rounded text-slate-900 dark:text-white text-xs"
                     >
                       <option value="20%">20%</option>
                       <option value="40%">40%</option>
@@ -1899,7 +1899,7 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
 
               {/* Password */}
               <div>
-                <label className="block text-[11px] uppercase text-slate-700 mb-1 font-semibold">
+                <label className="block text-[11px] uppercase text-slate-700 dark:text-slate-300 mb-1 font-semibold">
                   Contraseña
                 </label>
                 <input
@@ -1908,21 +1908,21 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                   value={editingUser.password || ""}
                   onChange={(e) => setEditingUser({ ...editingUser, password: e.target.value })}
                   placeholder="Escribe nueva contraseña o conserva la actual"
-                  className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono font-bold"
+                  className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white text-xs font-mono font-bold"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setEditingUser(null)}
-                  className="px-4 py-2 border border-slate-300 rounded text-xs font-mono uppercase text-slate-600 hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded text-xs font-mono uppercase text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-slate-900 hover:bg-black text-white font-bold text-xs font-mono uppercase rounded shadow-sm"
+                  className="px-5 py-2 bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-bold text-xs font-mono uppercase rounded shadow-xs"
                 >
                   Guardar Cambios
                 </button>
@@ -1937,24 +1937,24 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
       {/* ========================================================================= */}
       {passwordTargetUser && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-white border border-slate-300 rounded-xl max-w-sm w-full p-5 space-y-3 shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl max-w-sm w-full p-5 space-y-3 shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
               <div className="flex items-center gap-2">
-                <Key className="w-4 h-4 text-emerald-600" />
-                <h3 className="text-sm font-bold text-slate-900">
+                <Key className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                   Asignar Nueva Contraseña
                 </h3>
               </div>
               <button
                 onClick={() => setPasswordTargetUser(null)}
-                className="text-slate-400 hover:text-slate-800"
+                className="text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 font-mono">
-              Para: <strong>{passwordTargetUser.fullName}</strong> ({passwordTargetUser.email})
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-mono">
+              Para: <strong className="text-slate-900 dark:text-white">{passwordTargetUser.fullName}</strong> ({passwordTargetUser.email})
             </p>
 
             <form onSubmit={handleQuickPasswordSubmit} className="space-y-3 font-mono text-xs">
@@ -1965,12 +1965,12 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                   value={newQuickPassword}
                   onChange={(e) => setNewQuickPassword(e.target.value)}
                   placeholder="Escribe la nueva contraseña"
-                  className="w-full pl-3 pr-10 py-2 bg-slate-50 border border-slate-300 rounded text-slate-900 text-xs font-mono font-bold focus:outline-none focus:border-slate-900 focus:bg-white"
+                  className="w-full pl-3 pr-10 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-slate-900 dark:text-white placeholder:text-slate-400 text-xs font-mono font-bold focus:outline-none focus:border-slate-900 dark:focus:border-slate-400 focus:bg-white dark:focus:bg-slate-800"
                 />
                 <button
                   type="button"
                   onClick={() => setShowQuickPassToggle(!showQuickPassToggle)}
-                  className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700"
+                  className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                 >
                   {showQuickPassToggle ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -1980,23 +1980,23 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                 <button
                   type="button"
                   onClick={() => setNewQuickPassword(generateSuggestedPassword(passwordTargetUser.role))}
-                  className="text-emerald-700 font-bold hover:underline flex items-center gap-1"
+                  className="text-emerald-700 dark:text-emerald-400 font-bold hover:underline flex items-center gap-1"
                 >
                   <Sparkles className="w-3 h-3" /> Generar aleatoria
                 </button>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setPasswordTargetUser(null)}
-                  className="px-3 py-1.5 border border-slate-300 rounded text-xs font-mono uppercase text-slate-600"
+                  className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-xs font-mono uppercase text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-slate-900 hover:bg-black text-white font-bold text-xs font-mono uppercase rounded"
+                  className="px-4 py-1.5 bg-slate-900 hover:bg-black text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 font-bold text-xs font-mono uppercase rounded shadow-xs"
                 >
                   Actualizar Clave
                 </button>
@@ -2011,29 +2011,29 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
       {/* ========================================================================= */}
       {deletingUser && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-white border border-red-200 rounded-xl max-w-sm w-full p-5 space-y-3 shadow-xl">
-            <div className="flex items-center gap-2 text-red-600 border-b border-red-100 pb-2">
+          <div className="bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/60 rounded-xl max-w-sm w-full p-5 space-y-3 shadow-xl">
+            <div className="flex items-center gap-2 text-red-600 dark:text-red-400 border-b border-red-100 dark:border-red-900/40 pb-2">
               <AlertCircle className="w-5 h-5 shrink-0" />
-              <h3 className="text-sm font-bold text-slate-900">¿Eliminar este usuario?</h3>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">¿Eliminar este usuario?</h3>
             </div>
 
-            <p className="text-xs text-slate-600 font-mono leading-relaxed">
-              ¿Estás seguro de que deseas eliminar el acceso de <strong>{deletingUser.fullName}</strong> ({deletingUser.email})?
+            <p className="text-xs text-slate-600 dark:text-slate-300 font-mono leading-relaxed">
+              ¿Estás seguro de que deseas eliminar el acceso de <strong className="text-slate-900 dark:text-white">{deletingUser.fullName}</strong> ({deletingUser.email})?
               Esta acción revocará sus credenciales de inmediato.
             </p>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 font-mono text-xs">
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 font-mono text-xs">
               <button
                 type="button"
                 onClick={() => setDeletingUser(null)}
-                className="px-3 py-1.5 border border-slate-300 rounded uppercase text-slate-600 hover:bg-slate-50"
+                className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded uppercase text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 Cancelar
               </button>
               <button
                 type="button"
                 onClick={handleDeleteConfirm}
-                className="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold uppercase rounded"
+                className="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold uppercase rounded shadow-xs"
               >
                 Eliminar Definitivamente
               </button>

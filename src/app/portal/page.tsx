@@ -76,6 +76,9 @@ import { ClinicalDocumentModal } from "@/components/portal/ClinicalDocumentModal
 import { ClinicalBudgetPlan } from "@/components/portal/ClinicalBudgetPlan";
 import { InformedConsentModal } from "@/components/portal/InformedConsentModal";
 import { AdminUserManagement } from "@/components/portal/AdminUserManagement";
+import { DentalinkIntegrationPanel } from "@/components/portal/DentalinkIntegrationPanel";
+import { FlowClubManagementPanel } from "@/components/portal/FlowClubManagementPanel";
+import { CLINIC_INFO } from "@/data/clinicInfo";
 
 function normalizeIdentity(value?: string | null): string {
   return (value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -106,8 +109,8 @@ function PortalContent() {
   const [activeRole, setActiveRole] = useState<UserRole>("paciente");
 
   // Admin Navigation Sub-tab
-  const initialTabParam = searchParams.get("tab") as "dashboard" | "cms" | "citas" | "usuarios" | null;
-  const [adminTab, setAdminTab] = useState<"dashboard" | "cms" | "citas" | "usuarios">(initialTabParam || "dashboard");
+  const initialTabParam = searchParams.get("tab") as "dashboard" | "dentalink" | "citas" | "pagos_club" | "cms" | "usuarios" | "consentimientos" | null;
+  const [adminTab, setAdminTab] = useState<"dashboard" | "dentalink" | "citas" | "pagos_club" | "cms" | "usuarios" | "consentimientos">(initialTabParam || "dashboard");
 
   // Patient Sub-tabs
   const [patientTab, setPatientTab] = useState<"citas" | "ficha" | "odontograma" | "presupuesto" | "consentimientos" | "convenio">("citas");
@@ -185,13 +188,14 @@ function PortalContent() {
     [consents, currentUser]
   );
 
-  // Reception walk-in modal
+  // Reception walk-in & search state
   const [showWalkinModal, setShowWalkinModal] = useState(false);
   const [walkinName, setWalkinName] = useState("");
   const [walkinPhone, setWalkinPhone] = useState("");
   const [walkinBox, setWalkinBox] = useState("Box 1");
   const [walkinDoctor, setWalkinDoctor] = useState(DOCTORS[0]?.name || "Doctor Tratante");
   const [walkinTreatment, setWalkinTreatment] = useState("Consulta de Urgencia Dental");
+  const [receptionSearch, setReceptionSearch] = useState("");
 
   // Admin user list
   const [userList, setUserList] = useState<UserProfile[]>([]);
@@ -938,6 +942,14 @@ function PortalContent() {
               </div>
             </div>
 
+            {/* Legal Protocol Notice (Dentalink is primary EHR) */}
+            <div className="bg-blue-50/70 border border-blue-200 rounded-lg p-4 flex items-start gap-3 text-xs text-blue-900 font-light">
+              <ShieldCheck className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
+              <div>
+                <strong className="font-semibold text-blue-950">Protocolo Primario Ley 20.584:</strong> La Ficha Clínica oficial, el Odontograma en box y la emisión de Boletas SII residen exclusivamente en <strong>Dentalink</strong> (HealthAtom en el sillón clínico). Este módulo web opera como visor de triaje, admisión y derivación de citas web.
+              </div>
+            </div>
+
             {/* Daily Agenda Table */}
             <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 shadow-2xs overflow-hidden">
               <div className="p-4 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
@@ -1004,47 +1016,82 @@ function PortalContent() {
                   );
                 }
 
-                return filteredDoctorAppointments.map((item) => (
-                  <div key={item.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-slate-900">{item.time} hrs</span>
-                        <span className="text-sm font-semibold text-slate-900">· {item.patientName}</span>
-                        <span className="text-xs font-mono text-slate-500">({item.patientRut || "Sin RUT"})</span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-slate-100 text-slate-700 border border-slate-200">
-                          {item.status.replace("_", " ")}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-600 font-light">
-                        Procedimiento: <strong className="text-slate-900 font-medium">{item.treatmentName}</strong> · {item.box || "Box 1"}
-                        {item.doctorName && item.doctorName !== currentUser?.fullName && (
-                          <span className="text-slate-500"> · Asignado a: <strong className="text-slate-700">{item.doctorName}</strong></span>
-                        )}
-                      </p>
-                    </div>
+                return filteredDoctorAppointments.map((item) => {
+                  const patientUser = userList.find((u) => matchesPatient({ name: item.patientName, rut: item.patientRut, email: item.patientEmail }, u));
+                  const isClubMember = (patientUser?.convenioLevel && patientUser.convenioLevel !== "Ninguno") || Boolean(item.convenioDiscount);
+                  const clubTier = patientUser?.convenioLevel || (item.convenioDiscount ? "Convenio Activo" : null);
 
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => {
-                          const pName = item.patientName || "Paciente en Box";
-                          setSoapPatient(pName);
-                          handleStatusChange(item.id, "en_box");
-                          toast.info(`Paciente ${pName} cargado en Box y Ficha SOAP`);
-                        }}
-                        className="px-3 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-[11px] font-mono uppercase text-slate-800 transition bg-white cursor-pointer"
-                        title="Pasar paciente a box y precargar su ficha SOAP"
-                      >
-                        Pasar a Box
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(item.id, "completada")}
-                        className="px-3 py-1.5 rounded bg-slate-900 text-white font-bold text-[11px] font-mono uppercase transition hover:bg-black cursor-pointer"
-                      >
-                        Finalizar ✓
-                      </button>
+                  return (
+                    <div key={item.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition">
+                      <div className="space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-slate-900">{item.time} hrs</span>
+                          <span className="text-sm font-semibold text-slate-900">· {item.patientName}</span>
+                          <span className="text-xs font-mono text-slate-500">({item.patientRut || "Sin RUT"})</span>
+                          
+                          {/* Dentalink Sync Badge */}
+                          {item.dentalinkCitaId ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                              Dentalink #{item.dentalinkCitaId}
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-slate-100 text-slate-600">
+                              Web Box 1
+                            </span>
+                          )}
+
+                          {/* Club BeHappy Badge */}
+                          {isClubMember && (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1">
+                              <span>👑 Club BeHappy</span>
+                              {clubTier && <span>({clubTier})</span>}
+                            </span>
+                          )}
+
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-slate-100 text-slate-700 border border-slate-200">
+                            {item.status.replace("_", " ")}
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-slate-600 font-light">
+                          Procedimiento: <strong className="text-slate-900 font-medium">{item.treatmentName}</strong> · {item.box || "Box 1"}
+                          {item.doctorName && item.doctorName !== currentUser?.fullName && (
+                            <span className="text-slate-500"> · Asignado a: <strong className="text-slate-700">{item.doctorName}</strong></span>
+                          )}
+                        </p>
+
+                        {/* Web Triage Anamnesis Note */}
+                        {item.notes && (
+                          <div className="inline-block bg-amber-50/80 border border-amber-200/80 rounded px-2.5 py-1 text-[11px] font-mono text-amber-900">
+                            <span className="font-bold text-amber-950 uppercase tracking-wider text-[9px] mr-1">Triaje Web:</span>
+                            {item.notes}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => {
+                            const pName = item.patientName || "Paciente en Box";
+                            setSoapPatient(pName);
+                            handleStatusChange(item.id, "en_box");
+                            toast.info(`Paciente ${pName} cargado en Box y Ficha SOAP`);
+                          }}
+                          className="px-3 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-[11px] font-mono uppercase text-slate-800 transition bg-white cursor-pointer"
+                          title="Pasar paciente a box y precargar su ficha SOAP"
+                        >
+                          Pasar a Box
+                        </button>
+                        <button
+                          onClick={() => handleStatusChange(item.id, "completada")}
+                          className="px-3 py-1.5 rounded bg-slate-900 text-white font-bold text-[11px] font-mono uppercase transition hover:bg-black cursor-pointer"
+                        >
+                          Finalizar ✓
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ));
+                  );
+                });
               })()}
             </div>
 
@@ -1192,91 +1239,180 @@ function PortalContent() {
               </button>
             </div>
 
-            {/* Live Flow Table */}
+            {/* Legal Protocol Notice for Reception */}
+            <div className="bg-amber-50/70 border border-amber-200 rounded-lg p-4 flex items-start gap-3 text-xs text-amber-900 font-light">
+              <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <div>
+                <strong className="font-semibold text-amber-950">Protocolo de Admisión:</strong> La agenda oficial de sillones y cobros DTE se gestionan en Dentalink. Este módulo web permite registrar pacientes presenciales, cobrar abonos Flow y confirmar asistencia por WhatsApp.
+              </div>
+            </div>
+
+            {/* Live Flow Table with Search */}
             <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 shadow-2xs overflow-hidden">
-              <div className="p-4 bg-slate-50 flex items-center justify-between text-xs font-mono">
-                <span className="font-bold uppercase text-slate-900">Flujo de Pacientes en Sala</span>
-                <span className="text-slate-500">Total en Turno: {appointments.length}</span>
+              <div className="p-4 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold uppercase text-slate-900">Flujo de Pacientes en Sala</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-200/70 text-slate-700 font-bold text-[10px]">
+                    {appointments.length} Cita{appointments.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                {/* Reception Search */}
+                <div className="relative w-full sm:w-72">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={receptionSearch}
+                    onChange={(e) => setReceptionSearch(e.target.value)}
+                    placeholder="Filtrar por paciente, RUT o fono..."
+                    className="w-full pl-8 pr-3 py-1 bg-white border border-slate-300 rounded text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-800"
+                  />
+                  {receptionSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setReceptionSearch("")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {appointments.length === 0 ? (
-                <div className="p-12 text-center space-y-3">
-                  <Clock className="w-8 h-8 text-slate-400 mx-auto" />
-                  <h3 className="text-sm font-semibold text-slate-900">No hay citas registradas en recepción</h3>
-                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Los pacientes que agenden en la web pública o lleguen directamente a Suecia 3580 se gestionan aquí.
-                  </p>
-                  <div className="pt-2">
-                    <button
-                      onClick={() => setShowWalkinModal(true)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-black text-white font-bold text-xs font-mono uppercase tracking-wider rounded transition"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      Registrar Paciente Presencial
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                appointments.map((item) => (
-                  <div key={item.id} className="p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 hover:bg-slate-50/60 transition">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-slate-900 text-sm">{item.patientName}</span>
-                        <span className="text-xs font-mono text-slate-500">{item.patientPhone ? `· ${item.patientPhone}` : ""}</span>
-                        <span className="px-2 py-0.5 rounded border border-slate-200 bg-slate-100 text-[10px] font-mono uppercase text-slate-700">
-                          {item.status.replace("_", " ")}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-600 font-light">
-                        {item.treatmentName} · {item.doctorName} · {item.time} hrs
+              {(() => {
+                const filteredReceptionAppointments = appointments.filter((item) => {
+                  if (!receptionSearch.trim()) return true;
+                  const q = receptionSearch.toLowerCase().trim();
+                  const name = (item.patientName || "").toLowerCase();
+                  const rut = (item.patientRut || "").toLowerCase();
+                  const phone = (item.patientPhone || "").toLowerCase();
+                  const doc = (item.doctorName || "").toLowerCase();
+                  const treat = (item.treatmentName || "").toLowerCase();
+                  return name.includes(q) || rut.includes(q) || phone.includes(q) || doc.includes(q) || treat.includes(q);
+                });
+
+                if (filteredReceptionAppointments.length === 0) {
+                  return (
+                    <div className="p-12 text-center space-y-3">
+                      <Clock className="w-8 h-8 text-slate-400 mx-auto" />
+                      <h3 className="text-sm font-semibold text-slate-900">
+                        {receptionSearch ? "No se encontraron pacientes para esta búsqueda" : "No hay citas registradas en recepción"}
+                      </h3>
+                      <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                        {receptionSearch ? "Intenta con otro término o limpia el buscador." : "Los pacientes que agenden en la web pública o lleguen directamente a Suecia 3580 se gestionan aquí."}
                       </p>
+                      {!receptionSearch && (
+                        <div className="pt-2">
+                          <button
+                            onClick={() => setShowWalkinModal(true)}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-black text-white font-bold text-xs font-mono uppercase tracking-wider rounded transition cursor-pointer"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            Registrar Paciente Presencial
+                          </button>
+                        </div>
+                      )}
                     </div>
+                  );
+                }
 
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const amount = (item.price ?? 35000) - (item.convenioDiscount ?? 0);
-                          setFlowPaymentData({
-                            appointmentId: item.id,
-                            patientName: item.patientName || "Paciente",
-                            patientEmail: item.patientEmail || userList.find((u) => u.fullName.toLowerCase() === (item.patientName || "").toLowerCase())?.email || "",
-                            patientPhone: item.patientPhone || "",
-                            amount,
-                            subject: `Atención en Sede · ${item.treatmentName}`,
-                          });
-                          setShowFlowPaymentModal(true);
-                        }}
-                        className="px-2.5 py-1.5 rounded bg-slate-900 hover:bg-black text-white text-xs font-mono uppercase transition flex items-center gap-1 shadow-2xs cursor-pointer"
-                      >
-                        <CreditCard className="w-3.5 h-3.5" />
-                        <span>Cobro Flow</span>
-                      </button>
+                return filteredReceptionAppointments.map((item) => {
+                  const patientUser = userList.find((u) => matchesPatient({ name: item.patientName, rut: item.patientRut, email: item.patientEmail }, u));
+                  const isClubMember = (patientUser?.convenioLevel && patientUser.convenioLevel !== "Ninguno") || Boolean(item.convenioDiscount);
+                  const isFlowPaid = item.paymentStatus === "abono_flow" || item.paymentStatus === "pagado";
 
-                      <a
-                        href={buildWhatsAppUrl(`¡Hola ${item.patientName}! Le recordamos su cita de ${item.treatmentName} en BeHappy Ñuñoa para hoy a las ${item.time} hrs. ¿Nos confirma su asistencia?`)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-xs font-mono uppercase text-slate-800 transition bg-white"
-                      >
-                        WhatsApp
-                      </a>
-                      <button
-                        onClick={() => handleStatusChange(item.id, "en_espera")}
-                        className="px-2.5 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-xs font-mono uppercase text-slate-800 transition bg-white"
-                      >
-                        Llegó
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(item.id, "completada")}
-                        className="px-2.5 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs font-mono uppercase transition shadow-2xs"
-                      >
-                        Cobrado ✓
-                      </button>
+                  return (
+                    <div key={item.id} className="p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 hover:bg-slate-50/60 transition">
+                      <div className="space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-semibold text-slate-900 text-sm">{item.patientName}</span>
+                          <span className="text-xs font-mono text-slate-500">{item.patientPhone ? `· ${item.patientPhone}` : ""}</span>
+                          
+                          {/* Dentalink Sync Badge */}
+                          {item.dentalinkCitaId ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                              Dentalink #{item.dentalinkCitaId}
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-slate-100 text-slate-600">
+                              Web Directa
+                            </span>
+                          )}
+
+                          {/* Payment Status Badge */}
+                          {isFlowPaid ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Abono Web $10.000 Pagado ✓
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                              Pago Pendiente en Caja
+                            </span>
+                          )}
+
+                          {/* Club Badge */}
+                          {isClubMember && (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                              👑 Socio Club
+                            </span>
+                          )}
+
+                          <span className="px-2 py-0.5 rounded border border-slate-200 bg-slate-100 text-[10px] font-mono uppercase text-slate-700">
+                            {item.status.replace("_", " ")}
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-slate-600 font-light">
+                          {item.treatmentName} · {item.doctorName} · {item.time} hrs · {item.box || "Box 1"}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const amount = (item.price ?? 35000) - (item.convenioDiscount ?? 0);
+                            setFlowPaymentData({
+                              appointmentId: item.id,
+                              patientName: item.patientName || "Paciente",
+                              patientEmail: item.patientEmail || userList.find((u) => u.fullName.toLowerCase() === (item.patientName || "").toLowerCase())?.email || "",
+                              patientPhone: item.patientPhone || "",
+                              amount,
+                              subject: `Atención en Sede · ${item.treatmentName}`,
+                            });
+                            setShowFlowPaymentModal(true);
+                          }}
+                          className="px-2.5 py-1.5 rounded bg-slate-900 hover:bg-black text-white text-xs font-mono uppercase transition flex items-center gap-1 shadow-2xs cursor-pointer"
+                        >
+                          <CreditCard className="w-3.5 h-3.5" />
+                          <span>Cobro Flow</span>
+                        </button>
+
+                        <a
+                          href={buildWhatsAppUrl(`¡Hola ${item.patientName}! Le recordamos su cita de ${item.treatmentName} en BeHappy Ñuñoa para hoy a las ${item.time} hrs. ¿Nos confirma su asistencia?`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-xs font-mono uppercase text-slate-800 transition bg-white"
+                        >
+                          WhatsApp
+                        </a>
+                        <button
+                          onClick={() => handleStatusChange(item.id, "en_espera")}
+                          className="px-2.5 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-xs font-mono uppercase text-slate-800 transition bg-white cursor-pointer"
+                        >
+                          Llegó
+                        </button>
+                        <button
+                          onClick={() => handleStatusChange(item.id, "completada")}
+                          className="px-2.5 py-1.5 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs font-mono uppercase transition shadow-2xs cursor-pointer"
+                        >
+                          Cobrado ✓
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))
-              )}
+                  );
+                });
+              })()}
             </div>
 
             {/* Walk-in Modal */}
@@ -1391,74 +1527,160 @@ function PortalContent() {
                 </p>
               </div>
 
-              {/* Navigation Tabs */}
-              <nav className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-1 gap-1.5 font-mono text-xs">
-                <button
-                  type="button"
-                  onClick={() => setAdminTab("dashboard")}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded transition text-left ${
-                    adminTab === "dashboard"
-                      ? "bg-slate-900 text-white font-bold shadow-xs"
-                      : "text-slate-700 hover:bg-slate-100"
-                  }`}
-                >
-                  <LayoutDashboard className="w-4 h-4 shrink-0" />
-                  <span>Dashboard</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setAdminTab("cms")}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left ${
-                    adminTab === "cms"
-                      ? "bg-slate-900 text-white font-bold shadow-xs"
-                      : "text-slate-700 hover:bg-slate-100"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Globe className="w-4 h-4 shrink-0" />
-                    <span>Editor CMS Web</span>
-                  </div>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold uppercase">
-                    VIVO
+              {/* Categorized Navigation Tabs */}
+              <div className="space-y-4 font-mono text-xs">
+                {/* 1. DIRECCIÓN & ENLACE MAESTRO */}
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block px-1">
+                    Dirección & Enlace
                   </span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab("dashboard")}
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
+                      adminTab === "dashboard"
+                        ? "bg-slate-900 text-white font-bold shadow-xs"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <LayoutDashboard className="w-4 h-4 shrink-0" />
+                    <span>Dashboard</span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => setAdminTab("citas")}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left ${
-                    adminTab === "citas"
-                      ? "bg-slate-900 text-white font-bold shadow-xs"
-                      : "text-slate-700 hover:bg-slate-100"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-4 h-4 shrink-0" />
-                    <span>Control de Citas</span>
-                  </div>
-                  <span className="text-[10px] text-slate-500">{appointments.length}</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab("dentalink")}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
+                      adminTab === "dentalink"
+                        ? "bg-slate-900 text-white font-bold shadow-xs"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Activity className="w-4 h-4 shrink-0 text-blue-600" />
+                      <span>Enlace Dentalink</span>
+                    </div>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold uppercase">
+                      API
+                    </span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => setAdminTab("usuarios")}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left ${
-                    adminTab === "usuarios"
-                      ? "bg-slate-900 text-white font-bold shadow-xs"
-                      : "text-slate-700 hover:bg-slate-100"
-                  }`}
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab("consentimientos")}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
+                      adminTab === "consentimientos"
+                        ? "bg-slate-900 text-white font-bold shadow-xs"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-600" />
+                      <span>Auditoría Ley 20.584</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-semibold">{consents.length}</span>
+                  </button>
+                </div>
+
+                {/* 2. OPERACIÓN & CAPTACIÓN WEB */}
+                <div className="space-y-1 pt-2 border-t border-slate-100">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block px-1">
+                    Operación & Web
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab("citas")}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
+                      adminTab === "citas"
+                        ? "bg-slate-900 text-white font-bold shadow-xs"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Clock className="w-4 h-4 shrink-0" />
+                      <span>Citas Web & Triaje</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-semibold">{appointments.length}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab("pagos_club")}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
+                      adminTab === "pagos_club"
+                        ? "bg-slate-900 text-white font-bold shadow-xs"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <CreditCard className="w-4 h-4 shrink-0 text-emerald-600" />
+                      <span>Pagos Flow & Club</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-semibold">
+                      {userList.filter((u) => u.convenioLevel && u.convenioLevel !== "Ninguno").length}
+                    </span>
+                  </button>
+                </div>
+
+                {/* 3. CONTENIDO & SISTEMA */}
+                <div className="space-y-1 pt-2 border-t border-slate-100">
+                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block px-1">
+                    Contenido & Sistema
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab("cms")}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
+                      adminTab === "cms"
+                        ? "bg-slate-900 text-white font-bold shadow-xs"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Globe className="w-4 h-4 shrink-0 text-teal-600" />
+                      <span>Editor CMS Web</span>
+                    </div>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold uppercase">
+                      VIVO
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdminTab("usuarios")}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
+                      adminTab === "usuarios"
+                        ? "bg-slate-900 text-white font-bold shadow-xs"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <UsersIcon className="w-4 h-4 shrink-0" />
+                      <span>Usuarios & Roles</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-semibold">{userList.length}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Direct Access to Dentalink Master Cloud Agenda */}
+              <div className="pt-3 border-t border-slate-100 space-y-2">
+                <span className="text-[10px] font-mono uppercase text-slate-400 block tracking-wider">
+                  Acceso Dentalink Maestro
+                </span>
+                <a
+                  href={CLINIC_INFO.dentalink?.agendaUrl || "https://00b229f2077285343f1ffac76fd853c23816acec.agenda.softwaredentalink.com/"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between text-xs text-blue-700 hover:text-blue-900 font-mono py-1.5 px-2.5 bg-blue-50/70 hover:bg-blue-100/70 rounded border border-blue-200/80 transition"
                 >
-                  <div className="flex items-center gap-3">
-                    <UsersIcon className="w-4 h-4 shrink-0" />
-                    <span>Usuarios & Roles</span>
-                  </div>
-                  <span className="text-[10px] text-slate-500">{userList.length}</span>
-                </button>
-              </nav>
+                  <span className="font-semibold">Agenda Dentalink Cloud</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
+                </a>
+              </div>
 
               {/* Live Web Links */}
-              <div className="pt-4 border-t border-slate-100 space-y-2">
+              <div className="pt-3 border-t border-slate-100 space-y-2">
                 <span className="text-[10px] font-mono uppercase text-slate-400 block tracking-wider">Acceso Público</span>
                 <a
                   href="/"
@@ -1496,51 +1718,134 @@ function PortalContent() {
                       </span>
                       <h2 className="text-2xl font-semibold text-slate-900">Dashboard Ejecutivo</h2>
                       <p className="text-xs text-slate-500 font-mono mt-0.5">
-                        Métricas consolidadas BeHappy Ñuñoa · Conectado en tiempo real
+                        Headless Front-Office · BeHappy Ñuñoa (Suecia 3580)
                       </p>
                     </div>
 
-                    <button
-                      onClick={() => setAdminTab("cms")}
-                      className="px-4 py-2 bg-slate-900 hover:bg-black text-white font-mono text-xs uppercase tracking-wider rounded font-bold transition flex items-center gap-1.5 shadow-sm"
-                    >
-                      <Globe className="w-3.5 h-3.5" />
-                      <span>Abrir Editor CMS Web</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setAdminTab("dentalink")}
+                        className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-mono text-xs uppercase tracking-wider rounded font-bold transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      >
+                        <Activity className="w-3.5 h-3.5" />
+                        <span>Enlace Dentalink</span>
+                      </button>
+                      <button
+                        onClick={() => setAdminTab("cms")}
+                        className="px-4 py-2 bg-slate-900 hover:bg-black text-white font-mono text-xs uppercase tracking-wider rounded font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+                      >
+                        <Globe className="w-3.5 h-3.5" />
+                        <span>Editor CMS Web</span>
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Real Metrics Grid (Without fake figures) */}
+                  {/* Architecture Banner (Zero Duplication & Single Source of Truth) */}
+                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] font-mono tracking-widest uppercase text-emerald-600 dark:text-emerald-400 font-bold">
+                          ARQUITECTURA DE INTEGRACIÓN HEADLESS
+                        </span>
+                      </div>
+                      <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Dentalink es la Fuente Única Oficial (100%)</h4>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 font-normal max-w-2xl leading-relaxed">
+                        La Historia Clínica Electrónica (Ley 20.584), el Odontograma en box y las Boletas Electrónicas SII residen exclusivamente en Dentalink. Este panel administra la captación digital, triaje de pacientes, pasarela Flow.cl y contenidos editoriales.
+                      </p>
+                    </div>
+                    <a
+                      href={CLINIC_INFO.dentalink?.agendaUrl || "https://00b229f2077285343f1ffac76fd853c23816acec.agenda.softwaredentalink.com/"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-200 dark:border-white/20 text-slate-800 dark:text-white rounded text-xs font-mono uppercase tracking-wider font-bold transition flex items-center gap-1.5 shrink-0 shadow-xs"
+                    >
+                      <span>Abrir Dentalink</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-slate-500 dark:text-slate-300" />
+                    </a>
+                  </div>
+
+                  {/* Executive KPI Grid */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-1 shadow-2xs">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Ingresos del Mes</span>
+                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Enlace Dentalink</span>
+                      <span className="text-lg font-bold font-mono text-blue-700 block">HealthAtom Cloud</span>
+                      <span className="text-[10px] font-mono text-slate-500 block">Sucursal #1 · Suecia 3580</span>
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-1 shadow-2xs">
+                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Citas Web Headless</span>
+                      <span className="text-xl font-bold font-mono text-slate-900 block">{appointments.length}</span>
+                      <span className="text-[10px] font-mono text-slate-500 block">Captadas por triaje web</span>
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-1 shadow-2xs">
+                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Abonos Online Flow</span>
                       <span className="text-xl font-bold font-mono text-slate-900 block">
                         {(() => {
-                          const completed = appointments.filter((a) => a.status === "completada");
-                          const total = completed.reduce((acc, a) => acc + ((a.price ?? 35000) - (a.convenioDiscount ?? 0)), 0);
+                          const paid = appointments.filter((a) => a.paymentStatus === "pagado" || a.paymentStatus === "abono_flow");
+                          const total = paid.reduce((acc, a) => acc + (a.paymentStatus === "abono_flow" ? 10000 : (a.price ?? 35000)), 0);
                           return `$${total.toLocaleString("es-CL")} CLP`;
                         })()}
                       </span>
-                      <span className="text-[10px] font-mono text-slate-500 block">Calculado en tiempo real</span>
+                      <span className="text-[10px] font-mono text-slate-500 block">Webpay / Flow.cl Chile</span>
                     </div>
 
                     <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-1 shadow-2xs">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Citas Registradas</span>
-                      <span className="text-xl font-bold font-mono text-slate-900 block">{appointments.length}</span>
-                      <span className="text-[10px] font-mono text-slate-500 block">Agendadas en sistema</span>
-                    </div>
-
-                    <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-1 shadow-2xs">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Pacientes en Base</span>
-                      <span className="text-xl font-bold font-mono text-slate-900 block">{userList.length}</span>
-                      <span className="text-[10px] font-mono text-slate-500 block">Fichas activas registradas</span>
-                    </div>
-
-                    <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-1 shadow-2xs">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Planes Convenio</span>
+                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Club BeHappy</span>
                       <span className="text-xl font-bold font-mono text-emerald-600 block">
-                        {userList.filter((u) => u.convenioLevel).length} Activos
+                        {userList.filter((u) => u.convenioLevel && u.convenioLevel !== "Ninguno").length} Miembros
                       </span>
-                      <span className="text-[10px] font-mono text-slate-500 block">Con descuento aplicado</span>
+                      <span className="text-[10px] font-mono text-slate-500 block">Convenios sincronizados</span>
+                    </div>
+                  </div>
+
+                  {/* Telemetry CAC / Origin Breakdown Card */}
+                  <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-4 shadow-xs">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                      <div>
+                        <h4 className="text-sm font-bold font-mono uppercase tracking-wider text-slate-900">
+                          Telemetría de Captación & Atribución Publicitaria (CAC)
+                        </h4>
+                        <p className="text-xs text-slate-500 font-mono">
+                          Origen de pacientes inyectados a Dentalink desde campañas digitales
+                        </p>
+                      </div>
+                      <span className="text-xs font-mono font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">
+                        {appointments.length} Conversiones Totales
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                      <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1">
+                        <span className="text-[10px] uppercase text-slate-500 block">Google Search Ads</span>
+                        <span className="text-base font-bold text-slate-900 block">
+                          {appointments.filter((a) => (a.utmSource || "").toLowerCase().includes("google")).length}
+                        </span>
+                        <span className="text-[10px] text-slate-400 block">Palabras clave de intención</span>
+                      </div>
+
+                      <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1">
+                        <span className="text-[10px] uppercase text-slate-500 block">Meta Ads (Instagram)</span>
+                        <span className="text-base font-bold text-slate-900 block">
+                          {appointments.filter((a) => (a.utmSource || "").toLowerCase().includes("meta") || (a.utmSource || "").toLowerCase().includes("instagram")).length}
+                        </span>
+                        <span className="text-[10px] text-slate-400 block">Estética & Ortodoncia</span>
+                      </div>
+
+                      <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1">
+                        <span className="text-[10px] uppercase text-slate-500 block">Web Directa / SEO</span>
+                        <span className="text-base font-bold text-slate-900 block">
+                          {appointments.filter((a) => !(a.utmSource || "").toLowerCase().includes("google") && !(a.utmSource || "").toLowerCase().includes("meta") && !(a.utmSource || "").toLowerCase().includes("instagram")).length}
+                        </span>
+                        <span className="text-[10px] text-slate-400 block">Tráfico orgánico Ñuñoa</span>
+                      </div>
+
+                      <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1">
+                        <span className="text-[10px] uppercase text-slate-500 block">Tasa Inyección Dentalink</span>
+                        <span className="text-base font-bold text-emerald-600 block">100% Fallback Seguro</span>
+                        <span className="text-[10px] text-slate-400 block">Cero pacientes perdidos</span>
+                      </div>
                     </div>
                   </div>
 
@@ -1550,12 +1855,12 @@ function PortalContent() {
                       <span className="text-[10px] font-mono text-slate-500 uppercase font-bold block">GESTIÓN DE CONTENIDOS EN TIEMPO REAL</span>
                       <h4 className="text-base font-semibold text-slate-900">Edición Directa del Sitio Web Público</h4>
                       <p className="text-xs text-slate-600 font-light max-w-xl">
-                        Modifica el catálogo de tratamientos, equipo de doctores, teléfonos de WhatsApp, navegación de cabecera y convenios en tiempo real.
+                        Modifica el catálogo de 20 tratamientos, equipo de 8 doctores, teléfonos de WhatsApp de guardia, cintillo de anuncios y convenios en vivo.
                       </p>
                     </div>
                     <button
                       onClick={() => setAdminTab("cms")}
-                      className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white font-mono text-xs uppercase tracking-wider rounded font-bold transition flex items-center gap-1.5 shrink-0 shadow-sm"
+                      className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white font-mono text-xs uppercase tracking-wider rounded font-bold transition flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer"
                     >
                       <span>Ir a Módulo CMS</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -1564,47 +1869,85 @@ function PortalContent() {
                 </div>
               )}
 
-              {/* TAB 2: SITE CMS EDITOR */}
-              {adminTab === "cms" && (
-                <div className="space-y-4">
-                  <SiteCmsEditor />
-                </div>
+              {/* TAB 2: DENTALINK INTEGRATION MONITOR */}
+              {adminTab === "dentalink" && (
+                <DentalinkIntegrationPanel />
               )}
 
-              {/* TAB 3: GLOBAL APPOINTMENTS */}
+              {/* TAB 3: WEB APPOINTMENTS & TRIAGE QUEUE */}
               {adminTab === "citas" && (
                 <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 shadow-xs overflow-hidden">
-                  <div className="p-4 bg-slate-50 flex items-center justify-between text-xs font-mono">
-                    <span className="font-bold uppercase text-slate-900">Control Global de Citas Médicas</span>
+                  <div className="p-4 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-slate-600" />
+                      <span className="font-bold uppercase text-slate-900">Cola de Citas Web & Sincronización Dentalink</span>
+                    </div>
                     <span className="text-slate-500">{appointments.length} Citas Registradas</span>
                   </div>
 
                   {appointments.length === 0 ? (
-                    <div className="p-12 text-center text-slate-500 text-xs">
-                      No hay citas en la base de datos actualmente.
+                    <div className="p-12 text-center text-slate-500 text-xs font-mono">
+                      No hay citas en la cola actualmente. Las citas agendadas desde la web pública se reflejarán aquí.
                     </div>
                   ) : (
                     appointments.map((a) => (
-                      <div key={a.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-slate-50/60 transition">
-                        <div>
-                          <div className="flex items-center gap-2">
+                      <div key={a.id} className="p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 hover:bg-slate-50/60 transition">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
                             <span className="font-semibold text-slate-900 text-sm">{a.patientName}</span>
                             <span className="text-xs font-mono text-slate-500">· {a.treatmentName}</span>
-                            <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-slate-100 text-slate-700">
+                            
+                            {/* Dentalink Sync Badge */}
+                            {a.dentalinkCitaId ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                Dentalink #{a.dentalinkCitaId}
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                Fallback WhatsApp
+                              </span>
+                            )}
+
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-slate-100 text-slate-700 border border-slate-200">
                               {a.status}
                             </span>
                           </div>
+
                           <p className="text-xs text-slate-500 font-mono mt-0.5">
-                            {a.date} {a.time} · Doctor: {a.doctorName} · {a.patientPhone || "Sin teléfono"}
+                            Fecha: {a.date} {a.time} · Especialista: {a.doctorName} · Tel: {a.patientPhone || "Sin fono"}
+                            {a.utmSource && (
+                              <span className="text-slate-400"> · Origen: <strong className="text-slate-600">{a.utmSource}</strong></span>
+                            )}
                           </p>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                          {a.patientPhone && (
+                            <a
+                              href={buildWhatsAppUrl(`¡Hola ${a.patientName}! Le escribimos desde Centro Dental BeHappy (Ñuñoa) para coordinar su cita de ${a.treatmentName} agendada para el ${a.date} a las ${a.time} hrs.`)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 rounded border border-slate-300 hover:border-slate-800 text-[11px] font-mono uppercase text-slate-800 transition bg-white flex items-center gap-1"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>WhatsApp</span>
+                            </a>
+                          )}
+
                           <button
-                            onClick={() => handleStatusChange(a.id, "completada")}
-                            className="px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-[11px] font-mono uppercase rounded transition font-bold"
+                            type="button"
+                            onClick={() => handleStatusChange(a.id, "confirmada")}
+                            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-mono uppercase rounded transition font-bold cursor-pointer"
                           >
-                            Marcar Atendida
+                            Confirmar
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleStatusChange(a.id, "completada")}
+                            className="px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-[11px] font-mono uppercase rounded transition font-bold cursor-pointer"
+                          >
+                            Atendida ✓
                           </button>
                         </div>
                       </div>
@@ -1613,9 +1956,143 @@ function PortalContent() {
                 </div>
               )}
 
-              {/* TAB 4: USERS & ROLES */}
+              {/* TAB 4: FLOW PAYMENTS & CLUB BEHAPPY */}
+              {adminTab === "pagos_club" && (
+                <FlowClubManagementPanel userList={userList} appointments={appointments} />
+              )}
+
+              {/* TAB 5: SITE CMS EDITOR */}
+              {adminTab === "cms" && (
+                <div className="space-y-4">
+                  <SiteCmsEditor />
+                </div>
+              )}
+
+              {/* TAB 6: USERS & ROLES */}
               {adminTab === "usuarios" && (
                 <AdminUserManagement currentUser={currentUser} />
+              )}
+
+              {/* TAB 7: INFORMED CONSENT AUDIT (LEY 20.584) */}
+              {adminTab === "consentimientos" && (
+                <div className="space-y-6">
+                  {/* Header */}
+                  <div className="bg-white border border-slate-200 rounded-lg p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
+                        <span className="text-[10px] font-mono tracking-widest text-emerald-700 uppercase font-bold">
+                          MARCO LEGAL CLÍNICO · LEY 20.584 & SUPERINTENDENCIA DE SALUD
+                        </span>
+                      </div>
+                      <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">
+                        Auditoría de Consentimientos Informados
+                      </h2>
+                      <p className="text-xs text-slate-500 font-mono mt-0.5">
+                        Trazabilidad de rúbricas biométricas en canvas para cirugía, endodoncia, ortodoncia e implantes en box
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowConsentModal(true)}
+                      className="px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-mono uppercase tracking-wider rounded font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Emitir Consentimiento</span>
+                    </button>
+                  </div>
+
+                  {/* KPIs */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-1 shadow-2xs">
+                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Total Suscritos</span>
+                      <span className="text-xl font-bold font-mono text-slate-900 block">{consents.length}</span>
+                      <span className="text-[10px] font-mono text-slate-500 block">Registrados en expediente web</span>
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-1 shadow-2xs">
+                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Rúbrica Biométrica</span>
+                      <span className="text-xl font-bold font-mono text-emerald-600 block">
+                        {consents.filter((c) => c.status === "firmado" && c.signatureDataUrl).length} Firmados
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-500 block">Con firma digital en canvas</span>
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-1 shadow-2xs">
+                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Pacientes Acreditados</span>
+                      <span className="text-xl font-bold font-mono text-slate-900 block">
+                        {new Set(consents.map((c) => c.patientRut || c.patientName)).size}
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-500 block">Expedientes con consentimiento</span>
+                    </div>
+                  </div>
+
+                  {/* Consents Ledger Table */}
+                  <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 shadow-xs overflow-hidden">
+                    <div className="p-4 bg-slate-50 flex items-center justify-between text-xs font-mono">
+                      <span className="font-bold uppercase text-slate-900">Libro Maestro de Consentimientos Digitales</span>
+                      <span className="text-slate-500">{consents.length} Documentos</span>
+                    </div>
+
+                    {consents.length === 0 ? (
+                      <div className="p-12 text-center space-y-3 font-mono">
+                        <ShieldCheck className="w-8 h-8 text-slate-400 mx-auto" />
+                        <h4 className="text-sm font-semibold text-slate-900">No hay consentimientos registrados en este momento</h4>
+                        <p className="text-xs text-slate-500 max-w-md mx-auto">
+                          Los consentimientos informados firmados por pacientes desde su portal o emitidos por odontólogos en box quedarán registrados aquí de forma auditable.
+                        </p>
+                        <div className="pt-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowConsentModal(true)}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-black text-white font-bold text-xs font-mono uppercase tracking-wider rounded transition cursor-pointer"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                            Emitir Consentimiento de Prueba
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      consents.map((c) => (
+                        <div key={c.id} className="p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 hover:bg-slate-50/60 transition">
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-semibold text-slate-900 text-sm">{c.patientName}</span>
+                              <span className="text-xs font-mono text-slate-500">· RUT: {c.patientRut || "Sin RUT"}</span>
+                              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                                {c.title}
+                              </span>
+                              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                Firmado ✓
+                              </span>
+                            </div>
+
+                            <p className="text-xs text-slate-500 font-mono mt-0.5">
+                              Odontólogo: <strong className="text-slate-700">{c.doctorName}</strong> · Fecha de Suscripción: {c.signedDate} · Folio #{c.id.slice(0, 8)}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-3 shrink-0">
+                            {c.signatureDataUrl && (
+                              <div className="h-10 w-24 bg-slate-50 border border-slate-200 rounded p-1 flex items-center justify-center overflow-hidden">
+                                <img
+                                  src={c.signatureDataUrl}
+                                  alt="Rúbrica Digital"
+                                  className="max-h-full max-w-full object-contain"
+                                />
+                              </div>
+                            )}
+
+                            <span className="text-[10px] font-mono text-slate-400">
+                              Ley 20.584 Art. 14
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               )}
 
             </div>

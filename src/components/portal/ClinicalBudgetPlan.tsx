@@ -315,32 +315,32 @@ export function ClinicalBudgetPlan({
       </div>
 
       {/* Financial Ledger Totals */}
-      <div className="bg-slate-900 text-white p-6 rounded-lg space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-b border-slate-800 pb-4 text-xs font-mono">
+      <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white p-6 rounded-lg space-y-4 shadow-xs print:bg-white print:border-slate-300 print:text-black">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-b border-slate-200 dark:border-slate-800 pb-4 text-xs font-mono">
           <div>
-            <span className="text-slate-400 uppercase text-[10px] block">Arancel Mercado Referencial:</span>
-            <span className="text-base text-slate-300 line-through">
+            <span className="text-slate-500 dark:text-slate-400 uppercase text-[10px] block font-medium">Arancel Mercado Referencial:</span>
+            <span className="text-base text-slate-400 dark:text-slate-500 line-through">
               ${budget.totalBasePrice.toLocaleString("es-CL")} CLP
             </span>
           </div>
 
           <div>
-            <span className="text-emerald-400 uppercase text-[10px] block">Bonificación Club BeHappy:</span>
-            <span className="text-base font-bold text-emerald-400">
+            <span className="text-emerald-600 dark:text-emerald-400 uppercase text-[10px] block font-medium">Bonificación Club BeHappy:</span>
+            <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">
               - ${budget.totalDiscount.toLocaleString("es-CL")} CLP
             </span>
           </div>
 
           <div>
-            <span className="text-slate-300 uppercase text-[10px] block">Copago Neto a Pagar:</span>
-            <span className="text-2xl sm:text-3xl font-bold font-mono text-white">
+            <span className="text-slate-600 dark:text-slate-300 uppercase text-[10px] block font-medium">Copago Neto a Pagar:</span>
+            <span className="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white">
               ${budget.totalCopay.toLocaleString("es-CL")} CLP
             </span>
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono">
-          <div className="space-y-0.5 text-slate-300 text-[11px]">
+          <div className="space-y-0.5 text-slate-600 dark:text-slate-300 text-[11px]">
             <span>✓ Boleta médica electrónica disponible para reembolso Isapre</span>
             <span className="block">✓ Facilidad de pago: Hasta 12 cuotas sin interés Transbank / Webpay Plus</span>
           </div>
@@ -351,7 +351,7 @@ export function ClinicalBudgetPlan({
               <button
                 type="button"
                 onClick={() => onPayWithFlow(abonoInicial30, `Abono Inicial (30%) Presupuesto ${budget.id}`)}
-                className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold uppercase tracking-wider rounded transition flex items-center gap-1.5 shadow-sm text-xs cursor-pointer"
+                className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase tracking-wider rounded transition flex items-center gap-1.5 shadow-xs text-xs cursor-pointer"
               >
                 <CreditCard className="w-3.5 h-3.5" />
                 <span>Pagar Abono Inicial 30% (${abonoInicial30.toLocaleString("es-CL")})</span>
@@ -360,7 +360,7 @@ export function ClinicalBudgetPlan({
 
             <WhatsAppLink
               message={whatsappMessage}
-              className="px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-900 font-bold uppercase tracking-wider rounded transition flex items-center gap-1.5 text-xs shadow-sm"
+              className="px-4 py-2.5 bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white font-bold uppercase tracking-wider rounded transition flex items-center gap-1.5 text-xs shadow-xs"
             >
               <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
               <span>Aceptar por WhatsApp</span>

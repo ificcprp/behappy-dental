@@ -301,6 +301,9 @@ interface ServerCitaRow {
   notes?: string | null;
   status?: string | null;
   created_at?: string | null;
+  dentalink_cita_id?: number | string | null;
+  utm_source?: string | null;
+  payment_status?: string | null;
 }
 
 interface ServerRecordRow {
@@ -326,6 +329,10 @@ function mapServerCita(row: ServerCitaRow): PatientAppointment {
     patientPhone: row.patient_phone || undefined,
     patientEmail: row.patient_email || undefined,
     notes: row.notes || undefined,
+    dentalinkCitaId: row.dentalink_cita_id || undefined,
+    dentalinkPending: !row.dentalink_cita_id,
+    utmSource: row.utm_source || "web_direct",
+    paymentStatus: (row.payment_status as any) || "pendiente",
   };
 }
 
