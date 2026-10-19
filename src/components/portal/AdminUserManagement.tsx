@@ -31,7 +31,6 @@ import {
   Sparkles,
   Share2,
   X,
-  Lock,
   AlertCircle,
   Phone,
   Mail,
@@ -807,8 +806,8 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                       <td className="p-3.5">
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-1.5">
-                            <span className="px-2 py-1 bg-slate-100 border border-slate-300 rounded font-mono text-[11px] text-slate-800 font-bold select-all">
-                              {u.password || "BeHappy2026!"}
+                            <span className="px-2 py-1 bg-slate-100 border border-slate-300 rounded font-mono text-[11px] text-slate-500 font-bold tracking-widest">
+                              ••••••••
                             </span>
                             <button
                               onClick={() => handleCopyPasswordOnly(u.password || "BeHappy2026!")}
@@ -1485,13 +1484,6 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                                   <Mail className="w-3 h-3 text-slate-400" />
                                   <strong className="text-slate-800">{prof.email}</strong>
                                 </span>
-                                <span className="flex items-center gap-1">
-                                  <Lock className="w-3 h-3 text-emerald-600" />
-                                  Clave:{" "}
-                                  <span className="font-bold text-slate-900 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 select-all">
-                                    {prof.password || "BeHappy2026!"}
-                                  </span>
-                                </span>
                               </div>
                             </div>
                           </div>
@@ -1646,8 +1638,8 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                 <div className="flex justify-between items-center text-[11px] pt-1 border-t border-slate-800">
                   <span className="text-slate-400">Contraseña Asignada:</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-emerald-400 text-sm select-all">
-                      {handoffUser.password || "BeHappy2026!"}
+                    <span className="font-bold text-emerald-400 text-sm tracking-widest">
+                      ••••••••
                     </span>
                     <button
                       onClick={() => handleCopyPasswordOnly(handoffUser.password || "BeHappy2026!")}
@@ -1911,7 +1903,8 @@ export function AdminUserManagement({ currentUser }: AdminUserManagementProps) {
                   Contraseña
                 </label>
                 <input
-                  type="text"
+                  type="password"
+                  autoComplete="new-password"
                   value={editingUser.password || ""}
                   onChange={(e) => setEditingUser({ ...editingUser, password: e.target.value })}
                   placeholder="Escribe nueva contraseña o conserva la actual"

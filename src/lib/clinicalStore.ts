@@ -352,6 +352,7 @@ function recordDedupeKey(r: ClinicalRecord): string {
 
 export async function syncClinicalFromServer(): Promise<boolean> {
   if (typeof window === "undefined") return false;
+  if (typeof document !== "undefined" && document.hidden) return false;
 
   try {
     const [citasRes, recordsRes] = await Promise.all([
@@ -373,8 +374,11 @@ export async function syncClinicalFromServer(): Promise<boolean> {
           if (a.id.startsWith("srv-")) return true;
           return !serverKeys.has(appointmentDedupeKey(a));
         });
-        saveStoredAppointments([...serverAppointments, ...kept]);
-        changed = true;
+        const next = [...serverAppointments, ...kept];
+        if (JSON.stringify(next) !== JSON.stringify(current)) {
+          saveStoredAppointments(next);
+          changed = true;
+        }
       }
     }
 
@@ -390,8 +394,11 @@ export async function syncClinicalFromServer(): Promise<boolean> {
           if (r.id.startsWith("srv-")) return true;
           return !serverKeys.has(recordDedupeKey(r));
         });
-        saveStoredClinicalRecords([...serverRecords, ...kept]);
-        changed = true;
+        const next = [...serverRecords, ...kept];
+        if (JSON.stringify(next) !== JSON.stringify(current)) {
+          saveStoredClinicalRecords(next);
+          changed = true;
+        }
       }
     }
 
@@ -399,4 +406,19 @@ export async function syncClinicalFromServer(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export function clearClinicalLocalData(): void {
+  if (typeof window === "undefined") return;
+  [
+    STORAGE_APPOINTMENTS_KEY,
+    STORAGE_RECORDS_KEY,
+    STORAGE_ODONTOGRAM_KEY,
+    STORAGE_CONSENTS_KEY,
+    STORAGE_BUDGETS_KEY,
+  ].forEach((key) => {
+    try {
+      window.localStorage.removeItem(key);
+    } catch {}
+  });
 }

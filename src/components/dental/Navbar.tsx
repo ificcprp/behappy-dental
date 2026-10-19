@@ -7,6 +7,7 @@ import { CLINIC_INFO } from "@/data/clinicInfo";
 import { WhatsAppLink } from "./WhatsAppLink";
 import { getCMSData, CMSData, DEFAULT_HEADER_CONFIG } from "@/lib/cmsStore";
 import { getCurrentSession, clearCurrentSession } from "@/lib/authService";
+import { clearClinicalLocalData } from "@/lib/clinicalStore";
 import { UserProfile } from "@/types/auth";
 import { CMSHeaderConfig } from "@/types/cms";
 import { Menu, X, Sparkles, LogOut, ArrowRight, ShieldCheck } from "lucide-react";
@@ -31,9 +32,6 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      (window as any).__nextRouter = router;
-    }
     setSessionUser(getCurrentSession());
 
     const cms = getCMSData();
@@ -230,6 +228,7 @@ export function Navbar() {
                 </a>
                 <button
                   onClick={() => {
+                    clearClinicalLocalData();
                     clearCurrentSession();
                     setSessionUser(null);
                     window.location.href = "/";
@@ -359,6 +358,7 @@ export function Navbar() {
                 <span className="text-[11px] font-bold text-emerald-400">● {sessionUser.fullName}</span>
                 <button
                   onClick={() => {
+                    clearClinicalLocalData();
                     clearCurrentSession();
                     setSessionUser(null);
                     window.location.href = "/";

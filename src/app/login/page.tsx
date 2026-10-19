@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { authenticateUser, registerNewUser, requestServerSession } from "@/lib/authService";
 import { formatRut } from "@/lib/rutValidator";
 import { AuthNavbarHeader } from "@/components/auth/AuthNavbarHeader";
-import { getCMSData, CMSData, DEFAULT_AUTH_PORTAL } from "@/lib/cmsStore";
+import { getCMSData, CMSData, DEFAULT_AUTH_PORTAL, DEFAULT_CMS_DATA } from "@/lib/cmsStore";
 import { ArrowRight, AlertCircle, CheckCircle2, ShieldCheck, Sparkles, User, LogIn } from "lucide-react";
 
 function LoginContent() {
@@ -14,7 +14,7 @@ function LoginContent() {
   const searchParams = useSearchParams();
 
   // CMS dynamic configuration
-  const [cms, setCms] = useState<CMSData>(getCMSData());
+  const [cms, setCms] = useState<CMSData>(DEFAULT_CMS_DATA);
 
   useEffect(() => {
     setCms(getCMSData());

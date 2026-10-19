@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -36,10 +36,11 @@ import {
   getStoredBudgets,
   addStoredBudget,
   syncClinicalFromServer,
+  clearClinicalLocalData,
   CLINICAL_CHANGE_EVENT
 } from "@/lib/clinicalStore";
 import { SiteCmsEditor } from "@/components/portal/SiteCmsEditor";
-import { getCMSData, CMSData } from "@/lib/cmsStore";
+import { getCMSData, CMSData, DEFAULT_CMS_DATA } from "@/lib/cmsStore";
 import { DOCTORS } from "@/data/doctors";
 import { TREATMENTS } from "@/data/treatments";
 import { toast } from "sonner";
@@ -76,6 +77,23 @@ import { ClinicalBudgetPlan } from "@/components/portal/ClinicalBudgetPlan";
 import { InformedConsentModal } from "@/components/portal/InformedConsentModal";
 import { AdminUserManagement } from "@/components/portal/AdminUserManagement";
 
+function normalizeIdentity(value?: string | null): string {
+  return (value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function matchesPatient(
+  identity: { name?: string | null; rut?: string | null; email?: string | null; phone?: string | null },
+  user: UserProfile
+): boolean {
+  const targets = [user.fullName, user.rut, user.email, user.phone]
+    .map(normalizeIdentity)
+    .filter(Boolean);
+  if (targets.length === 0) return false;
+  return [identity.name, identity.rut, identity.email, identity.phone]
+    .map(normalizeIdentity)
+    .some((candidate) => candidate.length > 0 && targets.includes(candidate));
+}
+
 function PortalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -87,12 +105,8 @@ function PortalContent() {
   // Active role state
   const [activeRole, setActiveRole] = useState<UserRole>("paciente");
 
-  // Admin simulation view (strictly restricted to Admin users)
-  const initialRoleParam = searchParams.get("role") as UserRole | null;
-  const initialTabParam = searchParams.get("tab") as "dashboard" | "cms" | "citas" | "usuarios" | null;
-  const [adminSimulatedRole, setAdminSimulatedRole] = useState<UserRole | null>(null);
-
   // Admin Navigation Sub-tab
+  const initialTabParam = searchParams.get("tab") as "dashboard" | "cms" | "citas" | "usuarios" | null;
   const [adminTab, setAdminTab] = useState<"dashboard" | "cms" | "citas" | "usuarios">(initialTabParam || "dashboard");
 
   // Patient Sub-tabs
@@ -129,7 +143,7 @@ function PortalContent() {
   const [doctorAgendaFilter, setDoctorAgendaFilter] = useState<"mis_citas" | "todas">("mis_citas");
 
   // CMS dynamic reactive data
-  const [cmsData, setCmsData] = useState<CMSData>(getCMSData());
+  const [cmsData, setCmsData] = useState<CMSData>(DEFAULT_CMS_DATA);
   useEffect(() => {
     setCmsData(getCMSData());
     const handleCmsUpdate = (e: any) => {
@@ -141,6 +155,35 @@ function PortalContent() {
   }, []);
 
   const availableDoctors = (cmsData?.doctors && cmsData.doctors.length > 0) ? cmsData.doctors : DOCTORS;
+
+  const patientAppointments = useMemo(
+    () =>
+      currentUser
+        ? appointments.filter((item) =>
+            matchesPatient(
+              { name: item.patientName, rut: item.patientRut, email: item.patientEmail, phone: item.patientPhone },
+              currentUser
+            )
+          )
+        : [],
+    [appointments, currentUser]
+  );
+
+  const patientClinicalRecords = useMemo(
+    () =>
+      currentUser
+        ? clinicalRecords.filter((record) => matchesPatient({ name: record.patientId }, currentUser))
+        : [],
+    [clinicalRecords, currentUser]
+  );
+
+  const patientConsents = useMemo(
+    () =>
+      currentUser
+        ? consents.filter((consent) => matchesPatient({ name: consent.patientName, rut: consent.patientRut }, currentUser))
+        : [],
+    [consents, currentUser]
+  );
 
   // Reception walk-in modal
   const [showWalkinModal, setShowWalkinModal] = useState(false);
@@ -206,6 +249,7 @@ function PortalContent() {
 
   // Logout handler
   const handleLogout = () => {
+    clearClinicalLocalData();
     clearCurrentSession();
     router.replace("/login");
   };
@@ -446,10 +490,10 @@ function PortalContent() {
               <div className="p-5 bg-white border border-slate-200 rounded-lg space-y-1 shadow-2xs">
                 <span className="text-[10px] font-mono tracking-widest text-slate-500 block uppercase">Próxima Cita</span>
                 <span className="text-base font-semibold text-slate-900 block truncate">
-                  {appointments.length > 0 ? `${appointments[0].date} ${appointments[0].time}` : "Sin citas agendadas"}
+                  {patientAppointments.length > 0 ? `${patientAppointments[0].date} ${patientAppointments[0].time}` : "Sin citas agendadas"}
                 </span>
                 <span className="text-[11px] font-mono text-slate-500 block truncate">
-                  {appointments.length > 0 ? `${appointments[0].doctorName}` : "Disponible para agendar"}
+                  {patientAppointments.length > 0 ? `${patientAppointments[0].doctorName}` : "Disponible para agendar"}
                 </span>
               </div>
 
@@ -457,7 +501,7 @@ function PortalContent() {
                 <span className="text-[10px] font-mono tracking-widest text-slate-500 block uppercase">Ahorro Convenio</span>
                 <span className="text-base font-semibold text-emerald-600 block">
                   {(() => {
-                    const totalSavings = appointments.reduce((acc, a) => acc + (a.convenioDiscount || 0), 0);
+                    const totalSavings = patientAppointments.reduce((acc, a) => acc + (a.convenioDiscount || 0), 0);
                     return totalSavings > 0 ? `$${totalSavings.toLocaleString("es-CL")} CLP` : "$0 CLP";
                   })()}
                 </span>
@@ -467,20 +511,20 @@ function PortalContent() {
               <div className="p-5 bg-white border border-slate-200 rounded-lg space-y-1 shadow-2xs">
                 <span className="text-[10px] font-mono tracking-widest text-slate-500 block uppercase">Tratamiento Activo</span>
                 <span className="text-base font-semibold text-slate-900 block truncate">
-                  {appointments.length > 0 ? appointments[0].treatmentName : (clinicalRecords.length > 0 ? clinicalRecords[0].treatmentPerformed : "Sin tratamiento activo")}
+                  {patientAppointments.length > 0 ? patientAppointments[0].treatmentName : (patientClinicalRecords.length > 0 ? patientClinicalRecords[0].treatmentPerformed : "Sin tratamiento activo")}
                 </span>
                 <span className="text-[11px] font-mono text-slate-500 block">
-                  {appointments.length > 0 ? "En curso clínico" : "Consulta preventiva"}
+                  {patientAppointments.length > 0 ? "En curso clínico" : "Consulta preventiva"}
                 </span>
               </div>
 
               <div className="p-5 bg-white border border-slate-200 rounded-lg space-y-1 shadow-2xs">
                 <span className="text-[10px] font-mono tracking-widest text-slate-500 block uppercase">Estado Bucal</span>
                 <span className="text-base font-semibold text-slate-900 block">
-                  {clinicalRecords.length > 0 ? "Ficha al día" : "Ingreso Inicial"}
+                  {patientClinicalRecords.length > 0 ? "Ficha al día" : "Ingreso Inicial"}
                 </span>
                 <span className="text-[11px] font-mono text-slate-500 block">
-                  {clinicalRecords.length > 0 ? "Control registrado" : "Pendiente de diagnóstico"}
+                  {patientClinicalRecords.length > 0 ? "Control registrado" : "Pendiente de diagnóstico"}
                 </span>
               </div>
             </div>
@@ -495,7 +539,7 @@ function PortalContent() {
                     : "text-slate-500 hover:text-slate-900"
                 }`}
               >
-                1. Mis Citas ({appointments.length})
+                1. Mis Citas ({patientAppointments.length})
               </button>
 
               <button
@@ -506,7 +550,7 @@ function PortalContent() {
                     : "text-slate-500 hover:text-slate-900"
                 }`}
               >
-                2. Ficha Clínica ({clinicalRecords.length})
+                2. Ficha Clínica ({patientClinicalRecords.length})
               </button>
 
               <button
@@ -539,7 +583,7 @@ function PortalContent() {
                     : "text-slate-500 hover:text-slate-900"
                 }`}
               >
-                5. Consentimientos ({consents.length})
+                5. Consentimientos ({patientConsents.length})
               </button>
 
               <button
@@ -557,7 +601,7 @@ function PortalContent() {
             {/* Sub-Tab 1: Mis Citas */}
             {patientTab === "citas" && (
               <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 shadow-2xs overflow-hidden">
-                {appointments.length === 0 ? (
+                {patientAppointments.length === 0 ? (
                   <div className="p-12 text-center space-y-3">
                     <Calendar className="w-8 h-8 text-slate-400 mx-auto" />
                     <h3 className="text-sm font-semibold text-slate-900">No tienes citas agendadas</h3>
@@ -575,7 +619,7 @@ function PortalContent() {
                     </div>
                   </div>
                 ) : (
-                  appointments.map((item) => (
+                  patientAppointments.map((item) => (
                     <div key={item.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
@@ -644,7 +688,7 @@ function PortalContent() {
             {/* Sub-Tab 2: Ficha Clínica */}
             {patientTab === "ficha" && (
               <div className="space-y-4">
-                {clinicalRecords.length === 0 ? (
+                {patientClinicalRecords.length === 0 ? (
                   <div className="p-12 bg-white border border-slate-200 rounded-lg text-center space-y-3 shadow-2xs">
                     <Sparkles className="w-8 h-8 text-slate-400 mx-auto" />
                     <h3 className="text-sm font-semibold text-slate-900">Sin registros clínicos aún</h3>
@@ -653,7 +697,7 @@ function PortalContent() {
                     </p>
                   </div>
                 ) : (
-                  clinicalRecords.map((rec) => (
+                  patientClinicalRecords.map((rec) => (
                     <div key={rec.id} className="p-6 bg-white border border-slate-200 rounded-lg space-y-3 shadow-2xs">
                       <div className="flex items-center justify-between border-b border-slate-100 pb-3 text-xs font-mono">
                         <div>
@@ -755,7 +799,7 @@ function PortalContent() {
                   </button>
                 </div>
 
-                {consents.length === 0 ? (
+                {patientConsents.length === 0 ? (
                   <div className="p-12 bg-white border border-slate-200 rounded-lg text-center space-y-3 shadow-2xs">
                     <ShieldCheck className="w-8 h-8 text-slate-400 mx-auto" />
                     <h3 className="text-sm font-semibold text-slate-900">Sin consentimientos firmados aún</h3>
@@ -775,7 +819,7 @@ function PortalContent() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {consents.map((c) => (
+                    {patientConsents.map((c) => (
                       <div key={c.id} className="p-5 bg-white border border-slate-200 rounded-lg space-y-3 shadow-2xs">
                         <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
                           <div className="space-y-0.5">
