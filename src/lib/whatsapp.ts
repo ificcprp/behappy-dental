@@ -69,6 +69,7 @@ export function buildFormattedBookingWhatsAppUrl(params: {
   doctor?: string;
   fecha?: string;
   horario?: string;
+  telefono?: string;
   notas?: string;
 }): string {
   const config = getWhatsAppBookingConfig();
@@ -81,6 +82,7 @@ export function buildFormattedBookingWhatsAppUrl(params: {
     .replace("{doctor}", params.doctor || "Especialista Asignado")
     .replace("{fecha}", params.fecha || "A convenir")
     .replace("{horario}", params.horario || "A convenir")
+    .replace("{telefono}", params.telefono || "")
     .replace("{notas}", params.notas || "Sin observaciones");
 
   return buildWhatsAppUrl(filled, config.whatsappNumber);

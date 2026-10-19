@@ -54,6 +54,7 @@ function buildWhatsappUrl(
       .replace("{doctor}", params.doctorName || "Primer especialista disponible")
       .replace("{fecha}", params.dateIso || "A convenir")
       .replace("{horario}", params.timeSlotText || "A convenir")
+      .replace("{telefono}", params.patientPhone)
       .replace("{notas}", params.notes || "Sin observaciones");
     return `https://api.whatsapp.com/send/?phone=${phone}&text=${encodeURIComponent(filled)}&type=phone_number&app_absent=0`;
   }
