@@ -3,1468 +3,958 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Propuesta · BeHappy Dental · 2026</title>
+<title>Propuesta Digital 2026 · Centro Dental BeHappy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 
 <style>
-/* ── RESET ─────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* ── VARIABLES ──────────────────────────── */
-:root {
-  --cream:    #f0ebe0;
-  --cream2:   #e8e2d4;
-  --parchment:#d9d2c2;
-  --ink:      #1a1712;
-  --ink2:     #3d3830;
-  --muted:    #7a7266;
-  --green:    #1f4a35;
-  --green2:   #2d6b4a;
-  --greenlite:#d4e8dc;
-  --rule:     #c8c0b0;
-  --serif:    'Cormorant Garamond', Georgia, serif;
-  --sans:     'DM Sans', system-ui, sans-serif;
-}
-
-/* ── PRINT ──────────────────────────────── */
-@page { size: A4; margin: 7mm 12mm 7mm 12mm; }
-
-@media print {
-  .no-print { display: none !important; }
-  .page-break { page-break-before: always; }
-  body { background: var(--cream) !important; font-size: 9.8pt !important; }
-  .page { padding: 0 !important; }
-}
-
-/* ── BASE ───────────────────────────────── */
-html { font-size: 10.5pt; }
-
-body {
-  font-family: var(--sans);
-  background: var(--cream);
-  color: var(--ink);
-  line-height: 1.6;
-}
-
-/* ── UTILITIES ──────────────────────────── */
-.sc {
-  font-family: var(--sans);
-  font-size: 0.6rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--muted);
-}
-
-.serif { font-family: var(--serif); }
-
-.rule-top { border-top: 1px solid var(--rule); padding-top: 14px; }
-.rule-bot { border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
-
-.mt-1 { margin-top: 0.75rem; }
-.mt-2 { margin-top: 1.5rem; }
-.mt-3 { margin-top: 2.5rem; }
-.mb-1 { margin-bottom: 0.75rem; }
-.mb-2 { margin-bottom: 1.5rem; }
-.mb-3 { margin-bottom: 2.5rem; }
-
-/* ── PAGE WRAPPER ───────────────────────── */
-.page {
-  max-width: 210mm;
-  margin: 0 auto;
-  padding: 44px 52px;
-  position: relative;
-}
-
-/* ── COVER ──────────────────────────────── */
-.cover {
-  background: var(--cream);
-  min-height: 297mm;
-  padding: 52px 52px 44px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  max-width: 210mm;
-  margin: 0 auto;
-}
-
-.cover-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  border-bottom: 2px solid var(--ink);
-  padding-bottom: 10px;
-}
-
-.cover-top-brand {
-  font-family: var(--sans);
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--ink);
-}
-
-.cover-top-meta {
-  font-family: var(--sans);
-  font-size: 0.58rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-}
-
-.cover-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 64px 0 40px;
-  max-width: 520px;
-}
-
-.cover-chapter {
-  font-family: var(--sans);
-  font-size: 0.58rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--green);
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.cover-chapter::before {
-  content: '';
-  display: block;
-  width: 24px;
-  height: 1.5px;
-  background: var(--green);
-}
-
-.cover-title {
-  font-family: var(--serif);
-  font-size: 4rem;
-  font-weight: 300;
-  line-height: 1.05;
-  color: var(--ink);
-  margin-bottom: 8px;
-}
-
-.cover-title em {
-  font-style: italic;
-  font-weight: 400;
-  color: var(--green);
-}
-
-.cover-subtitle {
-  font-family: var(--sans);
-  font-size: 0.78rem;
-  color: var(--muted);
-  line-height: 1.7;
-  margin-top: 20px;
-  max-width: 440px;
-}
-
-.cover-stats {
-  display: flex;
-  gap: 48px;
-  margin-top: 52px;
-  padding-top: 24px;
-  border-top: 1px solid var(--rule);
-}
-
-.cover-stat .num {
-  font-family: var(--serif);
-  font-size: 3.2rem;
-  font-weight: 300;
-  line-height: 1;
-  color: var(--ink);
-  display: block;
-}
-
-.cover-stat .lbl {
-  font-size: 0.56rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-  display: block;
-  margin-top: 4px;
-}
-
-.cover-bottom {
-  border-top: 1px solid var(--rule);
-  padding-top: 18px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 0;
-}
-
-.cover-bottom-item { padding-right: 20px; }
-
-.cover-bottom-item label {
-  display: block;
-  font-size: 0.55rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-
-.cover-bottom-item p {
-  font-size: 0.72rem;
-  color: var(--ink2);
-  line-height: 1.5;
-}
-
-/* ── INNER PAGE HEADER ──────────────────── */
-.ph {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  border-bottom: 2px solid var(--ink);
-  padding-bottom: 8px;
-  margin-bottom: 36px;
-}
-
-.ph-left {
-  font-family: var(--sans);
-  font-size: 0.58rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--ink);
-}
-
-.ph-right {
-  font-family: var(--sans);
-  font-size: 0.56rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-}
-
-/* ── SECTION HEADERS ────────────────────── */
-.chapter-label {
-  font-family: var(--sans);
-  font-size: 0.58rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--green);
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.chapter-label::before {
-  content: '';
-  display: block;
-  width: 18px;
-  height: 1.5px;
-  background: var(--green);
-}
-
-.section-h {
-  font-family: var(--serif);
-  font-size: 2.4rem;
-  font-weight: 300;
-  line-height: 1.1;
-  color: var(--ink);
-  margin-bottom: 8px;
-}
-
-.section-h em { font-style: italic; color: var(--green); }
-
-.section-lead {
-  font-size: 0.82rem;
-  color: var(--muted);
-  line-height: 1.7;
-  max-width: 560px;
-  margin-bottom: 24px;
-}
-
-/* ── RULE SECTION ───────────────────────── */
-.section-rule {
-  border-top: 1px solid var(--rule);
-  padding-top: 28px;
-  margin-top: 28px;
-}
-
-/* ── TABLES ─────────────────────────────── */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8rem;
-}
-
-thead th {
-  font-size: 0.55rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-  text-align: left;
-  padding: 0 0 8px 0;
-  border-bottom: 1px solid var(--rule);
-}
-
-tbody tr { border-bottom: 1px solid var(--cream2); }
-tbody tr:last-child { border-bottom: 1px solid var(--rule); }
-
-tbody td {
-  padding: 10px 0;
-  vertical-align: top;
-  line-height: 1.5;
-}
-
-.td-n { font-weight: 600; color: var(--ink); padding-right: 16px; }
-.td-s { color: var(--muted); font-size: 0.76rem; }
-
-/* ── TAGS ───────────────────────────────── */
-.tag {
-  display: inline-block;
-  font-size: 0.56rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding: 3px 9px;
-  border-radius: 3px;
-  border: 1px solid;
-}
-
-.tag-ink { border-color: var(--ink); color: var(--ink); background: transparent; }
-.tag-green { border-color: var(--green); color: var(--green); background: transparent; }
-.tag-ok { background: var(--green); color: white; border-color: var(--green); }
-.tag-warn { border-color: #8a6000; color: #8a6000; background: transparent; }
-.tag-err { border-color: #8a0000; color: #8a0000; background: transparent; }
-.tag-muted { border-color: var(--rule); color: var(--muted); background: transparent; }
-
-/* ── METRIC STRIP ───────────────────────── */
-.metric-strip {
-  display: flex;
-  gap: 0;
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  margin: 24px 0;
-}
-
-.metric-item {
-  flex: 1;
-  padding: 16px 0;
-  border-right: 1px solid var(--rule);
-}
-
-.metric-item:last-child { border-right: none; padding-left: 20px; }
-.metric-item:not(:first-child) { padding-left: 20px; }
-
-.metric-item .n {
-  font-family: var(--serif);
-  font-size: 2.4rem;
-  font-weight: 300;
-  color: var(--ink);
-  display: block;
-  line-height: 1;
-}
-
-.metric-item .l {
-  font-size: 0.56rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  display: block;
-  margin-top: 4px;
-}
-
-/* ── GRID ───────────────────────────────── */
-.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-
-/* ── CALLOUT ────────────────────────────── */
-.callout {
-  border-left: 3px solid var(--ink);
-  padding: 16px 20px;
-  margin: 20px 0;
-}
-
-.callout-green { border-color: var(--green); background: var(--greenlite); }
-.callout-amber { border-left-color: #8a6000; background: #f5eed8; }
-
-.callout p { font-size: 0.82rem; color: var(--ink2); line-height: 1.7; }
-.callout p strong { font-weight: 700; }
-
-/* ── PLAN CARDS ─────────────────────────── */
-.plan-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 0;
-  border: 1px solid var(--rule);
-}
-
-.plan-col {
-  padding: 22px 20px;
-  border-right: 1px solid var(--rule);
-}
-
-.plan-col:last-child { border-right: none; }
-.plan-col.featured { background: var(--ink); color: white; }
-
-.plan-label {
-  font-size: 0.55rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-
-.plan-col.featured .plan-label { color: #7a7266; }
-
-.plan-name {
-  font-family: var(--serif);
-  font-size: 1.4rem;
-  font-weight: 400;
-  color: var(--ink);
-  margin-bottom: 4px;
-  line-height: 1.2;
-}
-
-.plan-col.featured .plan-name { color: white; }
-
-.plan-price {
-  font-size: 0.72rem;
-  color: var(--green);
-  font-weight: 600;
-  margin-bottom: 16px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--rule);
-}
-
-.plan-col.featured .plan-price { color: #6ee7b7; border-color: #2d3748; }
-
-.plan-feat {
-  font-size: 0.74rem;
-  color: var(--muted);
-  line-height: 1.75;
-  margin-bottom: 4px;
-  display: flex;
-  gap: 6px;
-}
-
-.plan-col.featured .plan-feat { color: #9ca3af; }
-
-.plan-feat::before {
-  content: '—';
-  flex-shrink: 0;
-  color: var(--rule);
-}
-
-.plan-col.featured .plan-feat::before { color: #374151; }
-
-/* ── TIMELINE ───────────────────────────── */
-.tl { list-style: none; padding: 0; }
-
-.tl-row {
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px dashed var(--rule);
-}
-
-.tl-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-
-.tl-idx {
-  font-family: var(--serif);
-  font-size: 2.2rem;
-  font-weight: 300;
-  color: var(--cream2);
-  line-height: 1;
-  padding-top: 2px;
-}
-
-.tl-body {}
-
-.tl-title {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 3px;
-}
-
-.tl-desc {
-  font-size: 0.76rem;
-  color: var(--muted);
-  line-height: 1.65;
-}
-
-/* ── VS TABLE ───────────────────────────── */
-.vs th:first-child { width: 40%; }
-.vs th.h-err { color: #8a0000; }
-.vs th.h-ok { color: var(--green); }
-.vs td { text-align: center; }
-.vs td:first-child { text-align: left; }
-.icon-ok { color: var(--green); font-weight: 900; }
-.icon-no { color: #8a0000; font-weight: 900; }
-.icon-w { color: #8a6000; font-weight: 900; }
-
-/* ── INVENTORY TABLE ────────────────────── */
-.inv th:last-child,
-.inv td:last-child { text-align: right; }
-
-/* ── SIGNATURE ──────────────────────────── */
-.sig-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  margin-top: 48px;
-  padding-top: 20px;
-  border-top: 1px solid var(--rule);
-}
-
-.sig-block label {
-  font-size: 0.56rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-  display: block;
-  margin-bottom: 36px;
-}
-
-.sig-line { border-bottom: 1px solid var(--ink); margin-bottom: 8px; }
-.sig-name { font-size: 0.72rem; color: var(--muted); }
-
-/* ── WATERMARK CHAPTER NUMBERS ──────────── */
-.wm {
-  position: absolute;
-  top: 44px;
-  right: 52px;
-  font-family: var(--serif);
-  font-size: 7rem;
-  font-weight: 300;
-  color: var(--cream2);
-  line-height: 1;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* ── COLOPHON / FOOTER ──────────────────── */
-.doc-foot {
-  text-align: center;
-  padding-top: 24px;
-  border-top: 1px solid var(--rule);
-  margin-top: 36px;
-}
-
-.doc-foot p {
-  font-size: 0.56rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  line-height: 1.8;
-}
-
-/* ── TOOLBAR FLOTANTE DE EDICIÓN WEB (NO-PRINT) ── */
-#editor-toolbar {
-  position: sticky;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: #141413;
-  color: #f4f4f6;
-  border-bottom: 2px solid #2d6b4a;
-  z-index: 9999;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  padding: 10px 20px;
-  font-family: var(--sans);
-}
-
-.toolbar-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.toolbar-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.8rem;
-}
-
-.toolbar-badge {
-  background: #2d6b4a;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 3px;
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.toolbar-btns {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.t-btn {
-  border: 1px solid #444;
-  background: #222;
-  color: #fff;
-  padding: 7px 14px;
-  font-size: 0.72rem;
-  font-family: var(--sans);
-  font-weight: 600;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.t-btn:hover {
-  background: #333;
-  border-color: #666;
-}
-
-.t-btn-primary {
-  background: #2d6b4a;
-  border-color: #2d6b4a;
-  color: white;
-}
-
-.t-btn-primary:hover {
-  background: #1f4a35;
-}
-
-.t-btn-edit.active {
-  background: #d4a373;
-  border-color: #d4a373;
-  color: #000;
-  font-weight: 700;
-}
-
-body.editing-active #proposal-container {
-  outline: 2px dashed rgba(45, 107, 74, 0.5);
-  outline-offset: 8px;
-}
-
-body.editing-active [contenteditable="true"] *:focus {
-  outline: 2px solid #2d6b4a !important;
-  background-color: rgba(45, 107, 74, 0.08) !important;
-}
-
-p { margin-bottom: 0.4rem; }
-p:last-child { margin-bottom: 0; }
-
-/* ── MODULE CARDS & PLATFORM ARCHITECTURE ── */
-.module-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 14px;
-  margin-bottom: 14px;
-}
-
-.module-card {
-  border: 1px solid var(--rule);
-  background: rgba(255, 255, 255, 0.55);
-  padding: 15px 16px;
-  display: flex;
-  flex-direction: column;
-}
-
-.module-card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--cream2);
-}
-
-.module-badge {
-  font-family: var(--sans);
-  font-size: 0.52rem;
-  font-weight: 700;
-  color: var(--green);
-  background: var(--greenlite);
-  padding: 2px 7px;
-  border-radius: 3px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.module-route {
-  font-family: var(--sans);
-  font-size: 0.54rem;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.module-h {
-  font-family: var(--serif);
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--ink);
-  line-height: 1.15;
-  margin-bottom: 4px;
-}
-
-.module-desc {
-  font-size: 0.73rem;
-  color: var(--ink2);
-  line-height: 1.5;
-  margin-bottom: 8px;
-}
-
-.module-bullets {
-  list-style: none;
-  font-size: 0.69rem;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
-.module-bullets li {
-  position: relative;
-  padding-left: 12px;
-  margin-bottom: 2px;
-}
-
-.module-bullets li::before {
-  content: '▪';
-  position: absolute;
-  left: 0;
-  font-size: 0.55rem;
-  top: 1px;
-  color: var(--green);
-}
-
-.module-bullets strong {
-  color: var(--ink);
-  font-weight: 600;
-}
-
-/* ── FINANCIAL & ROI METRICS ────────────── */
-.roi-box {
-  background: rgba(31, 74, 53, 0.05);
-  border: 1px solid var(--green);
-  padding: 12px 16px;
-  margin-top: 14px;
-}
-
-.roi-title {
-  font-family: var(--sans);
-  font-size: 0.6rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--green);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.roi-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  margin-top: 8px;
-  border-top: 1px solid rgba(31, 74, 53, 0.2);
-  padding-top: 8px;
-}
-
-.roi-item .num {
-  font-family: var(--serif);
-  font-size: 1.45rem;
-  font-weight: 600;
-  color: var(--green);
-  line-height: 1.1;
-  display: block;
-}
-
-.roi-item .desc {
-  font-size: 0.58rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 600;
-}
-
-/* ── COMPACT 3-PAGE MEMORANDUM STYLES ──── */
-.memo-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  border-bottom: 2px solid var(--ink);
-  padding-bottom: 6px;
-  margin-bottom: 14px;
-}
-
-.memo-brand {
-  font-family: var(--sans);
-  font-size: 0.64rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--ink);
-}
-
-.memo-meta {
-  font-family: var(--sans);
-  font-size: 0.56rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-}
-
-.memo-title-group {
-  margin-bottom: 12px;
-}
-
-.memo-tag {
-  font-family: var(--sans);
-  font-size: 0.54rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--green);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.memo-tag::before {
-  content: '';
-  display: inline-block;
-  width: 16px;
-  height: 1.5px;
-  background: var(--green);
-}
-
-.memo-h1 {
-  font-family: var(--serif);
-  font-size: 2.35rem;
-  font-weight: 300;
-  line-height: 1.05;
-  color: var(--ink);
-  margin-bottom: 4px;
-}
-
-.memo-h1 em {
-  font-style: italic;
-  font-weight: 400;
-  color: var(--green);
-}
-
-.memo-subtitle {
-  font-size: 0.74rem;
-  color: var(--muted);
-  line-height: 1.5;
-  max-width: 620px;
-}
-
-.stats-strip-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  padding: 8px 0;
-  margin: 10px 0;
-}
-
-.stats-strip-4 .stat-n {
-  font-family: var(--serif);
-  font-size: 1.65rem;
-  font-weight: 300;
-  line-height: 1;
-  color: var(--ink);
-  display: block;
-}
-
-.stats-strip-4 .stat-l {
-  font-size: 0.5rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  display: block;
-  margin-top: 2px;
-}
-
-.memo-info-bar {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 12px;
-  font-size: 0.66rem;
-  color: var(--ink2);
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--cream2);
-}
-
-.memo-info-bar label {
-  display: block;
-  font-size: 0.48rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  margin-bottom: 1px;
-}
-
-.module-grid-3x2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
-.module-card-compact {
-  border: 1px solid var(--rule);
-  background: rgba(255, 255, 255, 0.65);
-  padding: 9px 12px;
-  display: flex;
-  flex-direction: column;
-}
-
-.module-card-compact .m-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 3px;
-  padding-bottom: 3px;
-  border-bottom: 1px solid var(--cream2);
-}
-
-.module-card-compact .m-h {
-  font-family: var(--serif);
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--ink);
-  line-height: 1.15;
-  margin-bottom: 2px;
-}
-
-.module-card-compact .m-desc {
-  font-size: 0.66rem;
-  color: var(--ink2);
-  line-height: 1.4;
-}
-
-.page {
-  padding: 30px 42px;
-}
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --bg-body: #f1f5f9;
+    --bg-page: #ffffff;
+    --bg-soft: #f8fafc;
+    --bg-teal-soft: #f0fdfa;
+    --ink: #0f172a;
+    --ink-secondary: #475569;
+    --ink-muted: #64748b;
+    --teal: #0d9488;
+    --teal-dark: #0f766e;
+    --teal-border: #99f6e4;
+    --border: #e2e8f0;
+    --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  @page {
+    size: A4;
+    margin: 12mm 15mm;
+  }
+
+  @media print {
+    html {
+      font-size: 13.5px !important;
+    }
+    body {
+      background: #ffffff !important;
+      padding: 0 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      zoom: 0.84;
+    }
+    .no-print {
+      display: none !important;
+    }
+    .page {
+      display: block !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      width: 100% !important;
+      min-height: 0 !important;
+      height: auto !important;
+      padding: 0 !important;
+      page-break-after: always !important;
+      break-after: page !important;
+    }
+    .page:last-child {
+      page-break-after: auto !important;
+      break-after: auto !important;
+    }
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg-body);
+    color: var(--ink);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 60px;
+  }
+
+  /* ── TOP BAR (WEB ONLY) ─────────────────── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    padding: 12px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .topbar-inner {
+    max-width: 210mm;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .topbar-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .topbar-badge {
+    background: var(--teal);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 99px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-top {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-top:hover {
+    background: rgba(255,255,255,0.16);
+  }
+  .btn-top-primary {
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+  .btn-top-primary:hover {
+    background: var(--teal-dark);
+  }
+
+  /* ── PAGE CONTAINER ─────────────────────── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 28px auto;
+    background: var(--bg-page);
+    padding: 20mm 22mm;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* ── HEADER & FOOTER ────────────────────── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+  .brand-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .page-meta {
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  .page-footer {
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    margin-top: 24px;
+  }
+
+  /* ── TYPOGRAPHY ─────────────────────────── */
+  .eyebrow {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--teal-dark);
+    background: var(--bg-teal-soft);
+    border: 1px solid var(--teal-border);
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  h1 span {
+    color: var(--teal-dark);
+  }
+  h2 {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .lead {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-secondary);
+    margin-bottom: 26px;
+  }
+  .section-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    margin-bottom: 12px;
+  }
+
+  /* ── CALLOUT / STORY BOX ────────────────── */
+  .story-box {
+    background: var(--bg-soft);
+    border-left: 4px solid var(--teal);
+    padding: 22px 24px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 34px;
+  }
+  .story-box p {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--ink-secondary);
+  }
+  .story-box strong {
+    color: var(--ink);
+  }
+
+  /* ── TWO COLUMN SYNERGY (DENTALINK + WEB) ─ */
+  .synergy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 34px;
+  }
+  .synergy-card {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 22px;
+    background: #fff;
+  }
+  .synergy-card.highlight {
+    background: var(--bg-teal-soft);
+    border-color: var(--teal-border);
+  }
+  .synergy-tag {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .synergy-card.highlight .synergy-tag {
+    color: var(--teal-dark);
+  }
+  .synergy-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+  .synergy-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .synergy-list li {
+    font-size: 13.5px;
+    color: var(--ink-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.45;
+  }
+  .synergy-list li span.check {
+    color: var(--teal-dark);
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  /* ── 3 PILLARS STRIP ────────────────────── */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .pillar-card {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .pillar-num {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 4px;
+    display: block;
+  }
+  .pillar-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .pillar-desc {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    line-height: 1.45;
+  }
+
+  /* ── PAGE 2: 5 TOOLS LIST ───────────────── */
+  .tools-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .tool-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: #fff;
+  }
+  .tool-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--bg-teal-soft);
+    border: 1px solid var(--teal-border);
+    color: var(--teal-dark);
+    font-weight: 800;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .tool-body {
+    flex: 1;
+  }
+  .tool-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .tool-head h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .tool-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--teal-dark);
+    background: var(--bg-teal-soft);
+    padding: 2px 9px;
+    border-radius: 99px;
+  }
+  .tool-body p {
+    font-size: 13.5px;
+    color: var(--ink-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── IMPACT BANNER ──────────────────────── */
+  .impact-banner {
+    background: #0f172a;
+    color: #fff;
+    border-radius: 16px;
+    padding: 22px 24px;
+  }
+  .impact-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .impact-header h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+  .impact-tag {
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(20, 184, 166, 0.2);
+    color: #5eead4;
+    padding: 3px 10px;
+    border-radius: 99px;
+  }
+  .impact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 16px;
+  }
+  .impact-stat strong {
+    display: block;
+    font-size: 22px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+  .impact-stat strong.accent {
+    color: #5eead4;
+  }
+  .impact-stat span {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.4;
+    display: block;
+  }
+
+  /* ── PAGE 3: PRICING CARDS ──────────────── */
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 26px;
+  }
+  .plan-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 18px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .plan-card.recommended {
+    border: 2px solid var(--teal);
+    background: var(--bg-teal-soft);
+    position: relative;
+  }
+  .rec-pill {
+    position: absolute;
+    top: -11px;
+    left: 18px;
+    background: var(--teal);
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border-radius: 99px;
+  }
+  .plan-tier {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+  }
+  .plan-card.recommended .plan-tier {
+    color: var(--teal-dark);
+  }
+  .plan-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .plan-price-box {
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .plan-amount {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .plan-period {
+    font-size: 12px;
+    color: var(--ink-muted);
+    display: block;
+    margin-top: 2px;
+  }
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .plan-features li {
+    font-size: 12.8px;
+    color: var(--ink-secondary);
+    line-height: 1.45;
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+  }
+  .plan-features li strong {
+    color: var(--ink);
+  }
+  .plan-features li .dot {
+    color: var(--teal-dark);
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  /* ── NOTES & TIMELINE ───────────────────── */
+  .info-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+  .info-box {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .info-box h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .info-box ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .info-box li {
+    font-size: 13px;
+    color: var(--ink-secondary);
+    line-height: 1.5;
+  }
+  .info-box li strong {
+    color: var(--ink);
+  }
+
+  /* ── NEXT STEP CTA BOX ──────────────────── */
+  .cta-box {
+    background: var(--bg-teal-soft);
+    border: 1px solid var(--teal-border);
+    border-radius: 14px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .cta-text h4 {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .cta-text p {
+    font-size: 13px;
+    color: var(--ink-secondary);
+  }
+  .cta-link {
+    background: var(--ink);
+    color: #fff;
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  @media screen and (max-width: 760px) {
+    .page {
+      width: 100%;
+      margin: 0;
+      padding: 24px 20px;
+      min-height: auto;
+    }
+    .synergy-grid,
+    .pillars-grid,
+    .plans-grid,
+    .info-split,
+    .impact-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-box {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
 </style>
 </head>
 <body>
 
-<!-- BARRA DE EDICIÓN FLOTANTE (SE OCULTA AUTOMÁTICAMENTE EN EL PDF) -->
-<div id="editor-toolbar" class="no-print">
-  <div class="toolbar-inner">
-    <div class="toolbar-title">
-      <span class="toolbar-badge">MEMORÁNDUM EJECUTIVO</span>
-      <strong>Propuesta BeHappy Dental 2026</strong>
-      <span style="font-size:0.7rem;color:#a09d95;margin-left:8px;">Documento síntesis de 3 páginas A4</span>
+<!-- BARRA SUPERIOR (SOLO EN NAVEGADOR) -->
+<div class="topbar no-print">
+  <div class="topbar-inner">
+    <div class="topbar-title">
+      <span class="topbar-badge">Propuesta 2026</span>
+      <span>Centro Dental BeHappy · Hoja de Ruta &amp; Presupuesto</span>
     </div>
-    <div class="toolbar-btns">
-      <button id="toggle-edit-btn" onclick="toggleEditMode()" class="t-btn t-btn-edit">
-        <span id="edit-btn-label">✏️ Activar Edición en Pantalla</span>
-      </button>
-      <button onclick="saveProposalChanges()" class="t-btn">
-        💾 Guardar Cambios
-      </button>
-      <button onclick="resetProposalChanges()" class="t-btn" style="color:#d97706;">
-        🔄 Restaurar Original
-      </button>
-      <a href="/Propuesta-BeHappy-Dental-2026.pdf" download="Propuesta-BeHappy-Dental-2026.pdf" class="t-btn t-btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
-        ⬇️ Descargar PDF Oficial (3 Páginas)
+    <div class="topbar-actions">
+      <a href="/Propuesta-BeHappy-Dental-2026.pdf" download="Propuesta-BeHappy-Dental-2026.pdf" class="btn-top btn-top-primary">
+        ⬇️ Descargar PDF (3 Páginas)
       </a>
-      <button onclick="exportToPdf()" class="t-btn">
+      <button onclick="window.print()" class="btn-top">
         🖨️ Imprimir
       </button>
     </div>
   </div>
 </div>
 
-<div id="proposal-container">
+<!-- ══════════════════════════════════════════════════════════════════
+     PÁGINA 1: EL PUNTO DE PARTIDA & LA SINERGIA CON DENTALINK
+══════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">Centro Dental BeHappy · Suecia 3580, Ñuñoa</span>
+      </div>
+      <span class="page-meta">Propuesta de Crecimiento Digital · 2026</span>
+    </div>
 
-<!-- ════════════════════════════════════════
-     PÁGINA 1 DE 3: PORTADA & DIAGNÓSTICO DE CAPACIDAD DE SILLÓN
-════════════════════════════════════════ -->
-<div class="page" style="position:relative;">
-  <div class="memo-header">
-    <span class="memo-brand">Centro Dental BeHappy SpA &nbsp;·&nbsp; Suecia 3580, Ñuñoa</span>
-    <span class="memo-meta">Memorándum Estratégico &nbsp;·&nbsp; Octubre 2026</span>
-  </div>
-
-  <div class="memo-title-group">
-    <div class="memo-tag">Arquitectura Clínica, Soberanía Digital &amp; Modelo Financiero &nbsp;§ 2026</div>
-    <h1 class="memo-h1">
-      Ecosistema clínico <em>entrelazado</em><br>
-      y soberanía digital.
-    </h1>
-    <p class="memo-subtitle">
-      Reemplazo de presencia estática en Hostinger por una plataforma médica propia de captación local en Ñuñoa, triaje orientativo por síntoma, simulación referencial de copagos Fonasa/Isapre, integración nativa API REST con agenda Dentalink y membresías recurrentes Club BeHappy.
+    <span class="eyebrow">1 · El Punto de Partida</span>
+    <h1>Potenciar lo que ya funciona,<br><span>sin duplicar el trabajo de la clínica.</span></h1>
+    <p class="lead">
+      Tras conversar en la clínica y ver cómo operan día a día, quedó claro un punto fundamental: <strong>ustedes ya tienen resuelta su operación interna con Dentalink.</strong> Por eso, esta propuesta no busca cambiar su sistema ni darle doble trabajo a recepción, sino construir lo que falta afuera para llenar las horas disponibles de sillón.
     </p>
+
+    <div class="story-box">
+      <p>
+        <strong>La filosofía es simple:</strong> Dentalink cuida al paciente desde que se sienta en el box hasta que paga en caja. Nuestra plataforma se encarga de todo lo que ocurre antes: salir a buscar pacientes en Ñuñoa, guiarlos según su síntoma, transparentar valores y traerlos agendados directo al sillón.
+      </p>
+    </div>
+
+    <div class="section-label">Cómo conviven ambos mundos sin pisarse</div>
+    <div class="synergy-grid">
+      <div class="synergy-card">
+        <span class="synergy-tag">Adentro de la Clínica (Se mantiene igual)</span>
+        <h3>Lo que ya hace Dentalink</h3>
+        <ul class="synergy-list">
+          <li><span class="check">✓</span> <span>Ficha clínica oficial e historial médico del paciente.</span></li>
+          <li><span class="check">✓</span> <span>Odontograma clínico en el box y presupuestos.</span></li>
+          <li><span class="check">✓</span> <span>Agenda maestra de sillones y turnos por doctor.</span></li>
+          <li><span class="check">✓</span> <span>Boletas electrónicas SII, caja y liquidaciones.</span></li>
+        </ul>
+      </div>
+
+      <div class="synergy-card highlight">
+        <span class="synergy-tag">Hacia Afuera (Lo que sumamos este año)</span>
+        <h3>Motor de Captación &amp; Conversión</h3>
+        <ul class="synergy-list">
+          <li><span class="check">✓</span> <span><strong>Captación activa:</strong> Campañas en Google e Instagram enfocadas en vecinos de Ñuñoa y Providencia.</span></li>
+          <li><span class="check">✓</span> <span><strong>Triaje por síntoma:</strong> Guía al paciente según su molestia hacia el especialista correcto.</span></li>
+          <li><span class="check">✓</span> <span><strong>Simulador de precios:</strong> Quita el miedo al cobro sorpresa antes de agendar.</span></li>
+          <li><span class="check">✓</span> <span><strong>Club BeHappy:</strong> Cobro automático mensual con tarjeta (Flow.cl) para ingresos recurrentes.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-label">Tres pilares que guían este proyecto</div>
+    <div class="pillars-grid">
+      <div class="pillar-card">
+        <span class="pillar-num">$30.000</span>
+        <div class="pillar-title">Costo de la hora vacía</div>
+        <p class="pillar-desc">Cada hora de box desocupada en Suecia 3580 tiene un costo fijo real. El foco es transformar esas horas en pacientes sentados.</p>
+      </div>
+      <div class="pillar-card">
+        <span class="pillar-num">Cero Fricción</span>
+        <div class="pillar-title">Conectado a Dentalink</div>
+        <p class="pillar-desc">Las reservas web se sincronizan con la agenda de Dentalink para que el equipo no tenga que digitar datos dos veces.</p>
+      </div>
+      <div class="pillar-card">
+        <span class="pillar-num">100% Propio</span>
+        <div class="pillar-title">Propiedad de BeHappy</div>
+        <p class="pillar-desc">Sin amarras. Todo el código, dominio, base de datos y cuentas publicitarias quedan a nombre exclusivo de la clínica.</p>
+      </div>
+    </div>
   </div>
 
-  <div class="stats-strip-4">
-    <div class="stat-item">
-      <span class="stat-n">6</span>
-      <span class="stat-l">Activos en código</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-n">90</span>
-      <span class="stat-l">Días ciclo tracción</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-n" style="color:var(--green);font-weight:600;">$2.490.000</span>
-      <span class="stat-l">Margen neto incremental (M3)</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-n">100%</span>
-      <span class="stat-l">Titularidad de activos</span>
-    </div>
-  </div>
-
-  <div class="memo-info-bar">
-    <div>
-      <label>Para</label>
-      <strong>Centro Dental BeHappy SpA</strong> · Suecia 3580, Of. 304, Ñuñoa (RUT 77.xxx.xxx-x)
-    </div>
-    <div>
-      <label>Emitido el</label>
-      6 de octubre de 2026
-    </div>
-    <div>
-      <label>Validez</label>
-      20 de octubre de 2026 (14 días corridos)
-    </div>
-  </div>
-
-  <!-- § 01 DIAGNÓSTICO -->
-  <div class="chapter-label">§ 01 &nbsp;·&nbsp; Diagnóstico de mercado en Ñuñoa &amp; economía de sillón</div>
-  <h2 class="section-h" style="font-size:1.65rem;margin-bottom:3px;">Capacidad de sillón.<br><em>La matemática real del box y la sinergia frontal con Dentalink.</em></h2>
-  <p class="section-lead" style="font-size:0.72rem;line-height:1.45;margin-bottom:8px;">
-    Una clínica en Suecia 3580 tiene costos fijos estructurales severos: arriendo de box clínico en Providencia/Ñuñoa, asistente dental, autoclave, insumos certificados (3M, Dentsply) y recepción. Cada hora de sillón desocupada representa entre <strong>$25.000 y $35.000 CLP de pérdida irrecuperable</strong>.
-  </p>
-
-  <div class="callout callout-green" style="margin:6px 0;padding:6px 10px;font-size:0.69rem;line-height:1.4;">
-    <strong>Separación de responsabilidades: Front-Office de Captación vs. Back-Office Clínico Dentalink:</strong><br>
-    Dentalink es el software que gestiona la clínica por dentro y se preserva al 100%: Ficha Médica y Evoluciones (Ley 20.584), Odontograma en Box, Presupuestos por correo (<code>seguros-whitelabel</code>), Boletas SII y Liquidación de Especialistas. <strong>Nuestra plataforma resuelve lo que Dentalink no hace:</strong> salir a buscar pacientes a Google y Meta en Ñuñoa, traducir síntomas a citas calificadas, erradicar el miedo al cobro oculto y cobrar suscripciones mensuales (MRR) que Dentalink no puede procesar.
-  </div>
-
-  <div class="section-rule mt-1" style="padding-top:8px;margin-top:6px;">
-    <p class="sc mb-1">Diagnóstico de fugas y palancas operacionales (con supuestos explícitos)</p>
-    <table>
-      <thead>
-        <tr>
-          <th>Palanca</th>
-          <th>Diagnóstico actual y acción requerida</th>
-          <th style="width:115px;">Supuesto / Meta</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="td-n">Pre-cualificación<br><span class="td-s">Triaje por síntoma</span></td>
-          <td class="td-s">Filtro informativo en home que clasifica entre dolor agudo, estética, ortodoncia o implantes, priorizando la reserva con el cirujano dentista según su especialidad acreditada en SIS.</td>
-          <td><span class="tag tag-ok">&lt; 12% No-Show</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Transparencia<br><span class="td-s">Simulador Fonasa/Isapre</span></td>
-          <td class="td-s">Calculadora en /precios que desglosa aranceles y copagos estimados en CLP antes de la consulta, erradicando el freno al acceso dental por temor a cobros imprevistos.</td>
-          <td><span class="tag tag-ok">Supuesto demanda</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Retención fija (MRR)<br><span class="td-s">Club BeHappy</span></td>
-          <td class="td-s">Planes preventivos familiares ($14.990 – $32.990/mes) con débito automático vía Flow.cl (PAC/PAT), blindando el flujo de caja contra meses de baja estacional.</td>
-          <td><span class="tag tag-green">Ingreso recurrente</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Operación Box<br><span class="td-s">API REST Dentalink</span></td>
-          <td class="td-s">Inyección directa en agenda y sillón con RUT y campaña publicitaria (UTM). Reconocimiento de socios del Club BeHappy sin doble digitación médica.</td>
-          <td><span class="tag tag-ok">0% Fricción Box</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="metric-strip" style="margin:8px 0 0 0;padding:6px 0;">
-    <div class="metric-item" style="padding:2px 0;">
-      <span class="n" style="font-size:1.5rem;">$30.000</span>
-      <span class="l">costo fijo est. por hora de sillón ocioso</span>
-    </div>
-    <div class="metric-item" style="padding:2px 0 2px 14px;">
-      <span class="n" style="font-size:1.5rem;">&lt; 12%</span>
-      <span class="l">meta inasistencia con triaje y confirmación (vs 30% base)</span>
-    </div>
-    <div class="metric-item" style="padding:2px 0 2px 14px;">
-      <span class="n" style="font-size:1.5rem;">100%</span>
-      <span class="l">titularidad legal: GitHub, Supabase y Vercel</span>
-    </div>
+  <div class="page-footer">
+    <span>Centro Dental BeHappy · Suecia 3580, Of. 304, Ñuñoa</span>
+    <span>Página 1 de 3</span>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     PÁGINA 2 DE 3: SEIS ACTIVOS CLÍNICOS & MODELO ECONÓMICO (ROI)
-════════════════════════════════════════ -->
-<div class="page page-break" style="position:relative;">
-  <div class="wm">02</div>
-
-  <div class="ph">
-    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
-    <span class="ph-right">§ 02 · Seis Activos Clínicos, ROI &amp; Gobernanza</span>
-  </div>
-
-  <div class="chapter-label">§ 02 &nbsp;·&nbsp; Arquitectura clínica en código, modelo financiero &amp; gobernanza legal</div>
-  <h2 class="section-h" style="font-size:1.65rem;margin-bottom:3px;">Seis activos en código.<br><em>Ecosistema entrelazado de captación y cierre en box.</em></h2>
-  <p class="section-lead" style="font-size:0.72rem;line-height:1.45;margin-bottom:6px;">
-    Software activo orientado a la rentabilidad médica, a la pre-cualificación y a la retención familiar en Ñuñoa.
-  </p>
-
-  <div class="module-grid-3x2">
-    <!-- ACTIVO 01 -->
-    <div class="module-card-compact">
-      <div class="m-top">
-        <span class="module-badge">01 · Pre-cualificación</span>
-        <span class="module-route">Ruta: / (Home)</span>
+<!-- ══════════════════════════════════════════════════════════════════
+     PÁGINA 2: QUÉ CONSTRUIMOS PARA BEHAPPY (LAS 5 HERRAMIENTAS)
+══════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">Centro Dental BeHappy · Suecia 3580, Ñuñoa</span>
       </div>
-      <h3 class="m-h">Triaje Clínico por Síntoma</h3>
-      <p class="m-desc">Traduce molestias cotidianas (dolor al frío, estética, ortodoncia) al especialista SIS idóneo, resolviendo la barrera de entrada de la agenda médica fría de Dentalink.</p>
+      <span class="page-meta">Herramientas &amp; Retorno Estimado</span>
     </div>
 
-    <!-- ACTIVO 02 -->
-    <div class="module-card-compact">
-      <div class="m-top">
-        <span class="module-badge">02 · Transparencia</span>
-        <span class="module-route">Ruta: /precios</span>
-      </div>
-      <h3 class="m-h">Simulador Copago Fonasa/Isapre</h3>
-      <p class="m-desc">Calculadora abierta e indexable en Google que estima copagos en $ CLP antes de consultar, derribando el temor a cobros ocultos que frena al 74% de pacientes.</p>
-    </div>
-
-    <!-- ACTIVO 03 -->
-    <div class="module-card-compact">
-      <div class="m-top">
-        <span class="module-badge">03 · Ingresos Recurrentes (MRR)</span>
-        <span class="module-route">Rutas: /club y /precios</span>
-      </div>
-      <h3 class="m-h">Club BeHappy (Cobro Recurrente PAC/PAT)</h3>
-      <p class="m-desc">Débito automático mensual vía Flow.cl ($14.990 – $32.990) que Dentalink no puede recaudar nativamente. Conecta el pago con Dentalink asociando al paciente al convenio preferente.</p>
-    </div>
-
-    <!-- ACTIVO 04 -->
-    <div class="module-card-compact">
-      <div class="m-top">
-        <span class="module-badge">04 · Integración Headless</span>
-        <span class="module-route">API REST Dentalink (HealthAtom)</span>
-      </div>
-      <h3 class="m-h">Conector Nativo con Agenda Dentalink</h3>
-      <p class="m-desc">Inyección directa en los sillones de Suecia 3580 vía API REST. La cita cae en el monitor de recepción con RUT, triaje y campaña UTM. Cero doble digitación médica.</p>
-    </div>
-
-    <!-- ACTIVO 05 -->
-    <div class="module-card-compact">
-      <div class="m-top">
-        <span class="module-badge">05 · Auto-Servicio</span>
-        <span class="module-route">Rutas: /registro y /portal</span>
-      </div>
-      <h3 class="m-h">Portal Paciente &amp; Auto-Registro</h3>
-      <p class="m-desc">Cuentas privadas con RUT y previsión. Historial de citas agendadas, estado de socio Club BeHappy y descarga de comprobantes sin intermediación de recepción.</p>
-    </div>
-
-    <!-- ACTIVO 06 -->
-    <div class="module-card-compact">
-      <div class="m-top">
-        <span class="module-badge">06 · Soberanía Clínica</span>
-        <span class="module-route">Ruta: /login → /portal</span>
-      </div>
-      <h3 class="m-h">Editor CMS en Vivo &amp; Control de Marca</h3>
-      <p class="m-desc">Panel de autogestión de promociones estacionales, aranceles y directorio médico con caché instantánea y base de datos con políticas RLS (100% código propio).</p>
-    </div>
-  </div>
-
-  <!-- CAJA ROI FINANCIERO REFORMULADO (REALISTA Y DEFENDIBLE) -->
-  <div class="roi-box" style="margin-top:6px;padding:7px 12px;">
-    <div class="roi-title">
-      <span>Modelo de Rendimiento Incremental (Mes 3 · Inversión Total $950.000 CLP/mes)</span>
-      <span class="tag tag-ok">Retorno Neto Real ~2.6x</span>
-    </div>
-    <div class="roi-grid" style="margin-top:5px;padding-top:5px;">
-      <div class="roi-item">
-        <span class="num" style="font-size:1.25rem;">$4.030.000</span>
-        <span class="desc">Facturación bruta incremental (4.2x)</span>
-      </div>
-      <div class="roi-item">
-        <span class="num" style="font-size:1.25rem;">$2.490.000</span>
-        <span class="desc">Margen clínico neto (~55% box + 85% club)</span>
-      </div>
-      <div class="roi-item">
-        <span class="num" style="font-size:1.25rem;color:var(--green);font-weight:700;">+$1.540.000</span>
-        <span class="desc">Beneficio neto tras pagar pauta y fee</span>
-      </div>
-    </div>
-    <p style="font-size:0.56rem;color:var(--muted);margin-top:4px;line-height:1.3;">
-      * Ecuación: Inversión Total = $300.000 pauta directa + $650.000 honorarios Plan B. Facturación bruta = 22 citas directas ($3.11M) + 40 suscripciones Club ($920K). El margen neto descuenta insumos clínicos (3M/Dentsply), comisiones y honorarios de especialistas tratantes.
+    <span class="eyebrow">2 · Lo que ya está construido y listo para activar</span>
+    <h2>Cinco herramientas pensadas para<br><span>convertir visitas en pacientes reales.</span></h2>
+    <p class="lead">
+      En lugar de una página informativa estática donde la gente entra y se va, desarrollamos un ecosistema práctico con los 20 tratamientos reales de la clínica y sus 8 especialistas.
     </p>
-  </div>
 
-  <div class="section-rule" style="margin-top:8px;padding-top:6px;">
-    <p class="sc mb-1">Comparativa técnica y comercial: Presencia Aislada vs. Ecosistema BeHappy 2026 + Dentalink</p>
-    <table class="vs">
-      <thead>
-        <tr>
-          <th>Criterio Operacional y Comercial</th>
-          <th class="h-err" style="text-align:center;width:150px;">Hostinger + Dentalink Solo</th>
-          <th class="h-ok" style="text-align:center;width:190px;">Ecosistema BeHappy + API Dentalink</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="td-n">Captación &amp; Atribución Publicitaria</td>
-          <td class="td-s">Ciego a Google/Meta; CAC por sillón desconocido.</td>
-          <td class="td-s"><span class="icon-ok">✓</span> Medición exacta de CAC e inyección directa en sillón.</td>
-        </tr>
-        <tr>
-          <td class="td-n">Experiencia de Reserva (Triaje)</td>
-          <td class="td-s">Lista médica fría de aranceles; alta deserción.</td>
-          <td class="td-s"><span class="icon-ok">✓</span> Triaje empático por síntoma hacia el especialista SIS.</td>
-        </tr>
-        <tr>
-          <td class="td-n">Transparencia Pre-Consulta</td>
-          <td class="td-s">Incertidumbre de precios hasta llegar al box.</td>
-          <td class="td-s"><span class="icon-ok">✓</span> Simulador público Fonasa/Isapre en Google Ñuñoa.</td>
-        </tr>
-        <tr>
-          <td class="td-n">Recaudación Recurrente (MRR)</td>
-          <td class="td-s">Dentalink no cobra suscripciones PAC/PAT mensuales.</td>
-          <td class="td-s"><span class="icon-ok">✓</span> Cobro mensual automático Flow.cl vinculado al convenio.</td>
-        </tr>
-        <tr>
-          <td class="td-n">Ficha Clínica &amp; Resguardo Legal</td>
-          <td class="td-s">Dentalink como EHR legal.</td>
-          <td class="td-s"><span class="icon-ok">✓</span> Dentalink 100% preservado como Fuente Única (Ley 20.584).</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="tools-stack">
+      <div class="tool-row">
+        <div class="tool-num">1</div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <h3>Triaje Clínico por Síntoma</h3>
+            <span class="tool-badge">En Portada (/)</span>
+          </div>
+          <p>Muchos pacientes no saben qué tratamiento técnico pedir en una agenda tradicional. Aquí eligen lo que sienten (<em>"Tengo dolor agudo"</em>, <em>"Quiero alinear mis dientes"</em>, <em>"Me falta una pieza"</em>) y la web los deriva de inmediato al especialista de BeHappy indicado.</p>
+        </div>
+      </div>
 
-  <div class="callout callout-green" style="font-size:0.67rem;padding:5px 10px;margin-top:6px;margin-bottom:0;line-height:1.35;">
-    <strong>Gobernanza clínica y privacidad (Leyes 19.628, 20.584 y nueva Ley 21.719 · Vigencia plena 2026):</strong> La Ficha Clínica Oficial y el Odontograma Médico residen de forma inalterable y exclusiva dentro de Dentalink (Fuente Única de la Verdad). La web BeHappy actúa como canal de captación y triaje previo, transmitiendo citas y RUT bajo túneles TLS 1.3 / AES-256 sin almacenar datos sensibles de salud. <strong>Publicidad sanitaria:</strong> El triaje es orientativo y no reemplaza el examen presencial. Las garantías de 2 años aplican a la integridad mecánica de resinas bajo controles semestrales.
-  </div>
-</div>
+      <div class="tool-row">
+        <div class="tool-num">2</div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <h3>Calculadora Transparente de Aranceles y Copagos</h3>
+            <span class="tool-badge">Ruta: /precios</span>
+          </div>
+          <p>El principal freno para ir al dentista es no saber cuánto va a costar. El paciente puede simular valores estimados con Fonasa, Isapre o Convenio antes de ir, generando confianza inmediata y atrayendo pacientes decididos.</p>
+        </div>
+      </div>
 
-<!-- ════════════════════════════════════════
-     PÁGINA 3 DE 3: PLANES DE SERVICIO, CRONOGRAMA & FORMALIZACIÓN
-════════════════════════════════════════ -->
-<div class="page page-break" style="position:relative;">
-  <div class="wm">03</div>
+      <div class="tool-row">
+        <div class="tool-num">3</div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <h3>Puente Directo con Agenda Dentalink</h3>
+            <span class="tool-badge">API Oficial</span>
+          </div>
+          <p>Cuando el paciente agenda en la web, el sistema consulta los horarios libres en Dentalink e inyecta la cita con su RUT y el motivo del triaje. Así el doctor sabe de antemano por qué viene el paciente.</p>
+        </div>
+      </div>
 
-  <div class="ph">
-    <span class="ph-left">BeHappy · Propuesta Digital 2026</span>
-    <span class="ph-right">§ 03 · Planes de Servicio, Precios &amp; Formalización</span>
-  </div>
+      <div class="tool-row">
+        <div class="tool-num">4</div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <h3>Club BeHappy con Suscripción Automática</h3>
+            <span class="tool-badge">Ruta: /club</span>
+          </div>
+          <p>Permite que pacientes individuales o familias se suscriban a planes preventivos mensuales ($14.990 a $32.990/mes) con cobro automático en tarjeta vía Flow.cl, avisándole al box qué descuento aplicar en Dentalink.</p>
+        </div>
+      </div>
 
-  <div class="chapter-label">§ 03 &nbsp;·&nbsp; Planes de servicio, precios cerrados, cronograma y formalización</div>
-  <h2 class="section-h" style="font-size:1.65rem;margin-bottom:3px;">Matriz de servicio.<br><em>Valores cerrados, transparencia en pauta y puesta en marcha.</em></h2>
-  <p class="section-lead" style="font-size:0.72rem;line-height:1.45;margin-bottom:6px;">
-    Inversión publicitaria pagada directamente por la clínica a Google y Meta sin comisiones. Cada plan define entregables exactos, precios fijos y nivel de acompañamiento comercial.
-  </p>
-
-  <div class="section-rule mb-1" style="padding-top:6px;margin-top:2px;">
-    <p class="sc mb-1">Comparativa de planes de servicio y entregables</p>
-    <table>
-      <thead>
-        <tr>
-          <th>Entregable / Alcance</th>
-          <th style="text-align:center">Plan A: Implementación</th>
-          <th class="h-ok" style="text-align:center">Plan B: Captación 90 Días</th>
-          <th style="text-align:center">Plan C: Escalamiento</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="td-n">Plataforma Web en código propio (responsive móvil)</td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Triaje clínico por síntoma + Simulador de copago Fonasa/Isapre</td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Club BeHappy con débito recurrente PAC/PAT Flow.cl</td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí (Base)</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí + Links Flow/WA</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí + Convenios Pyme</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Integración API REST Dentalink (Inyección de citas &amp; sync de convenios)</td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Portal Paciente (RUT) + CMS de Marca en Vivo</td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-          <td style="text-align:center"><span class="tag tag-ok">Sí</span></td>
-        </tr>
-        <tr>
-          <td class="td-n">Google Search Ads (Búsqueda local Ñuñoa)</td>
-          <td style="text-align:center" class="td-s">Configuración inicial</td>
-          <td style="text-align:center" class="td-s"><strong>Gestión mensual activa</strong></td>
-          <td style="text-align:center" class="td-s">Gestión multiespecialidad</td>
-        </tr>
-        <tr>
-          <td class="td-n">Meta Ads (Instagram + Facebook equipo médico)</td>
-          <td style="text-align:center"><span class="tag tag-muted">—</span></td>
-          <td style="text-align:center" class="td-s"><strong>1 campaña activa/mes</strong></td>
-          <td style="text-align:center" class="td-s">Hasta 2–3 campañas/mes</td>
-        </tr>
-        <tr>
-          <td class="td-n">Reporte mensual de ROI y citas confirmadas</td>
-          <td style="text-align:center" class="td-s">Entrega inicial</td>
-          <td style="text-align:center" class="td-s"><strong>Mensual (1 reunión/mes)</strong></td>
-          <td style="text-align:center" class="td-s">Mensual + revisión trimestral</td>
-        </tr>
-        <tr>
-          <td class="td-n">Mantenimiento, parches de seguridad y soporte RLS</td>
-          <td style="text-align:center" class="td-s">Lanzamiento (10 días)</td>
-          <td style="text-align:center" class="td-s"><strong>Correctivo y preventivo</strong></td>
-          <td style="text-align:center" class="td-s">Continuo + mejoras a medida</td>
-        </tr>
-        <tr>
-          <td class="td-n" style="font-weight:700">Honorarios profesionales</td>
-          <td style="text-align:center;font-weight:700">$1.490.000 <span style="font-size:0.58rem;font-weight:400;display:block;">pago único (o 2 de $745K)</span></td>
-          <td style="text-align:center;font-weight:700;color:var(--green)">$650.000 / mes <span style="font-size:0.58rem;font-weight:400;display:block;">ciclo 90 días tracción</span></td>
-          <td style="text-align:center;font-weight:700">$890.000 / mes <span style="font-size:0.58rem;font-weight:400;display:block;">escalamiento desde M4</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:5px;">
-    <div>
-      <p class="sc mb-1">Separación de costos y soberanía</p>
-      <div style="font-size:0.65rem;line-height:1.45;color:var(--ink2);">
-        <p>• <strong>Pauta publicitaria:</strong> Pagada directo por la clínica a Google y Meta ($300.000/mes sugerido). Cero recargo ni comisiones.</p>
-        <p>• <strong>Canje dental formal:</strong> Opción de compensar hasta un 30% de los honorarios con prestaciones dentales valorizadas a arancel clínico neto.</p>
-        <p>• <strong>Traspaso de titularidad:</strong> Entrega formal de accesos maestros del repositorio (GitHub), base de datos (Supabase) y hosting (Vercel) a nombre exclusivo de la clínica.</p>
+      <div class="tool-row">
+        <div class="tool-num">5</div>
+        <div class="tool-body">
+          <div class="tool-head">
+            <h3>Panel de Administración y Editor Web en Vivo</h3>
+            <span class="tool-badge">Ruta: /portal</span>
+          </div>
+          <p>Un panel limpio para que ustedes mismos puedan actualizar precios, agregar promociones, editar doctores, revisar pagos de Flow y ver el estado del enlace con Dentalink sin depender de un programador.</p>
+        </div>
       </div>
     </div>
-    <div>
-      <p class="sc mb-1">Cronograma de activación (10 días hábiles)</p>
-      <div style="font-size:0.65rem;line-height:1.45;color:var(--ink2);">
-        <p>• <strong>Días 1–2:</strong> Firma de acuerdo, definición de plan, accesos y configuración inicial.</p>
-        <p>• <strong>Días 3–6:</strong> Despliegue en cloud, base Supabase con RLS, Google Business y GA4.</p>
-        <p>• <strong>Días 7–10:</strong> Activación campañas Google Ads, protocolo recepción y marcha blanca.</p>
+
+    <div class="impact-banner">
+      <div class="impact-header">
+        <h4>Proyección conservadora al Mes 3 (Campaña local + Plataforma)</h4>
+        <span class="impact-tag">Retorno estimado ~2.6x</span>
+      </div>
+      <div class="impact-grid">
+        <div class="impact-stat">
+          <strong>~22 citas/mes</strong>
+          <span>Pacientes nuevos captados por búsqueda activa en Ñuñoa ($3,1M facturación bruta est.)</span>
+        </div>
+        <div class="impact-stat">
+          <strong>40 socios Club</strong>
+          <span>Suscripciones activas aportando flujo mensual estable (~$920.000/mes adicionales)</span>
+        </div>
+        <div class="impact-stat">
+          <strong class="accent">+$1.540.000</strong>
+          <span>Margen libre estimado para la clínica tras descontar insumos, especialistas, anuncios y servicio</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- FIRMAS FORMALES CON RAZÓN SOCIAL -->
-  <div class="sig-row mt-2" style="margin-top:12px;padding-top:10px;">
-    <div class="sig-block">
-      <label>Proveedor de servicios digitales &amp; consultoría</label>
-      <div class="sig-line"></div>
-      <div class="sig-name">Nombre Consultor · RUT: 1x.xxx.xxx-x · Fecha</div>
-    </div>
-    <div class="sig-block">
-      <label>Cliente institucional</label>
-      <div class="sig-line"></div>
-      <div class="sig-name">Centro Dental BeHappy SpA · RUT: 77.xxx.xxx-x · Rep. Legal</div>
-    </div>
-  </div>
-
-  <div class="doc-foot" style="margin-top:10px;padding-top:8px;">
-    <p>Centro Dental BeHappy SpA &nbsp;·&nbsp; Suecia 3580, Of. 304, Ñuñoa, Región Metropolitana &nbsp;·&nbsp; +56 9 4757 8597 &nbsp;·&nbsp; behappydental.cl</p>
-    <p>Documento confidencial &nbsp;·&nbsp; Propuesta válida hasta el 20 de octubre de 2026 &nbsp;·&nbsp; Sujeto a aprobación jurídica y técnica</p>
+  <div class="page-footer">
+    <span>Centro Dental BeHappy · Suecia 3580, Of. 304, Ñuñoa</span>
+    <span>Página 2 de 3</span>
   </div>
 </div>
 
-</div><!-- FIN #proposal-container -->
+<!-- ══════════════════════════════════════════════════════════════════
+     PÁGINA 3: PLANES DE TRABAJO, COSTOS Y PRÓXIMOS PASOS
+══════════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">Centro Dental BeHappy · Suecia 3580, Ñuñoa</span>
+      </div>
+      <span class="page-meta">Planes de Trabajo &amp; Costos 2026</span>
+    </div>
 
-<script>
-let isEditMode = false;
+    <span class="eyebrow">3 · Modalidades de Trabajo y Costos</span>
+    <h2>Tres caminos claros según<br><span>el ritmo que quieran darle a la clínica.</span></h2>
+    <p class="lead">
+      Sin costos ocultos ni contratos eternos. Pueden elegir solo la entrega de la plataforma lista y conectada, o bien que los acompañe mes a mes trayendo pacientes con campañas activas.
+    </p>
 
-function toggleEditMode() {
-  isEditMode = !isEditMode;
-  const container = document.getElementById('proposal-container');
-  if (container) {
-    container.setAttribute('contenteditable', isEditMode ? 'true' : 'false');
-  }
-  const btn = document.getElementById('toggle-edit-btn');
-  const label = document.getElementById('edit-btn-label');
-  if (isEditMode) {
-    btn.classList.add('active');
-    label.textContent = '✏️ Edición Activada (Haz clic y escribe en cualquier texto)';
-    document.body.classList.add('editing-active');
-  } else {
-    btn.classList.remove('active');
-    label.textContent = '✏️ Activar Edición en Pantalla';
-    document.body.classList.remove('editing-active');
-  }
-}
+    <div class="plans-grid">
+      <!-- PLAN A -->
+      <div class="plan-card">
+        <div>
+          <div class="plan-tier">Opción 1 · Entrega Llave en Mano</div>
+          <div class="plan-title">Plan A: Implementación</div>
+          <div class="plan-price-box">
+            <span class="plan-amount">$1.490.000</span>
+            <span class="plan-period">Pago único (o 2 cuotas de $745.000)</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="dot">✓</span> <span><strong>Plataforma web completa</strong> con los 20 tratamientos y 8 doctores.</span></li>
+            <li><span class="dot">✓</span> <span><strong>Triaje por síntoma</strong> y simulador de copagos Fonasa/Isapre.</span></li>
+            <li><span class="dot">✓</span> <span><strong>Conexión API con Dentalink</strong> y pasarela de pagos Flow.cl.</span></li>
+            <li><span class="dot">✓</span> <span><strong>Panel autoadministrable</strong> y configuración base de Google.</span></li>
+            <li><span class="dot">✓</span> <span>Acompañamiento de marcha blanca por 10 días hábiles.</span></li>
+          </ul>
+        </div>
+      </div>
 
-function saveProposalChanges() {
-  const container = document.getElementById('proposal-container');
-  if (container) {
-    localStorage.setItem('behappy_propuesta_html_v8', container.innerHTML);
-    alert('✓ Cambios guardados con éxito en la memoria de tu navegador.');
-  }
-}
+      <!-- PLAN B -->
+      <div class="plan-card recommended">
+        <span class="rec-pill">Camino Recomendado</span>
+        <div>
+          <div class="plan-tier">Opción 2 · Plataforma + Pacientes</div>
+          <div class="plan-title">Plan B: Captación 90 Días</div>
+          <div class="plan-price-box">
+            <span class="plan-amount">$650.000 <small style="font-size:14px;font-weight:600;">/ mes</small></span>
+            <span class="plan-period">Ciclo inicial de 3 meses de tracción</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="dot">✓</span> <span><strong>Incluye toda la plataforma del Plan A</strong> sin pago inicial aparte.</span></li>
+            <li><span class="dot">✓</span> <span><strong>Gestión mensual de Google Ads</strong> (búsqueda en Ñuñoa: urgencias, implantes, ortodoncia).</span></li>
+            <li><span class="dot">✓</span> <span><strong>1 campaña mensual en Instagram/Meta</strong> destacando al equipo médico.</span></li>
+            <li><span class="dot">✓</span> <span><strong>Soporte técnico continuo</strong>, ajustes web y mantención.</span></li>
+            <li><span class="dot">✓</span> <span><strong>Reunión mensual</strong> con reporte claro de pacientes agendados y retorno.</span></li>
+          </ul>
+        </div>
+      </div>
 
-function resetProposalChanges() {
-  if (confirm('¿Deseas restaurar la propuesta al contenido original de fábrica?')) {
-    localStorage.removeItem('behappy_propuesta_html_v8');
-    location.reload();
-  }
-}
+      <!-- PLAN C -->
+      <div class="plan-card">
+        <div>
+          <div class="plan-tier">Opción 3 · Expansión</div>
+          <div class="plan-title">Plan C: Escalamiento</div>
+          <div class="plan-price-box">
+            <span class="plan-amount">$890.000 <small style="font-size:14px;font-weight:600;">/ mes</small></span>
+            <span class="plan-period">Pensado desde el mes 4 en adelante</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="dot">✓</span> <span><strong>Todo lo incluido en el Plan B.</strong></span></li>
+            <li><span class="dot">✓</span> <span><strong>Campañas simultáneas por especialidad</strong> (Invisalign, Implantes, Estética).</span></li>
+            <li><span class="dot">✓</span> <span><strong>Rescate de presupuestos pendientes</strong> enviados desde Dentalink.</span></li>
+            <li><span class="dot">✓</span> <span><strong>Activación de convenios locales</strong> para empresas e instituciones en Ñuñoa.</span></li>
+            <li><span class="dot">✓</span> <span>Desarrollo de nuevas funciones a medida para la clínica.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-function exportToPdf() {
-  if (isEditMode) {
-    toggleEditMode(); // Ocultar bordes de edición antes de imprimir
-  }
-  window.print();
-}
+    <div class="info-split">
+      <div class="info-box">
+        <h4>Transparencia y facilidades</h4>
+        <ul>
+          <li>• <strong>Pauta directa sin comisiones:</strong> El presupuesto de anuncios en Google/Meta ($300.000/mes sugerido) lo paga la clínica directo a las plataformas con su tarjeta.</li>
+          <li>• <strong>Modalidad de canje dental:</strong> Abiertos a compensar hasta un <strong>30% de los honorarios</strong> mediante prestaciones odontológicas en la clínica.</li>
+        </ul>
+      </div>
 
-window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('behappy_propuesta_html_v8');
-  if (saved) {
-    const container = document.getElementById('proposal-container');
-    if (container) {
-      container.innerHTML = saved;
-    }
-  }
-});
-</script>
+      <div class="info-box">
+        <h4>Puesta en marcha en 10 días hábiles</h4>
+        <ul>
+          <li>• <strong>Días 1 al 3:</strong> Conectamos el token de su cuenta Dentalink y su cuenta de Flow.cl para pagos.</li>
+          <li>• <strong>Días 4 al 7:</strong> Configuramos el dominio oficial, Google Analytics y seguimiento de conversiones.</li>
+          <li>• <strong>Días 8 al 10:</strong> Lanzamos campañas en Ñuñoa y dejamos todo operativo con recepción.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cta-box">
+      <div class="cta-text">
+        <h4>¿Pueden ver cómo luce hoy en vivo?</h4>
+        <p>Toda la plataforma, el simulador de precios y el panel ya están funcionando en línea para que puedan recorrerlos desde el celular o computador.</p>
+      </div>
+      <a href="https://behappy-dental.vercel.app" target="_blank" class="cta-link">
+        Ver Demo en Vivo →
+      </a>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>Centro Dental BeHappy · Suecia 3580, Of. 304, Ñuñoa</span>
+    <span>Página 3 de 3</span>
+  </div>
+</div>
 
 </body>
 </html>
