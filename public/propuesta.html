@@ -29,12 +29,12 @@
 }
 
 /* ── PRINT ──────────────────────────────── */
-@page { size: A4; margin: 15mm 18mm 15mm 18mm; }
+@page { size: A4; margin: 7mm 12mm 7mm 12mm; }
 
 @media print {
   .no-print { display: none !important; }
   .page-break { page-break-before: always; }
-  body { background: var(--cream) !important; }
+  body { background: var(--cream) !important; font-size: 9.8pt !important; }
   .page { padding: 0 !important; }
 }
 
@@ -999,8 +999,11 @@ p:last-child { margin-bottom: 0; }
       <button onclick="resetProposalChanges()" class="t-btn" style="color:#d97706;">
         🔄 Restaurar Original
       </button>
-      <button onclick="exportToPdf()" class="t-btn t-btn-primary">
-        🖨️ Descargar como PDF (3 Páginas)
+      <a href="/Propuesta-BeHappy-Dental-2026.pdf" download="Propuesta-BeHappy-Dental-2026.pdf" class="t-btn t-btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+        ⬇️ Descargar PDF Oficial (3 Páginas)
+      </a>
+      <button onclick="exportToPdf()" class="t-btn">
+        🖨️ Imprimir
       </button>
     </div>
   </div>
