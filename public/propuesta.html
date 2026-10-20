@@ -412,53 +412,54 @@
     line-height: 1.5;
   }
 
-  /* ── IMPACT BANNER ──────────────────────── */
+  /* ── METRICS & TRANSPARENCY BANNER ──────── */
   .impact-banner {
-    background: #0f172a;
-    color: #fff;
-    border-radius: 16px;
-    padding: 22px 24px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
   }
   .impact-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
   .impact-header h4 {
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
-    color: #f8fafc;
+    color: var(--ink);
   }
   .impact-tag {
     font-size: 11px;
     font-weight: 700;
-    background: rgba(20, 184, 166, 0.2);
-    color: #5eead4;
+    background: var(--bg-teal-soft);
+    color: var(--teal-dark);
+    border: 1px solid var(--teal-border);
     padding: 3px 10px;
     border-radius: 99px;
   }
   .impact-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    border-top: 1px solid rgba(255,255,255,0.12);
-    padding-top: 16px;
+    gap: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
   }
   .impact-stat strong {
     display: block;
-    font-size: 22px;
+    font-size: 17px;
     font-weight: 800;
-    color: #fff;
+    color: var(--ink);
     margin-bottom: 2px;
   }
   .impact-stat strong.accent {
-    color: #5eead4;
+    color: var(--teal-dark);
   }
   .impact-stat span {
     font-size: 12px;
-    color: #94a3b8;
-    line-height: 1.4;
+    color: var(--ink-secondary);
+    line-height: 1.45;
     display: block;
   }
 
@@ -815,21 +816,21 @@
 
     <div class="impact-banner">
       <div class="impact-header">
-        <h4>Proyección conservadora al Mes 3 (Campaña local + Plataforma)</h4>
-        <span class="impact-tag">Retorno estimado ~2.6x</span>
+        <h4>Medición con datos reales (Sin promesas al aire)</h4>
+        <span class="impact-tag">Trazabilidad Total</span>
       </div>
       <div class="impact-grid">
         <div class="impact-stat">
-          <strong>~22 citas/mes</strong>
-          <span>Pacientes nuevos captados por búsqueda activa en Ñuñoa ($3,1M facturación bruta est.)</span>
+          <strong>Origen Claro</strong>
+          <span>La clínica sabe con exactitud de dónde llega cada consulta (búsquedas locales, web, WhatsApp o referidos).</span>
         </div>
         <div class="impact-stat">
-          <strong>40 socios Club</strong>
-          <span>Suscripciones activas aportando flujo mensual estable (~$920.000/mes adicionales)</span>
+          <strong>Cero Fugas</strong>
+          <span>Cada solicitud de cita se deriva de inmediato a WhatsApp y Dentalink para no perder pacientes por falta de respuesta.</span>
         </div>
         <div class="impact-stat">
           <strong class="accent">100% Directo</strong>
-          <span>Recaudación de citas y suscripciones ingresada íntegramente a BeHappy, sin comisiones de plataformas intermedias</span>
+          <span>La recaudación de copagos y membresías del Club ingresa íntegra a BeHappy, sin comisiones de plataformas intermedias.</span>
         </div>
       </div>
     </div>
