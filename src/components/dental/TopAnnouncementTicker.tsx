@@ -20,9 +20,18 @@ const DEFAULT_SLIDES = [
   { text: "Especialistas en Ortodoncia, Implantes y Estética en Ñuñoa.", link: "/tratamientos" },
 ];
 
-export function TopAnnouncementTicker() {
+export interface TopAnnouncementTickerProps {
+  initialAnnouncements?: string[];
+}
+
+export function TopAnnouncementTicker({ initialAnnouncements }: TopAnnouncementTickerProps = {}) {
   const pathname = usePathname();
-  const [slides, setSlides] = useState<{ text: string; link: string | null }[]>(DEFAULT_SLIDES);
+  const [slides, setSlides] = useState<{ text: string; link: string | null }[]>(() => {
+    if (initialAnnouncements && initialAnnouncements.length > 0) {
+      return initialAnnouncements.map((text) => ({ text, link: null }));
+    }
+    return DEFAULT_SLIDES;
+  });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -75,7 +84,7 @@ export function TopAnnouncementTicker() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 h-10 flex items-center justify-between relative">
+      <div className="max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 h-10 flex items-center justify-between relative">
         {/* Prev Arrow */}
         <button
           onClick={prevSlide}

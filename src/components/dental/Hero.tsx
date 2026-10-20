@@ -4,15 +4,22 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { getCMSData, CMSData, CMSHero, DEFAULT_HERO } from "@/lib/cmsStore";
 
-export function Hero() {
-  const [heroData, setHeroData] = useState<CMSHero>(DEFAULT_HERO);
+interface HeroProps {
+  initialHero?: CMSHero;
+}
+
+export function Hero({ initialHero }: HeroProps) {
+  const [heroData, setHeroData] = useState<CMSHero>(() => {
+    if (initialHero) return initialHero;
+    if (typeof window !== "undefined") {
+      const cms = getCMSData();
+      if (cms?.hero) return cms.hero;
+    }
+    return DEFAULT_HERO;
+  });
 
   useEffect(() => {
-    const cms = getCMSData();
-    if (cms?.hero) {
-      setHeroData(cms.hero);
-    }
-
+    // Escuchar actualizaciones dinámicas desde el CMS
     const handleUpdate = (e: Event) => {
       const custom = (e as CustomEvent<CMSData>).detail;
       if (custom?.hero) {
@@ -31,24 +38,81 @@ export function Hero() {
     const el = document.getElementById("agendar");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.location.href = "/#agendar";
     }
   };
 
+  // Punto focal de la foto o video
+  const focalClass =
+    heroData.focalPoint === "top"
+      ? "object-top"
+      : heroData.focalPoint === "bottom"
+      ? "object-bottom"
+      : "object-center";
+
+  // Altura configurable del hero
+  const heightClass =
+    heroData.heroHeight === "compact"
+      ? "min-h-[520px] sm:min-h-[580px] lg:min-h-[620px]"
+      : heroData.heroHeight === "tall"
+      ? "min-h-[680px] sm:min-h-[760px] lg:min-h-[820px]"
+      : heroData.heroHeight === "fullscreen"
+      ? "min-h-screen"
+      : "min-h-[580px] sm:min-h-[640px] lg:min-h-[700px]";
+
+  // Tonalidad del fondo oscuro
+  const overlayColorClass =
+    heroData.overlayColor === "navy"
+      ? "bg-[#09111e]"
+      : heroData.overlayColor === "warm"
+      ? "bg-[#18120b]"
+      : "bg-black";
+
+  const overlayOpacityPercent = typeof heroData.overlayOpacity === "number" ? heroData.overlayOpacity : 65;
+
+  const isVideo = heroData.mediaType === "video" && Boolean(heroData.bgVideo);
+
   return (
-    <section className="relative w-full min-h-[580px] sm:min-h-[640px] lg:min-h-[700px] flex items-center justify-center overflow-hidden bg-black text-white border-b border-neutral-800">
+    <section className={`relative w-full ${heightClass} flex items-center justify-center overflow-hidden bg-black text-white border-b border-neutral-800`}>
       
-      {/* Background Image with Dark Vignette Overlay */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src={heroData.bgImage || "/images/hero-woman.jpg"}
-          alt="Centro Dental BeHappy Ñuñoa"
-          fill
-          priority
-          className="object-cover object-center filter brightness-[0.72] contrast-[1.05]"
-          sizes="100vw"
+      {/* Fondo multimedia: Imagen o Video con control de opacidad y encuadre */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        {isVideo ? (
+          <video
+            autoPlay
+            loop={heroData.videoLoop ?? true}
+            muted={heroData.videoMuted ?? true}
+            playsInline
+            poster={heroData.videoPoster || heroData.bgImage || "/images/hero-woman.jpg"}
+            className={`w-full h-full object-cover ${focalClass} ${
+              heroData.blurBackground ? "filter blur-xs scale-105" : ""
+            }`}
+          >
+            <source src={heroData.bgVideo} type="video/mp4" />
+            <source src={heroData.bgVideo} type="video/webm" />
+          </video>
+        ) : (
+          <Image
+            src={heroData.bgImage || "/images/hero-woman.jpg"}
+            alt="Centro Dental BeHappy Ñuñoa"
+            fill
+            priority
+            className={`object-cover ${focalClass} ${
+              heroData.blurBackground ? "filter blur-xs scale-105" : ""
+            }`}
+            sizes="100vw"
+          />
+        )}
+
+        {/* Capa de control de opacidad y tonalidad configurable desde el CMS */}
+        <div
+          className={`absolute inset-0 transition-opacity duration-300 ${overlayColorClass}`}
+          style={{ opacity: overlayOpacityPercent / 100 }}
         />
-        {/* Soft gradient overlay matching reference screenshot */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/80" />
+
+        {/* Viñeta cinematográfica suave superior e inferior para legibilidad óptima */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/85 pointer-events-none" />
       </div>
 
       {/* Hero Content Box Centered */}
@@ -71,7 +135,7 @@ export function Hero() {
           {heroData.subtitle || "Centro dental en Ñuñoa con la última tecnología y tratamientos de la más alta calidad."}
         </p>
 
-        {/* Call to Actions (Matching screenshot rounded pill CTA) */}
+        {/* Call to Actions */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
             href={heroData.primaryCtaUrl || "https://api.whatsapp.com/send/?phone=56947578597&text&type=phone_number&app_absent=0"}

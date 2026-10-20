@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { getCMSData, CMSFlashAlert, DEFAULT_FLASH_ALERT } from "@/lib/cmsStore";
 import { AlertTriangle, Sparkles, Info, ArrowRight, X } from "lucide-react";
 
 export function FlashAlertBanner() {
+  const pathname = usePathname();
   const [alert, setAlert] = useState<CMSFlashAlert | null>(null);
   const [dismissed, setDismissed] = useState(false);
 
@@ -49,6 +51,15 @@ export function FlashAlertBanner() {
       window.removeEventListener("behappy_cms_updated", handleCmsUpdate);
     };
   }, []);
+
+  if (
+    pathname?.startsWith("/portal") ||
+    pathname === "/login" ||
+    pathname === "/registro" ||
+    pathname === "/demo"
+  ) {
+    return null;
+  }
 
   if (!alert || !alert.enabled || dismissed || !alert.message) {
     return null;

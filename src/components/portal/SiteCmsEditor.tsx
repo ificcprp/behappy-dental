@@ -41,12 +41,14 @@ import {
   AlertTriangle,
   Calculator,
   Globe,
+  Film,
 } from "lucide-react";
 
 // Submódulos modulares Enterprise
 import { CmsGlobalToolbar } from "./cms/CmsGlobalToolbar";
 import { VersionHistoryModal } from "./cms/VersionHistoryModal";
 import { HeroEditor } from "./cms/HeroEditor";
+import { MediaLibraryEditor } from "./cms/MediaLibraryEditor";
 import { PilaresEditor } from "./cms/PilaresEditor";
 import { PrevencionEditor } from "./cms/PrevencionEditor";
 import { MembershipsFlowEditor } from "./cms/MembershipsFlowEditor";
@@ -101,6 +103,7 @@ export function SiteCmsEditor() {
   const [activeTab, setActiveTab] = useState<
     | "header"
     | "hero"
+    | "medios"
     | "pilares"
     | "prevencion"
     | "membresias"
@@ -252,20 +255,21 @@ export function SiteCmsEditor() {
       <div className="flex items-center gap-1.5 overflow-x-auto bg-slate-100 p-1.5 border border-slate-200 rounded-lg scrollbar-none w-full min-w-0">
         {[
           { id: "header" as const, label: "0. Menú", icon: Layout, color: "text-sky-600" },
-          { id: "hero" as const, label: "1. Hero", icon: Sparkles, color: "text-purple-600" },
-          { id: "pilares" as const, label: "2. Pilares", icon: Layers, color: "text-teal-600" },
-          { id: "prevencion" as const, label: "3. Prevención", icon: HeartHandshake, color: "text-emerald-600" },
-          { id: "membresias" as const, label: "4. Club", icon: CreditCard, color: "text-amber-600" },
-          { id: "tratamientos" as const, label: "5. Catálogo", icon: Stethoscope, color: "text-cyan-600" },
-          { id: "doctores" as const, label: "6. Staff SIS", icon: Users, color: "text-blue-600" },
-          { id: "promos" as const, label: "7. Promos", icon: Percent, color: "text-pink-600" },
-          { id: "contacto" as const, label: "8. Contacto", icon: PhoneCall, color: "text-amber-700" },
-          { id: "anuncios" as const, label: "9. Marquesina", icon: Bell, color: "text-rose-600" },
-          { id: "auth" as const, label: "10. Acceso", icon: KeyRound, color: "text-emerald-700" },
-          { id: "whatsapp" as const, label: "11. WhatsApp", icon: MessageCircle, color: "text-emerald-600" },
-          { id: "alert" as const, label: "12. Avisos", icon: AlertTriangle, color: "text-amber-600" },
-          { id: "aranceles" as const, label: "13. Aranceles", icon: Calculator, color: "text-cyan-600" },
-          { id: "seo" as const, label: "14. SEO & Ads", icon: Globe, color: "text-purple-600" },
+          { id: "hero" as const, label: "1. Hero & Video", icon: Sparkles, color: "text-purple-600" },
+          { id: "medios" as const, label: "2. Medios & Galería", icon: Film, color: "text-purple-600" },
+          { id: "pilares" as const, label: "3. Pilares", icon: Layers, color: "text-teal-600" },
+          { id: "prevencion" as const, label: "4. Prevención", icon: HeartHandshake, color: "text-emerald-600" },
+          { id: "membresias" as const, label: "5. Club", icon: CreditCard, color: "text-amber-600" },
+          { id: "tratamientos" as const, label: "6. Catálogo", icon: Stethoscope, color: "text-cyan-600" },
+          { id: "doctores" as const, label: "7. Staff SIS", icon: Users, color: "text-blue-600" },
+          { id: "promos" as const, label: "8. Promos", icon: Percent, color: "text-pink-600" },
+          { id: "contacto" as const, label: "9. Contacto", icon: PhoneCall, color: "text-amber-700" },
+          { id: "anuncios" as const, label: "10. Marquesina", icon: Bell, color: "text-rose-600" },
+          { id: "auth" as const, label: "11. Acceso", icon: KeyRound, color: "text-emerald-700" },
+          { id: "whatsapp" as const, label: "12. WhatsApp", icon: MessageCircle, color: "text-emerald-600" },
+          { id: "alert" as const, label: "13. Avisos", icon: AlertTriangle, color: "text-amber-600" },
+          { id: "aranceles" as const, label: "14. Aranceles", icon: Calculator, color: "text-cyan-600" },
+          { id: "seo" as const, label: "15. SEO & Ads", icon: Globe, color: "text-purple-600" },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -308,6 +312,24 @@ export function SiteCmsEditor() {
             saveCMSData(next, { status: "draft" });
           }}
           presetImages={CLINIC_PRESET_IMAGES.hero}
+        />
+      )}
+
+      {activeTab === "medios" && (
+        <MediaLibraryEditor
+          cmsData={cmsData}
+          onUpdateGallery={(updatedGallery) => {
+            const next = { ...cmsData, gallery: updatedGallery };
+            setCmsData(next);
+            saveCMSData(next, { status: "draft" });
+            triggerToast("✓ Galería de imágenes actualizada");
+          }}
+          onUpdateHero={(updatedHero) => {
+            const next = { ...cmsData, hero: updatedHero };
+            setCmsData(next);
+            saveCMSData(next, { status: "draft" });
+            triggerToast("✓ Portada y medios actualizados");
+          }}
         />
       )}
 

@@ -128,10 +128,30 @@ export interface EnhancedHero {
   primaryCtaUrl: string;
   secondaryCtaText: string;
   secondaryCtaUrl: string;
+  mediaType?: "image" | "video";
   bgImage: string;
+  bgVideo?: string;
+  videoPoster?: string;
+  videoLoop?: boolean;
+  videoMuted?: boolean;
+  overlayOpacity?: number;
+  overlayColor?: "black" | "navy" | "warm";
+  focalPoint?: "center" | "top" | "bottom";
+  heroHeight?: "default" | "tall" | "fullscreen";
+  blurBackground?: boolean;
   statusBadge?: string;
   abVariantTitle?: string;
   enableAbTesting?: boolean;
+}
+
+export interface CMSGalleryItem {
+  id: string;
+  code: string;
+  title: string;
+  category: string;
+  src: string;
+  desc: string;
+  mediaType?: "image" | "video";
 }
 
 export interface StructuredAnnouncement {

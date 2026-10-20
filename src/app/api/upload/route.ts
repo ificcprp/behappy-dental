@@ -4,8 +4,18 @@ import { isAdminSession } from "@/lib/cmsAuth";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 
 const BUCKET = "clinic-media";
-const MAX_SIZE_BYTES = 5 * 1024 * 1024;
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+const MAX_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB para soportar fotos de alta resolución y videos breves
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+  "image/svg+xml",
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+  "video/ogg",
+];
 
 function cloudReady(): boolean {
   return (
@@ -44,13 +54,13 @@ export async function POST(request: Request) {
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: "Formato no permitido. Usa JPG, PNG, WebP o AVIF." },
+        { error: "Formato no permitido. Usa JPG, PNG, WebP, AVIF, MP4 o WebM." },
         { status: 400 }
       );
     }
 
     if (file.size > MAX_SIZE_BYTES) {
-      return NextResponse.json({ error: "La imagen supera el máximo de 5 MB." }, { status: 400 });
+      return NextResponse.json({ error: "El archivo supera el máximo permitido de 25 MB." }, { status: 400 });
     }
 
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-80);

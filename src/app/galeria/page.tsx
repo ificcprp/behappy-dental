@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Image from "next/image";
 import { AppointmentBookingSection } from "@/components/dental/AppointmentBookingSection";
+import { getPublishedCMS } from "@/lib/cmsServer";
 
 export const metadata: Metadata = {
   title: "Galería Clínica & Instalaciones | Centro Dental BeHappy Ñuñoa",
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
     "Registro fotográfico de Centro Dental BeHappy en Suecia 3580, Ñuñoa: boxes clínicos de última generación, ortodoncia Invisalign, implantes y estética restauradora.",
 };
 
-const GALLERY_ARCHIVE = [
+const DEFAULT_GALLERY_FALLBACK = [
   {
     code: "ARCH-01",
     title: "Box Clínico Principal & Ergonomía Dental",
@@ -67,7 +68,10 @@ const GALLERY_ARCHIVE = [
   },
 ];
 
-export default function GaleriaPage() {
+export default async function GaleriaPage() {
+  const cms = await getPublishedCMS();
+  const galleryItems = cms.gallery && cms.gallery.length > 0 ? cms.gallery : DEFAULT_GALLERY_FALLBACK;
+
   return (
     <div className="bg-[#faf8f5] text-[#141413]">
       {/* Editorial Header */}
@@ -86,7 +90,7 @@ export default function GaleriaPage() {
       {/* Gallery Grid (Clean Architectural Ledger) */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 border-b border-[#e5e0d5]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {GALLERY_ARCHIVE.map((item, idx) => (
+          {galleryItems.map((item, idx) => (
             <div
               key={idx}
               className="border border-[#e5e0d5] bg-white p-5 hover:border-[#141413] transition-colors flex flex-col justify-between group"
@@ -95,7 +99,7 @@ export default function GaleriaPage() {
                 {/* Meta Top Line */}
                 <div className="flex items-center justify-between border-b border-[#f0ede6] pb-2.5">
                   <span className="text-[10px] font-mono tracking-[0.18em] text-[#78736a] uppercase">
-                    {item.code}
+                    {item.code || `ARCH-0${idx + 1}`}
                   </span>
                   <span className="text-[10px] font-mono tracking-widest text-[#141413] uppercase">
                     {item.category}

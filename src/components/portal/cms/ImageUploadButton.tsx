@@ -7,22 +7,36 @@ interface ImageUploadButtonProps {
   onUploaded: (url: string) => void;
   label?: string;
   compact?: boolean;
+  allowVideo?: boolean;
 }
 
-export function ImageUploadButton({ onUploaded, label = "Subir imagen", compact = false }: ImageUploadButtonProps) {
+export function ImageUploadButton({
+  onUploaded,
+  label,
+  compact = false,
+  allowVideo = false,
+}: ImageUploadButtonProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const defaultLabel = allowVideo ? "Subir foto o video" : "Subir imagen";
+  const displayLabel = label || defaultLabel;
+
   const handleFile = async (file: File) => {
     setError(null);
 
-    if (!file.type.startsWith("image/")) {
-      setError("Solo imágenes");
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+
+    if (!isImage && (!allowVideo || !isVideo)) {
+      setError(allowVideo ? "Solo fotos o videos" : "Solo imágenes");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Máx 5 MB");
+
+    const maxSize = allowVideo ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError(allowVideo ? "Máx 25 MB" : "Máx 10 MB");
       return;
     }
 
@@ -45,12 +59,16 @@ export function ImageUploadButton({ onUploaded, label = "Subir imagen", compact 
     }
   };
 
+  const acceptString = allowVideo
+    ? "image/png,image/jpeg,image/webp,image/avif,video/mp4,video/webm,video/quicktime"
+    : "image/png,image/jpeg,image/webp,image/avif";
+
   return (
     <div className="inline-flex items-center gap-2">
       <input
         ref={inputRef}
         type="file"
-        accept="image/png,image/jpeg,image/webp,image/avif"
+        accept={acceptString}
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];

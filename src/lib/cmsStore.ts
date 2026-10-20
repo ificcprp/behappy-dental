@@ -28,10 +28,30 @@ export interface CMSHero {
   primaryCtaUrl: string;
   secondaryCtaText: string;
   secondaryCtaUrl: string;
+  mediaType?: "image" | "video";
   bgImage: string;
+  bgVideo?: string;
+  videoPoster?: string;
+  videoLoop?: boolean;
+  videoMuted?: boolean;
+  overlayOpacity?: number; // 20 - 95 (%)
+  overlayColor?: "black" | "navy" | "warm";
+  focalPoint?: "center" | "top" | "bottom";
+  heroHeight?: "compact" | "default" | "tall" | "fullscreen";
+  blurBackground?: boolean;
   statusBadge?: string;
   abVariantTitle?: string;
   enableAbTesting?: boolean;
+}
+
+export interface CMSGalleryItem {
+  id: string;
+  code: string;
+  title: string;
+  category: string;
+  src: string;
+  desc: string;
+  mediaType?: "image" | "video";
 }
 
 export interface CMSWelcomeCard {
@@ -163,6 +183,7 @@ export interface CMSData {
   promotions: CMSPromotion[];
   membershipPlans: CMSMembershipPlan[];
   hero: CMSHero;
+  gallery?: CMSGalleryItem[];
   welcomeSection: CMSWelcomeSection;
   preventionSection: CMSPreventionSection;
   authPortal: CMSAuthPortal;
@@ -188,8 +209,85 @@ export const DEFAULT_HERO: CMSHero = {
   primaryCtaUrl: "https://api.whatsapp.com/send/?phone=56947578597&text&type=phone_number&app_absent=0",
   secondaryCtaText: "Agendar con agendador →",
   secondaryCtaUrl: "#agendar",
-  bgImage: "/images/hero-woman.jpg"
+  mediaType: "image",
+  bgImage: "/images/hero-woman.jpg",
+  bgVideo: "https://assets.mixkit.co/videos/preview/mixkit-dentist-examining-a-patient-41838-large.mp4",
+  videoPoster: "/images/hero-woman.jpg",
+  videoLoop: true,
+  videoMuted: true,
+  overlayOpacity: 65,
+  overlayColor: "black",
+  focalPoint: "center",
+  heroHeight: "default",
+  blurBackground: false,
 };
+
+export const DEFAULT_GALLERY: CMSGalleryItem[] = [
+  {
+    id: "gal-1",
+    code: "ARCH-01",
+    title: "Box Clínico Principal & Ergonomía Dental",
+    category: "Infraestructura",
+    src: "/images/clinic-interior.jpg",
+    desc: "Sillones odontológicos ergonómicos, iluminación LED de campo quirúrgico y sistemas de bioseguridad certificados.",
+  },
+  {
+    id: "gal-2",
+    code: "ARCH-02",
+    title: "Ortodoncia Invisible Invisalign & Brackets",
+    category: "Ortodoncia",
+    src: "/images/treatments_real/invisalign.jpg",
+    desc: "Planificación digital 3D y alineadores removibles transparentes para corrección oclusal y armonía estética.",
+  },
+  {
+    id: "gal-3",
+    code: "ARCH-03",
+    title: "Blanqueamiento Dental en Consulta",
+    category: "Estética",
+    src: "/images/treatments_real/blanqueamiento.jpg",
+    desc: "Protocolo de aclaramiento dental seguro con peróxido supervisado y protección gingival aislada.",
+  },
+  {
+    id: "gal-4",
+    code: "ARCH-04",
+    title: "Implantología Oseointegrada de Titanio",
+    category: "Cirugía",
+    src: "/images/treatments_real/implantes.jpg",
+    desc: "Reemplazo radicular definitivo con fijaciones biocompatibles para restaurar función masticatoria y estética.",
+  },
+  {
+    id: "gal-5",
+    code: "ARCH-05",
+    title: "Imagenología y Radiología Digital",
+    category: "Diagnóstico",
+    src: "/images/treatments_real/radiografias.jpg",
+    desc: "Captura radiográfica intraoral instantánea con emisión radiológica de mínima dosis para diagnósticos inmediatos.",
+  },
+  {
+    id: "gal-6",
+    code: "ARCH-06",
+    title: "Rehabilitación Oral & Coronas de Zirconio",
+    category: "Rehabilitación",
+    src: "/images/treatments_real/coronas.jpg",
+    desc: "Estructuras cerámicas monolíticas de alta resistencia y translucidez idéntica al esmalte dental natural.",
+  },
+  {
+    id: "gal-7",
+    code: "ARCH-07",
+    title: "Higiene y Profilaxis Profunda",
+    category: "Prevención",
+    src: "/images/treatments_real/limpieza.jpg",
+    desc: "Destartraje supragingival con ultrasonido y pulido coronario con pasta profiláctica fluorada.",
+  },
+  {
+    id: "gal-8",
+    code: "ARCH-08",
+    title: "Tratamiento de Bruxismo & Planos Oclusales",
+    category: "ATM & Oclusión",
+    src: "/images/treatments_real/bruxismo.jpg",
+    desc: "Planos de relajación miotensivos confeccionados a medida para proteger articulación temporomandibular y esmalte.",
+  },
+];
 
 export const DEFAULT_WELCOME_SECTION: CMSWelcomeSection = {
   kicker: "ACCESOS Y PILARES INSTITUCIONALES",
@@ -547,6 +645,7 @@ export const DEFAULT_CMS_DATA: CMSData = {
   promotions: DEFAULT_PROMOTIONS,
   membershipPlans: DEFAULT_MEMBERSHIP_PLANS,
   hero: DEFAULT_HERO,
+  gallery: DEFAULT_GALLERY,
   welcomeSection: DEFAULT_WELCOME_SECTION,
   preventionSection: DEFAULT_PREVENTION_SECTION,
   authPortal: DEFAULT_AUTH_PORTAL,
@@ -606,6 +705,8 @@ function mergeIncomingCMS(parsed: Partial<CMSData>): CMSData {
   return normalizeLegacySeguroTerms({
     ...DEFAULT_CMS_DATA,
     ...parsed,
+    hero: parsed.hero ? { ...DEFAULT_HERO, ...parsed.hero } : DEFAULT_HERO,
+    gallery: parsed.gallery && parsed.gallery.length > 0 ? parsed.gallery : DEFAULT_GALLERY,
     authPortal: parsed.authPortal ? { ...DEFAULT_AUTH_PORTAL, ...parsed.authPortal } : DEFAULT_AUTH_PORTAL,
     headerConfig: parsed.headerConfig ? { ...DEFAULT_HEADER_CONFIG, ...parsed.headerConfig } : DEFAULT_HEADER_CONFIG,
     whatsappBooking: parsed.whatsappBooking ? { ...DEFAULT_WHATSAPP_BOOKING, ...parsed.whatsappBooking } : DEFAULT_WHATSAPP_BOOKING,

@@ -7,11 +7,14 @@ import { EspecialidadesTratamientosCarousel } from "@/components/dental/Especial
 import { DoctorsSection } from "@/components/dental/DoctorsSection";
 import { AppointmentBookingSection } from "@/components/dental/AppointmentBookingSection";
 import { LocationHoursSection } from "@/components/dental/LocationHoursSection";
+import { getPublishedCMS } from "@/lib/cmsServer";
 
-export default function Home() {
+export default async function Home() {
+  const cms = await getPublishedCMS();
+
   return (
     <div className="space-y-0">
-      <Hero />
+      <Hero initialHero={cms.hero} />
       <ClinicalTriageSection />
       <RealCardsAndWelcomeSection />
       <PreventionSection />

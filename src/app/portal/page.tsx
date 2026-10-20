@@ -69,8 +69,10 @@ import {
   ChevronRight,
   UserCheck,
   CreditCard,
-  Printer
+  Printer,
+  Menu
 } from "lucide-react";
+import { PortalSidebar } from "@/components/portal/PortalSidebar";
 import { AnatomicalOdontogram } from "@/components/portal/AnatomicalOdontogram";
 import { ClinicalDocumentModal } from "@/components/portal/ClinicalDocumentModal";
 import { ClinicalBudgetPlan } from "@/components/portal/ClinicalBudgetPlan";
@@ -114,6 +116,9 @@ function PortalContent() {
 
   // Patient Sub-tabs
   const [patientTab, setPatientTab] = useState<"citas" | "ficha" | "odontograma" | "presupuesto" | "consentimientos" | "convenio">("citas");
+  const [doctorTab, setDoctorTab] = useState<"agenda" | "soap" | "odontograma" | "presupuesto" | "consentimientos" | "todo">("agenda");
+  const [recepcionTab, setRecepcionTab] = useState<"sala" | "citas" | "cobros" | "todo">("sala");
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Clinical data store state
   const [appointments, setAppointments] = useState<PatientAppointment[]>([]);
@@ -371,82 +376,152 @@ function PortalContent() {
 
   const currentRoleMeta = roleLabels[activeRole] || roleLabels.paciente;
 
+  const sidebarCounts = useMemo(() => ({
+    appointments: appointments.length,
+    patientAppointments: patientAppointments.length,
+    consents: consents.length,
+    patientConsents: patientConsents.length,
+    records: clinicalRecords.length,
+    patientRecords: patientClinicalRecords.length,
+    users: userList.length,
+    clubUsers: userList.filter((u) => u.convenioLevel && u.convenioLevel !== "Ninguno").length,
+    budgets: budgets.length,
+  }), [appointments, patientAppointments, consents, patientConsents, clinicalRecords, patientClinicalRecords, userList, budgets]);
+
+  const activeSectionTitle = useMemo(() => {
+    if (activeRole === "admin") {
+      switch (adminTab) {
+        case "dashboard": return "Dashboard Ejecutivo";
+        case "dentalink": return "Enlace Dentalink API";
+        case "consentimientos": return "Auditoría Ley 20.584";
+        case "citas": return "Citas Web & Triaje";
+        case "pagos_club": return "Pagos Flow & Club";
+        case "cms": return "Editor CMS Web";
+        case "usuarios": return "Usuarios & Roles";
+        default: return "Administración Central";
+      }
+    }
+    if (activeRole === "doctor") {
+      switch (doctorTab) {
+        case "agenda": return "Agenda Médica del Día";
+        case "soap": return "Evolución SOAP en Box";
+        case "odontograma": return "Odontograma FDI & Diagnóstico";
+        case "presupuesto": return "Presupuestos Dentales";
+        case "consentimientos": return "Consentimientos Informados";
+        case "todo": return "Box Clínico Completo";
+        default: return "Cuerpo Médico";
+      }
+    }
+    if (activeRole === "recepcion") {
+      switch (recepcionTab) {
+        case "sala": return "Flujo de Pacientes en Sala";
+        case "citas": return "Agenda del Día";
+        case "cobros": return "Caja & Pagos Flow";
+        case "todo": return "Admisión Completa";
+        default: return "Recepción";
+      }
+    }
+    if (activeRole === "paciente") {
+      switch (patientTab) {
+        case "citas": return "Mis Citas Agendadas";
+        case "ficha": return "Mi Ficha Clínica Legal";
+        case "odontograma": return "Mi Odontograma FDI";
+        case "presupuesto": return "Mi Presupuesto Dental";
+        case "consentimientos": return "Mis Consentimientos Firmados";
+        case "convenio": return "Club BeHappy & Beneficios";
+        default: return "Mi Expediente de Salud";
+      }
+    }
+    return "Portal Clínico";
+  }, [activeRole, adminTab, doctorTab, recepcionTab, patientTab]);
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] flex flex-col antialiased">
+    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] flex flex-col lg:flex-row antialiased">
       
       {/* ========================================================================= */}
-      {/* DEDICATED MEDICAL APPLICATION TOPBAR (No marketing header clashing) */}
+      {/* 1. NATIVE DOCKED LEFT SIDEBAR (Uniform across all roles) */}
       {/* ========================================================================= */}
-      <header className="bg-white border-b border-slate-200/90 sticky top-0 z-40 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
-          
-          {/* Brand & Clinic Context */}
-          <div className="flex items-center gap-3">
-            <a href="/" className="flex items-center gap-2.5 group">
-              <div className="relative w-8 h-8 rounded-full overflow-hidden bg-white p-0.5 border border-slate-300 shadow-sm">
-                <Image
-                  src="/images/brand/logo.png"
-                  alt="Centro Dental BeHappy"
-                  fill
-                  className="object-cover rounded-full"
-                />
-              </div>
-              <div>
-                <span className="font-semibold text-sm tracking-tight text-slate-900 block leading-tight">
-                  Centro Dental BeHappy
-                </span>
-                <span className="text-[10px] font-mono tracking-wider text-slate-500 uppercase block">
-                  {currentRoleMeta.subtitle}
-                </span>
-              </div>
-            </a>
+      <PortalSidebar
+        currentUser={currentUser}
+        activeRole={activeRole}
+        setActiveRole={setActiveRole}
+        adminTab={adminTab}
+        setAdminTab={setAdminTab}
+        doctorTab={doctorTab}
+        setDoctorTab={setDoctorTab}
+        recepcionTab={recepcionTab}
+        setRecepcionTab={setRecepcionTab}
+        patientTab={patientTab}
+        setPatientTab={setPatientTab}
+        counts={sidebarCounts}
+        mobileOpen={mobileSidebarOpen}
+        setMobileOpen={setMobileSidebarOpen}
+        onLogout={handleLogout}
+        onOpenWalkin={() => setShowWalkinModal(true)}
+      />
 
-            <span className={`hidden sm:inline-flex px-2.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider uppercase border ${currentRoleMeta.color}`}>
-              {currentRoleMeta.badge}
-            </span>
+      {/* ========================================================================= */}
+      {/* 2. MAIN APPLICATION WORKSPACE */}
+      {/* ========================================================================= */}
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen">
+        
+        {/* Dedicated Medical Application Topbar */}
+        <header className="bg-white border-b border-slate-200/90 sticky top-0 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.03)] px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Hamburger button on mobile */}
+            <button
+              type="button"
+              onClick={() => setMobileSidebarOpen(true)}
+              className="lg:hidden p-1.5 rounded-md hover:bg-slate-100 text-slate-700 cursor-pointer"
+              aria-label="Abrir menú de navegación"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] sm:text-xs font-mono text-slate-400 uppercase tracking-wider hidden sm:inline">
+                  Portal BeHappy
+                </span>
+                <span className="text-slate-300 hidden sm:inline">/</span>
+                <h1 className="text-xs sm:text-sm font-bold font-mono text-slate-900 uppercase tracking-tight truncate">
+                  {activeSectionTitle}
+                </h1>
+              </div>
+            </div>
           </div>
 
-          {/* Right Action Block: Authenticated User & Actions */}
-          <div className="flex items-center gap-3">
-            
-            {/* Authenticated User Identity */}
-            <div className="text-right flex flex-col justify-center">
-              <span className="text-xs font-semibold text-slate-900 block leading-tight">
-                {currentUser.fullName}
-              </span>
-              <span className="text-[10px] font-mono text-slate-500 block">
-                {currentUser.email}
-              </span>
-            </div>
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            <span className={`hidden md:inline-flex px-2.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider uppercase border ${currentRoleMeta.color}`}>
+              {currentRoleMeta.badge}
+            </span>
 
             {/* Link back to public web */}
             <a
               href="/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-2.5 py-1.5 rounded border border-slate-200 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition text-xs font-mono flex items-center gap-1 shadow-2xs shrink-0"
               title="Volver al sitio web principal"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-slate-500" />
+              <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
               <span className="hidden sm:inline">Web</span>
             </a>
 
             {/* Logout button */}
             <button
               onClick={handleLogout}
-              className="px-2.5 py-1.5 rounded border border-slate-200 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 transition text-xs font-mono flex items-center gap-1.5 shadow-2xs shrink-0"
+              className="px-2.5 py-1.5 rounded border border-slate-200 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 transition text-xs font-mono flex items-center gap-1.5 shadow-2xs shrink-0 cursor-pointer"
               title="Cerrar sesión de forma segura"
             >
               <LogOut className="w-3.5 h-3.5 text-slate-500" />
               <span className="hidden sm:inline">Salir</span>
             </button>
           </div>
+        </header>
 
-        </div>
-      </header>
-
-      {/* ========================================================================= */}
-      {/* MAIN CLINICAL CONTENT AREA */}
-      {/* ========================================================================= */}
-      <main className="flex-1 max-w-7xl w-full min-w-0 max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        {/* Dynamic Main Body Content */}
+        <main className="flex-1 w-full min-w-0 p-4 sm:p-6 lg:p-8 space-y-6">
         
         {/* ========================================================================= */}
         {/* 1. ROLE: PACIENTE (Personal Health Ledger) */}
@@ -951,7 +1026,8 @@ function PortalContent() {
             </div>
 
             {/* Daily Agenda Table */}
-            <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 shadow-2xs overflow-hidden">
+            {(doctorTab === "agenda" || doctorTab === "todo") && (
+              <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 shadow-2xs overflow-hidden">
               <div className="p-4 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
                 <div className="flex items-center gap-2">
                   <span className="font-bold uppercase text-slate-900">Agenda Médica del Día</span>
@@ -1093,10 +1169,12 @@ function PortalContent() {
                   );
                 });
               })()}
-            </div>
+              </div>
+            )}
 
             {/* SOAP Form (Ficha de Evolución) */}
-            <div className="p-6 bg-white border border-slate-200 rounded-lg space-y-4 shadow-2xs">
+            {(doctorTab === "soap" || doctorTab === "todo") && (
+              <div className="p-6 bg-white border border-slate-200 rounded-lg space-y-4 shadow-2xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
                   <h3 className="text-base font-semibold text-slate-900">Evolución Clínica (Método SOAP)</h3>
@@ -1178,39 +1256,142 @@ function PortalContent() {
                 </div>
               </form>
             </div>
+            )}
 
             {/* Doctor Odontogram Quick-Chart */}
-            <div className="p-6 bg-white border border-slate-200 rounded-lg space-y-4 shadow-2xs">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                <div>
-                  <h3 className="text-base font-semibold text-slate-900">Odontograma Interactivo FDI & Diagnóstico</h3>
-                  <p className="text-xs font-mono text-slate-500">Mapeo anatómico en sillón con derivación arancelaria directa</p>
+            {(doctorTab === "odontograma" || doctorTab === "todo") && (
+              <div className="p-6 bg-white border border-slate-200 rounded-lg space-y-4 shadow-2xs">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900">Odontograma Interactivo FDI & Diagnóstico</h3>
+                    <p className="text-xs font-mono text-slate-500">Mapeo anatómico en sillón con derivación arancelaria directa</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowBudgetModal(true)}
+                      className="px-3.5 py-1.5 bg-teal-800 hover:bg-teal-900 text-white rounded text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>Presupuesto desde Odontograma</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowConsentModal(true)}
+                      className="px-3.5 py-1.5 bg-slate-900 hover:bg-black text-white rounded text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Consentimiento Ley 20.584</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <AnatomicalOdontogram
+                  teeth={odontogram}
+                  isDoctorMode={true}
+                  onToothClick={handleToothClick}
+                />
+              </div>
+            )}
+
+            {/* Presupuesto Dental en Box */}
+            {doctorTab === "presupuesto" && (
+              <div className="p-6 bg-white border border-slate-200 rounded-lg space-y-4 shadow-2xs">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900">Plan de Presupuesto Dental</h3>
+                    <p className="text-xs font-mono text-slate-500">Cotización con aranceles oficiales BeHappy y descuentos de convenio</p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => setShowBudgetModal(true)}
-                    className="px-3.5 py-1.5 bg-teal-800 hover:bg-teal-900 text-white rounded text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                    className="px-4 py-2 bg-slate-900 hover:bg-black text-white rounded text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xs transition cursor-pointer"
                   >
                     <Layers className="w-3.5 h-3.5" />
-                    <span>Presupuesto desde Odontograma</span>
+                    <span>Crear Nuevo Presupuesto</span>
                   </button>
+                </div>
+                <ClinicalBudgetPlan
+                  odontogram={odontogram}
+                  patientName={soapPatient || "Paciente en Box"}
+                  patientRut=""
+                  patientEmail=""
+                  patientPhone=""
+                  convenioLevel="40%"
+                  onPayWithFlow={(amount, subject) => {
+                    setFlowPaymentData({
+                      patientName: soapPatient || "Paciente en Box",
+                      patientEmail: "",
+                      patientPhone: "",
+                      amount,
+                      subject,
+                    });
+                    setShowFlowPaymentModal(true);
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Consentimientos Informados Ley 20.584 en Box */}
+            {doctorTab === "consentimientos" && (
+              <div className="space-y-4">
+                <div className="p-6 bg-white border border-slate-200 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs">
+                  <div>
+                    <span className="text-[10px] font-mono tracking-widest text-purple-700 uppercase font-bold block">
+                      MARCO LEGAL SANITARIO · LEY 20.584
+                    </span>
+                    <h3 className="text-base font-semibold text-slate-900">Consentimientos Informados en Box</h3>
+                    <p className="text-xs font-mono text-slate-500">Suscripción de rúbrica biométrica para cirugías y tratamientos invasivos</p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => setShowConsentModal(true)}
-                    className="px-3.5 py-1.5 bg-slate-900 hover:bg-black text-white rounded text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+                    className="px-4 py-2 bg-slate-900 hover:bg-black text-white rounded text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xs transition cursor-pointer"
                   >
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Consentimiento Ley 20.584</span>
+                    <span>Emitir Consentimiento</span>
                   </button>
                 </div>
+
+                <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100 shadow-2xs overflow-hidden">
+                  <div className="p-4 bg-slate-50 flex items-center justify-between text-xs font-mono">
+                    <span className="font-bold uppercase text-slate-900">Historial de Consentimientos Firmados</span>
+                    <span className="text-slate-500">{consents.length} Registro{consents.length !== 1 ? "s" : ""}</span>
+                  </div>
+                  {consents.length === 0 ? (
+                    <div className="p-10 text-center space-y-2">
+                      <ShieldCheck className="w-8 h-8 text-slate-400 mx-auto" />
+                      <p className="text-xs text-slate-700 font-semibold">Sin consentimientos suscritos recientemente</p>
+                      <p className="text-[11px] font-mono text-slate-500">Presiona 'Emitir Consentimiento' para suscribir un documento digital en box.</p>
+                    </div>
+                  ) : (
+                    consents.map((c) => (
+                      <div key={c.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-slate-50/60 transition">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-slate-900 text-sm">{c.patientName}</span>
+                            <span className="text-xs font-mono text-slate-500">· RUT: {c.patientRut || "Sin RUT"}</span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                              {c.title}
+                            </span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Firmado ✓
+                            </span>
+                          </div>
+                          <p className="text-xs font-mono text-slate-500 mt-0.5">
+                            Fecha: {c.signedDate} · Folio #{c.id.slice(0, 8)} · Tratante: {c.doctorName}
+                          </p>
+                        </div>
+                        {c.signatureDataUrl && (
+                          <div className="h-9 w-20 bg-slate-50 border border-slate-200 rounded p-0.5 flex items-center justify-center shrink-0">
+                            <img src={c.signatureDataUrl} alt="Firma" className="max-h-full max-w-full object-contain" />
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-              <AnatomicalOdontogram
-                teeth={odontogram}
-                isDoctorMode={true}
-                onToothClick={handleToothClick}
-              />
-            </div>
+            )}
 
           </div>
         )}
@@ -1508,203 +1689,7 @@ function PortalContent() {
         {/* 4. ROLE: ADMIN (Executive Central & CMS Platform) */}
         {/* ========================================================================= */}
         {activeRole === "admin" && (
-          <div className="flex flex-col lg:flex-row gap-8 items-start w-full min-w-0 max-w-full">
-            
-            {/* Admin Sidebar Navigation */}
-            <aside className="w-full lg:w-64 shrink-0 bg-white border border-slate-200 rounded-lg p-5 lg:sticky lg:top-20 space-y-6 shadow-xs">
-              <div>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-2 h-2 rounded-full bg-purple-600 animate-pulse" />
-                  <span className="text-[10px] font-mono tracking-[0.2em] text-purple-700 uppercase font-bold">
-                    ADMINISTRACIÓN CENTRAL
-                  </span>
-                </div>
-                <h3 className="text-base font-semibold text-slate-900 tracking-tight">
-                  Panel de Control
-                </h3>
-                <p className="text-[11px] font-mono text-slate-500 mt-0.5">
-                  Dirección · Centro Dental BeHappy
-                </p>
-              </div>
-
-              {/* Categorized Navigation Tabs */}
-              <div className="space-y-4 font-mono text-xs">
-                {/* 1. DIRECCIÓN & ENLACE MAESTRO */}
-                <div className="space-y-1">
-                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block px-1">
-                    Dirección & Enlace
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab("dashboard")}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
-                      adminTab === "dashboard"
-                        ? "bg-slate-900 text-white font-bold shadow-xs"
-                        : "text-slate-700 hover:bg-slate-100"
-                    }`}
-                  >
-                    <LayoutDashboard className="w-4 h-4 shrink-0" />
-                    <span>Dashboard</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab("dentalink")}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
-                      adminTab === "dentalink"
-                        ? "bg-slate-900 text-white font-bold shadow-xs"
-                        : "text-slate-700 hover:bg-slate-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Activity className="w-4 h-4 shrink-0 text-blue-600" />
-                      <span>Enlace Dentalink</span>
-                    </div>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold uppercase">
-                      API
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab("consentimientos")}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
-                      adminTab === "consentimientos"
-                        ? "bg-slate-900 text-white font-bold shadow-xs"
-                        : "text-slate-700 hover:bg-slate-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-600" />
-                      <span>Auditoría Ley 20.584</span>
-                    </div>
-                    <span className="text-[10px] text-slate-500 font-semibold">{consents.length}</span>
-                  </button>
-                </div>
-
-                {/* 2. OPERACIÓN & CAPTACIÓN WEB */}
-                <div className="space-y-1 pt-2 border-t border-slate-100">
-                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block px-1">
-                    Operación & Web
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab("citas")}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
-                      adminTab === "citas"
-                        ? "bg-slate-900 text-white font-bold shadow-xs"
-                        : "text-slate-700 hover:bg-slate-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-4 h-4 shrink-0" />
-                      <span>Citas Web & Triaje</span>
-                    </div>
-                    <span className="text-[10px] text-slate-500 font-semibold">{appointments.length}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab("pagos_club")}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
-                      adminTab === "pagos_club"
-                        ? "bg-slate-900 text-white font-bold shadow-xs"
-                        : "text-slate-700 hover:bg-slate-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <CreditCard className="w-4 h-4 shrink-0 text-emerald-600" />
-                      <span>Pagos Flow & Club</span>
-                    </div>
-                    <span className="text-[10px] text-slate-500 font-semibold">
-                      {userList.filter((u) => u.convenioLevel && u.convenioLevel !== "Ninguno").length}
-                    </span>
-                  </button>
-                </div>
-
-                {/* 3. CONTENIDO & SISTEMA */}
-                <div className="space-y-1 pt-2 border-t border-slate-100">
-                  <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block px-1">
-                    Contenido & Sistema
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab("cms")}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
-                      adminTab === "cms"
-                        ? "bg-slate-900 text-white font-bold shadow-xs"
-                        : "text-slate-700 hover:bg-slate-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Globe className="w-4 h-4 shrink-0 text-teal-600" />
-                      <span>Editor CMS Web</span>
-                    </div>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold uppercase">
-                      VIVO
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setAdminTab("usuarios")}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded transition text-left cursor-pointer ${
-                      adminTab === "usuarios"
-                        ? "bg-slate-900 text-white font-bold shadow-xs"
-                        : "text-slate-700 hover:bg-slate-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <UsersIcon className="w-4 h-4 shrink-0" />
-                      <span>Usuarios & Roles</span>
-                    </div>
-                    <span className="text-[10px] text-slate-500 font-semibold">{userList.length}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Direct Access to Dentalink Master Cloud Agenda */}
-              <div className="pt-3 border-t border-slate-100 space-y-2">
-                <span className="text-[10px] font-mono uppercase text-slate-400 block tracking-wider">
-                  Acceso Dentalink Maestro
-                </span>
-                <a
-                  href={CLINIC_INFO.dentalink?.agendaUrl || "https://00b229f2077285343f1ffac76fd853c23816acec.agenda.softwaredentalink.com/"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between text-xs text-blue-700 hover:text-blue-900 font-mono py-1.5 px-2.5 bg-blue-50/70 hover:bg-blue-100/70 rounded border border-blue-200/80 transition"
-                >
-                  <span className="font-semibold">Agenda Dentalink Cloud</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
-                </a>
-              </div>
-
-              {/* Live Web Links */}
-              <div className="pt-3 border-t border-slate-100 space-y-2">
-                <span className="text-[10px] font-mono uppercase text-slate-400 block tracking-wider">Acceso Público</span>
-                <a
-                  href="/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between text-xs text-slate-600 hover:text-slate-900 font-mono py-1"
-                >
-                  <span>Página de Inicio</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-                <a
-                  href="/tratamientos"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between text-xs text-slate-600 hover:text-slate-900 font-mono py-1"
-                >
-                  <span>Catálogo de Tratamientos</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            </aside>
-
-            {/* Admin Main Dynamic Pane */}
-            <div className="flex-1 w-full min-w-0 max-w-full space-y-6">
+          <div className="w-full min-w-0 space-y-6">
               
               {/* TAB 1: EXECUTIVE DASHBOARD */}
               {adminTab === "dashboard" && (
@@ -2096,8 +2081,7 @@ function PortalContent() {
               )}
 
             </div>
-          </div>
-        )}
+          )}
 
         {/* Modal Ficha Clínica Legal (Ley 20.584) */}
         {selectedRecordForDocument && (
@@ -2270,7 +2254,8 @@ function PortalContent() {
           />
         )}
 
-      </main>
+        </main>
+      </div>
 
     </div>
   );

@@ -201,8 +201,8 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} min-h-screen bg-[#faf8f5] text-[#141413] font-sans antialiased selection:bg-[#141413] selection:text-[#faf8f5]`}
       >
         <FlashAlertBanner />
-        <TopAnnouncementTicker />
-        <Navbar />
+        <TopAnnouncementTicker initialAnnouncements={cms.announcements} />
+        <Navbar initialHeaderConfig={cms.headerConfig} initialClinicInfo={cms.clinicInfo} />
         <main className="min-h-screen">{children}</main>
         <Footer />
         <WhatsAppFloatingButton />
