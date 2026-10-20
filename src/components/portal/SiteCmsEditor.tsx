@@ -119,6 +119,8 @@ export function SiteCmsEditor() {
     | "seo"
   >("header");
 
+  const [activeCategory, setActiveCategory] = useState<"all" | "home" | "clinica" | "marketing" | "canales">("all");
+
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
@@ -251,43 +253,91 @@ export function SiteCmsEditor() {
         onImportBackup={handleImportBackup}
       />
 
-      {/* Tabs Navigation (Adaptive Segmented Bar) */}
-      <div className="flex items-center gap-1.5 overflow-x-auto bg-slate-100 p-1.5 border border-slate-200 rounded-lg scrollbar-none w-full min-w-0">
+      {/* Categorías Principales del CMS */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-2">
+        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider font-bold mr-1">
+          Sección:
+        </span>
         {[
-          { id: "header" as const, label: "0. Menú", icon: Layout, color: "text-sky-600" },
-          { id: "hero" as const, label: "1. Hero & Video", icon: Sparkles, color: "text-purple-600" },
-          { id: "medios" as const, label: "2. Medios & Galería", icon: Film, color: "text-purple-600" },
-          { id: "pilares" as const, label: "3. Pilares", icon: Layers, color: "text-teal-600" },
-          { id: "prevencion" as const, label: "4. Prevención", icon: HeartHandshake, color: "text-emerald-600" },
-          { id: "membresias" as const, label: "5. Club", icon: CreditCard, color: "text-amber-600" },
-          { id: "tratamientos" as const, label: "6. Catálogo", icon: Stethoscope, color: "text-cyan-600" },
-          { id: "doctores" as const, label: "7. Staff SIS", icon: Users, color: "text-blue-600" },
-          { id: "promos" as const, label: "8. Promos", icon: Percent, color: "text-pink-600" },
-          { id: "contacto" as const, label: "9. Contacto", icon: PhoneCall, color: "text-amber-700" },
-          { id: "anuncios" as const, label: "10. Marquesina", icon: Bell, color: "text-rose-600" },
-          { id: "auth" as const, label: "11. Acceso", icon: KeyRound, color: "text-emerald-700" },
-          { id: "whatsapp" as const, label: "12. WhatsApp", icon: MessageCircle, color: "text-emerald-600" },
-          { id: "alert" as const, label: "13. Avisos", icon: AlertTriangle, color: "text-amber-600" },
-          { id: "aranceles" as const, label: "14. Aranceles", icon: Calculator, color: "text-cyan-600" },
-          { id: "seo" as const, label: "15. SEO & Ads", icon: Globe, color: "text-purple-600" },
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
+          { id: "all" as const, label: "Todos los Módulos" },
+          { id: "home" as const, label: "Portada & Home" },
+          { id: "clinica" as const, label: "Tratamientos & Precios" },
+          { id: "marketing" as const, label: "Campañas & Avisos" },
+          { id: "canales" as const, label: "Canales & SEO" },
+        ].map((cat) => {
+          const isCatActive = activeCategory === cat.id;
           return (
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-3 py-2 text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 rounded-md shrink-0 whitespace-nowrap ${
-                isActive
-                  ? "bg-white text-slate-900 border border-slate-200/80 shadow-xs font-bold"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 border border-transparent"
+              key={cat.id}
+              type="button"
+              onClick={() => {
+                setActiveCategory(cat.id);
+                // Si la tab activa no pertenece a la categoría, pasar a la primera de ella
+                if (cat.id !== "all") {
+                  const firstTab = [
+                    { id: "header", category: "home" },
+                    { id: "tratamientos", category: "clinica" },
+                    { id: "promos", category: "marketing" },
+                    { id: "contacto", category: "canales" },
+                  ].find((t) => t.category === cat.id);
+                  if (firstTab) setActiveTab(firstTab.id as any);
+                }
+              }}
+              className={`px-3 py-1 rounded-full text-xs font-mono transition cursor-pointer ${
+                isCatActive
+                  ? "bg-slate-900 text-white font-bold shadow-2xs"
+                  : "bg-slate-100 hover:bg-slate-200 text-slate-600"
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? tab.color : "text-slate-400"}`} />
-              <span>{tab.label}</span>
+              {cat.label}
             </button>
           );
         })}
+      </div>
+
+      {/* Tabs Navigation (Adaptive Segmented Bar) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto bg-slate-100 p-1.5 border border-slate-200 rounded-lg scrollbar-none w-full min-w-0">
+        {[
+          // Home & Portada
+          { id: "header" as const, label: "Cabecera & Menú", category: "home", icon: Layout, color: "text-sky-600" },
+          { id: "hero" as const, label: "Hero & Portada", category: "home", icon: Sparkles, color: "text-purple-600" },
+          { id: "medios" as const, label: "Galería & Medios", category: "home", icon: Film, color: "text-indigo-600" },
+          { id: "pilares" as const, label: "Pilares", category: "home", icon: Layers, color: "text-teal-600" },
+          { id: "prevencion" as const, label: "Prevención", category: "home", icon: HeartHandshake, color: "text-emerald-600" },
+          // Clínica & Aranceles
+          { id: "tratamientos" as const, label: "Catálogo Tratamientos", category: "clinica", icon: Stethoscope, color: "text-cyan-600" },
+          { id: "aranceles" as const, label: "Aranceles Clínicos", category: "clinica", icon: Calculator, color: "text-cyan-600" },
+          { id: "membresias" as const, label: "Club BeHappy", category: "clinica", icon: CreditCard, color: "text-amber-600" },
+          { id: "doctores" as const, label: "Staff Médico SIS", category: "clinica", icon: Users, color: "text-blue-600" },
+          // Campañas & Avisos
+          { id: "promos" as const, label: "Promociones", category: "marketing", icon: Percent, color: "text-pink-600" },
+          { id: "alert" as const, label: "Avisos Flash", category: "marketing", icon: AlertTriangle, color: "text-amber-600" },
+          { id: "anuncios" as const, label: "Marquesina", category: "marketing", icon: Bell, color: "text-rose-600" },
+          // Canales & SEO
+          { id: "contacto" as const, label: "Contacto & Sede", category: "canales", icon: PhoneCall, color: "text-amber-700" },
+          { id: "whatsapp" as const, label: "WhatsApp", category: "canales", icon: MessageCircle, color: "text-emerald-600" },
+          { id: "auth" as const, label: "Portal Paciente", category: "canales", icon: KeyRound, color: "text-emerald-700" },
+          { id: "seo" as const, label: "SEO & Ads", category: "canales", icon: Globe, color: "text-purple-600" },
+        ]
+          .filter((t) => activeCategory === "all" || t.category === activeCategory)
+          .map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3 py-2 text-xs font-mono tracking-wider transition flex items-center gap-2 rounded-md shrink-0 whitespace-nowrap cursor-pointer ${
+                  isActive
+                    ? "bg-white text-slate-900 border border-slate-200/80 shadow-xs font-bold"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 border border-transparent"
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? tab.color : "text-slate-400"}`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
       </div>
 
       {/* Tab Panels */}

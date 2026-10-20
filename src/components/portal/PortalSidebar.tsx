@@ -710,34 +710,13 @@ export function PortalSidebar({
               </div>
             )}
 
-            {/* Public Web Links */}
-            <div className="space-y-1 pt-1">
-              <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block px-2">
-                Accesos Directos
-              </span>
-              <a
-                href="/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-between px-3 py-1.5 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition text-xs"
-              >
-                <span className="truncate">Sitio Web Público</span>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
-              </a>
-              <a
-                href="/tratamientos"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-between px-3 py-1.5 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition text-xs"
-              >
-                <span className="truncate">Catálogo de Aranceles</span>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
-              </a>
+            {/* Enlace de soporte WhatsApp */}
+            <div className="pt-1">
               <a
                 href={buildWhatsAppUrl("Hola Centro Dental BeHappy, me comunico desde el Portal Clínico.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-between px-3 py-1.5 rounded text-slate-600 hover:text-emerald-700 hover:bg-emerald-50/60 transition text-xs"
+                className="w-full flex items-center justify-between px-3 py-1.5 rounded text-slate-600 hover:text-emerald-700 hover:bg-emerald-50/60 transition text-xs font-mono"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <MessageCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" />

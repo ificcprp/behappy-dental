@@ -1699,11 +1699,11 @@ function PortalContent() {
                   <div className="bg-white border border-slate-200 rounded-lg p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
                     <div>
                       <span className="text-[10px] font-mono tracking-widest text-purple-700 uppercase font-bold block">
-                        DIRECCIÓN MÉDICA & ADMINISTRACIÓN CENTRAL
+                        Panel de Control General
                       </span>
                       <h2 className="text-2xl font-semibold text-slate-900">Dashboard Ejecutivo</h2>
                       <p className="text-xs text-slate-500 font-mono mt-0.5">
-                        Headless Front-Office · BeHappy Ñuñoa (Suecia 3580)
+                        Centro Dental BeHappy · Sede Ñuñoa (Suecia 3580)
                       </p>
                     </div>
 
