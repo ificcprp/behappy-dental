@@ -421,10 +421,29 @@ export function SiteCmsEditor() {
         <TreatmentsCatalogEditor
           treatments={cmsData.treatments}
           onUpdateTreatments={(updated) => {
-            const next = { ...cmsData, treatments: updated };
+            // Sincronizar automáticamente los precios y nombres con el cotizador interactivo
+            const updatedProcedures = (cmsData.pricingProcedures || DEFAULT_PRICING_PROCEDURES).map((proc) => {
+              const matched = updated.find((t) => t.id === proc.id || t.slug === proc.id);
+              if (matched) {
+                const market = matched.priceBaseCLP || proc.marketPrice;
+                const club = matched.priceClubCLP || Math.round(market * 0.7);
+                const discount = market > club && market > 0
+                  ? Math.round(((market - club) / market) * 100)
+                  : proc.convenioDiscountPercent;
+                return {
+                  ...proc,
+                  name: matched.name,
+                  marketPrice: market,
+                  convenioDiscountPercent: discount,
+                };
+              }
+              return proc;
+            });
+
+            const next = { ...cmsData, treatments: updated, pricingProcedures: updatedProcedures };
             setCmsData(next);
             saveCMSData(next, { status: "draft" });
-            triggerToast("✓ Catálogo de tratamientos actualizado");
+            triggerToast("✓ Catálogo de tratamientos y cotizador de aranceles sincronizados");
           }}
           presetImages={CLINIC_PRESET_IMAGES.treatments}
         />
@@ -459,26 +478,53 @@ export function SiteCmsEditor() {
         <ContactLocationEditor
           clinicInfo={cmsData.clinicInfo}
           onUpdateClinicInfo={(updated) => {
-            const next = { ...cmsData, clinicInfo: updated };
+            const newPhone = updated.contact?.whatsappNumber || updated.contact?.phoneClean;
+            const clean = newPhone ? newPhone.replace(/[^0-9]/g, "") : undefined;
+            const nextWhatsapp = clean
+              ? {
+                  ...(cmsData.whatsappBooking || DEFAULT_WHATSAPP_BOOKING),
+                  whatsappNumber: clean,
+                  emergencyWhatsappNumber: clean,
+                }
+              : cmsData.whatsappBooking;
+
+            const next = { ...cmsData, clinicInfo: updated, whatsappBooking: nextWhatsapp };
             setCmsData(next);
           }}
           onSave={() => {
             saveCMSData(cmsData, { status: "draft" });
-            triggerToast("✓ Canales oficiales y horarios guardados");
+            triggerToast("✓ Canales oficiales y horarios guardados (WhatsApp sincronizado)");
           }}
         />
       )}
 
       {activeTab === "anuncios" && (
-        <AnnouncementsTickerEditor
-          announcements={cmsData.announcements}
-          onUpdateAnnouncements={(updated) => {
-            const next = { ...cmsData, announcements: updated };
-            setCmsData(next);
-            saveCMSData(next, { status: "draft" });
-            triggerToast("✓ Anuncios marquesina actualizados");
-          }}
-        />
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-md text-xs font-mono w-fit">
+            <button
+              type="button"
+              onClick={() => setActiveTab("alert")}
+              className="px-3 py-1 rounded text-slate-600 hover:text-slate-900 transition"
+            >
+              Banner Alerta Flash
+            </button>
+            <button
+              type="button"
+              className="px-3 py-1 rounded bg-white text-slate-900 font-bold shadow-2xs"
+            >
+              Marquesina Ticker
+            </button>
+          </div>
+          <AnnouncementsTickerEditor
+            announcements={cmsData.announcements}
+            onUpdateAnnouncements={(updated) => {
+              const next = { ...cmsData, announcements: updated };
+              setCmsData(next);
+              saveCMSData(next, { status: "draft" });
+              triggerToast("✓ Anuncios marquesina actualizados");
+            }}
+          />
+        </div>
       )}
 
       {activeTab === "auth" && (
@@ -498,26 +544,55 @@ export function SiteCmsEditor() {
         <WhatsappBookingEditor
           whatsappBooking={cmsData.whatsappBooking || DEFAULT_WHATSAPP_BOOKING}
           onUpdateWhatsappBooking={(updated) => {
-            const next = { ...cmsData, whatsappBooking: updated };
+            const clean = updated.whatsappNumber ? updated.whatsappNumber.replace(/[^0-9]/g, "") : undefined;
+            const nextClinic = clean && cmsData.clinicInfo
+              ? {
+                  ...cmsData.clinicInfo,
+                  contact: {
+                    ...cmsData.clinicInfo.contact,
+                    whatsappNumber: clean,
+                    phoneClean: clean,
+                  },
+                }
+              : cmsData.clinicInfo;
+
+            const next = { ...cmsData, whatsappBooking: updated, clinicInfo: nextClinic };
             setCmsData(next);
             saveCMSData(next, { status: "draft" });
-            triggerToast("✓ WhatsApp y Agendamiento actualizados");
+            triggerToast("✓ WhatsApp y Canales de Contacto sincronizados");
           }}
           triggerToast={triggerToast}
         />
       )}
 
       {activeTab === "alert" && (
-        <FlashAlertEditor
-          flashAlert={cmsData.flashAlert || DEFAULT_FLASH_ALERT}
-          onUpdateFlashAlert={(updated) => {
-            const next = { ...cmsData, flashAlert: updated };
-            setCmsData(next);
-            saveCMSData(next, { status: "draft" });
-            triggerToast("✓ Banner de aviso y contingencia actualizado");
-          }}
-          triggerToast={triggerToast}
-        />
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-md text-xs font-mono w-fit">
+            <button
+              type="button"
+              className="px-3 py-1 rounded bg-white text-slate-900 font-bold shadow-2xs"
+            >
+              Banner Alerta Flash
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("anuncios")}
+              className="px-3 py-1 rounded text-slate-600 hover:text-slate-900 transition"
+            >
+              Marquesina Ticker
+            </button>
+          </div>
+          <FlashAlertEditor
+            flashAlert={cmsData.flashAlert || DEFAULT_FLASH_ALERT}
+            onUpdateFlashAlert={(updated) => {
+              const next = { ...cmsData, flashAlert: updated };
+              setCmsData(next);
+              saveCMSData(next, { status: "draft" });
+              triggerToast("✓ Banner de aviso y contingencia actualizado");
+            }}
+            triggerToast={triggerToast}
+          />
+        </div>
       )}
 
       {activeTab === "aranceles" && (

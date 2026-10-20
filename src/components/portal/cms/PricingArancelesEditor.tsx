@@ -61,27 +61,27 @@ export function PricingArancelesEditor({
   return (
     <div className="space-y-6">
       {/* Header Bar */}
-      <div className="border border-[#222228] bg-[#121216] p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <div className="border border-slate-200 bg-white p-4 sm:p-5 rounded-lg shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h3 className="text-base font-normal text-white flex items-center gap-2">
-            <Calculator className="w-4 h-4 text-cyan-400" />
+          <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+            <Calculator className="w-4 h-4 text-cyan-600" />
             <span>Aranceles & Copagos del Cotizador Interactivo (/precios)</span>
           </h3>
-          <p className="text-xs text-neutral-400 font-light mt-0.5">
-            Configura los precios de mercado, descuentos del Club BeHappy y estimaciones de cobertura Fonasa e Isapre para cada procedimiento.
+          <p className="text-xs text-slate-500 font-light mt-0.5">
+            Los precios base y de Club se sincronizan automáticamente con el Catálogo de Tratamientos. Aquí puedes afinar las estimaciones de cobertura Fonasa e Isapre para cada procedimiento.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={handleAddProcedure}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold transition rounded-xs"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-mono font-bold transition rounded-xs cursor-pointer shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Añadir Procedimiento</span>
           </button>
           <button
             onClick={handleResetDefaults}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#18181f] hover:bg-[#22222a] border border-[#2e2e38] text-neutral-300 hover:text-white text-xs font-mono transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-mono transition rounded-xs cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Valores por Defecto</span>

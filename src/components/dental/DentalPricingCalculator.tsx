@@ -5,25 +5,44 @@ import { ArrowRight } from "lucide-react";
 import { getCMSData, CMSData, CMSPricingProcedure, DEFAULT_PRICING_PROCEDURES } from "@/lib/cmsStore";
 import { Treatment } from "@/data/treatments";
 
-function mapTreatmentsToProcedures(cmsTreatments?: Treatment[]): CMSPricingProcedure[] {
-  if (!cmsTreatments || cmsTreatments.length === 0) return DEFAULT_PRICING_PROCEDURES;
+function mapTreatmentsToProcedures(
+  cmsTreatments?: Treatment[],
+  customPricing?: CMSPricingProcedure[]
+): CMSPricingProcedure[] {
+  if (!cmsTreatments || cmsTreatments.length === 0) {
+    return customPricing && customPricing.length > 0 ? customPricing : DEFAULT_PRICING_PROCEDURES;
+  }
   return cmsTreatments.map((t) => {
-    const market = t.priceBaseCLP || 45000;
-    const clubPrice = t.priceClubCLP || Math.round(market * 0.7);
+    const existing = customPricing?.find((p) => p.id === t.id || p.id === t.slug);
+    
+    // Extraer precio de base
+    const market = t.priceBaseCLP || existing?.marketPrice || 45000;
+
+    // Extraer precio Club
+    const clubPrice = t.priceClubCLP || (existing?.convenioDiscountPercent
+      ? Math.round(market * (1 - existing.convenioDiscountPercent / 100))
+      : Math.round(market * 0.7));
+
     const discount =
-      market > clubPrice ? Math.round(((market - clubPrice) / market) * 100) : 30;
+      market > clubPrice
+        ? Math.round(((market - clubPrice) / market) * 100)
+        : (existing?.convenioDiscountPercent || 30);
 
     return {
       id: t.id || t.slug,
       name: t.name,
       marketPrice: market,
       convenioDiscountPercent: discount,
-      fonasaEstimateCoverage: t.fonasaCode ? Math.round(market * 0.15) : 0,
-      isapreEstimateCoverage: Math.round(market * 0.35),
-      category: t.category || "Tratamiento General",
+      fonasaEstimateCoverage:
+        existing?.fonasaEstimateCoverage ??
+        (t.fonasaCode ? Math.round(market * 0.15) : 0),
+      isapreEstimateCoverage:
+        existing?.isapreEstimateCoverage ?? Math.round(market * 0.35),
+      category: t.category || existing?.category || "Tratamiento General",
       notes:
         t.shortDescription ||
         t.recommendedFor ||
+        existing?.notes ||
         "Atención clínica odontológica en Centro Dental BeHappy.",
     };
   });
@@ -33,6 +52,9 @@ export function DentalPricingCalculator() {
   const [procedures, setProcedures] = useState<CMSPricingProcedure[]>(() => {
     try {
       const cms = getCMSData();
+      if (cms?.treatments && cms.treatments.length > 0) {
+        return mapTreatmentsToProcedures(cms.treatments, cms.pricingProcedures);
+      }
       return cms?.pricingProcedures && cms.pricingProcedures.length > 0
         ? cms.pricingProcedures
         : DEFAULT_PRICING_PROCEDURES;
@@ -48,10 +70,10 @@ export function DentalPricingCalculator() {
   useEffect(() => {
     const loadProcedures = () => {
       const cms = getCMSData();
-      if (cms?.pricingProcedures && cms.pricingProcedures.length > 0) {
+      if (cms?.treatments && cms.treatments.length > 0) {
+        setProcedures(mapTreatmentsToProcedures(cms.treatments, cms.pricingProcedures));
+      } else if (cms?.pricingProcedures && cms.pricingProcedures.length > 0) {
         setProcedures(cms.pricingProcedures);
-      } else if (cms?.treatments && cms.treatments.length > 0) {
-        setProcedures(mapTreatmentsToProcedures(cms.treatments));
       } else {
         setProcedures(DEFAULT_PRICING_PROCEDURES);
       }
